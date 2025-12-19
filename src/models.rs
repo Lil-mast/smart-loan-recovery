@@ -1,4 +1,4 @@
-use chrono::{DateTime, Duration, Utc};
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -9,14 +9,14 @@ pub enum UserRole {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum User {
+pub struct User {
     pub id: Uuid,
     pub name: String,
     pub role: UserRole,
     // for future use add more attributes like emails, phone numbers etc.
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum LoanStatus {
     Active,
     Overdue,
@@ -39,7 +39,11 @@ pub struct Loan {
 }
 
 pub trait RiskScorable {
-    fn calculate_risk_score(&self)-> f64 {
+    fn calculate_risk_score(&self) -> f64;
+}
+
+impl RiskScorable for Loan {
+    fn calculate_risk_score(&self) -> f64 {
         // Simple rule: higher if overdue
         if let LoanStatus::Overdue = self.status {
             0.8 // High risk
