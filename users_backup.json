@@ -1,0 +1,57 @@
+[
+  {
+    "id": "5bed4297-61b2-4d55-b1af-4724e391cefa",
+    "name": "Alice Johnson",
+    "role": "Borrower"
+  },
+  {
+    "id": "5971a327-8e85-48a5-865a-e587c567f60f",
+    "name": "Bob Smith",
+    "role": "Lender"
+  },
+  {
+    "id": "0b1329b7-4e5c-4b6f-bd6d-856089876058",
+    "name": "Alice Johnson",
+    "role": "Borrower"
+  },
+  {
+    "id": "82a33eb6-e8eb-4e37-8415-00b8103f85b0",
+    "name": "Bob Smith",
+    "role": "Lender"
+  },
+  {
+    "id": "4544ad2d-c078-47f9-bb02-215cd0553170",
+    "name": "Alice Johnson",
+    "role": "Borrower"
+  },
+  {
+    "id": "7325f294-8256-4766-9a35-10e77796ad98",
+    "name": "Alice Johnson",
+    "role": "Borrower"
+  },
+  {
+    "id": "e011db73-1286-4df7-afd7-eea32f60ec4c",
+    "name": "Bob Smith",
+    "role": "Lender"
+  },
+  {
+    "id": "8b76fdaa-165d-402e-8e84-d05c6ffc7569",
+    "name": "Test User",
+    "role": "Lender"
+  },
+  {
+    "id": "eaeed2d3-88f8-4862-8ac0-94da99e541af",
+    "name": "Levi",
+    "role": "Borrower"
+  },
+  {
+    "id": "5ed5879c-51c6-40b8-abc1-34f59de4a76d",
+    "name": "Alice Johnson",
+    "role": "Borrower"
+  },
+  {
+    "id": "509283de-713b-46eb-9b59-c4616f4833cf",
+    "name": "Bob Smith",
+    "role": "Lender"
+  }
+]

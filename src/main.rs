@@ -1,30 +1,186 @@
 mod models;
 mod user;
 mod loan;
+mod db;
+mod recovery;
 
 use crate::models::{UserRole, RiskScorable};
 use crate::user::UserManager;
 use crate::loan::LoanTracker;
+use crate::recovery::RecoveryEngine;
+use crate::db::Db;
+use clap::{Parser, Subcommand};
+use uuid::Uuid;
+
+#[derive(Parser)]
+#[command(name = "smart-loan-recovery")]
+#[command(about = "AI-enhanced loan recovery system")]
+struct Cli {
+    #[command(subcommand)]
+    command: Option<Commands>,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    /// Register a new user (borrower or lender)
+    RegisterUser {
+        /// User name
+        #[arg(short, long)]
+        name: String,
+        /// User role (borrower or lender)
+        #[arg(short, long)]
+        role: String
+    },
+    /// Create a new loan
+    CreateLoan {
+        /// Borrower UUID
+        #[arg(short, long)]
+        borrower_id: String,
+        /// Lender UUID
+        #[arg(short, long)]
+        lender_id: String,
+        /// Loan principal amount
+        #[arg(short, long)]
+        principal: f64,
+        /// Annual interest rate (percentage)
+        #[arg(short = 'r', long)]
+        interest_rate: f64,
+        /// Loan duration in months
+        #[arg(short, long)]
+        months: i64
+    },
+    /// Flag overdue loans
+    FlagOverdues,
+    /// Get recovery recommendation for a loan
+    Recommend {
+        /// Loan UUID
+        #[arg(short, long)]
+        loan_id: String
+    },
+    /// Run the demo
+    Demo,
+}
+
+fn run_cli(cli: Cli, db: Db) -> Result<(), Box<dyn std::error::Error>> {
+    let user_manager = UserManager::new(&db);
+    let loan_tracker = LoanTracker::new(&db);
+    let recovery_engine = RecoveryEngine;
+
+    match cli.command.unwrap() {
+        Commands::RegisterUser { name, role } => {
+            let user_role = match role.to_lowercase().as_str() {
+                "borrower" => UserRole::Borrower,
+                "lender" => UserRole::Lender,
+                _ => {
+                    eprintln!("❌ Invalid role. Use 'borrower' or 'lender'");
+                    return Ok(());
+                }
+            };
+
+            match user_manager.register_user(name.clone(), user_role) {
+                Ok(user_id) => println!("✅ Registered {} as {} with ID: {}", name, role, user_id),
+                Err(e) => eprintln!("❌ Failed to register user: {}", e),
+            }
+        }
+
+        Commands::CreateLoan { borrower_id, lender_id, principal, interest_rate, months } => {
+            let borrower_uuid = Uuid::parse_str(&borrower_id)
+                .map_err(|_| "Invalid borrower UUID format")?;
+            let lender_uuid = Uuid::parse_str(&lender_id)
+                .map_err(|_| "Invalid lender UUID format")?;
+
+            match loan_tracker.create_loan(borrower_uuid, lender_uuid, principal, interest_rate, months) {
+                Ok(loan_id) => println!("✅ Created loan with ID: {}", loan_id),
+                Err(e) => eprintln!("❌ Failed to create loan: {}", e),
+            }
+        }
+
+        Commands::FlagOverdues => {
+            match loan_tracker.flag_overdues() {
+                Ok(()) => println!("✅ Overdue loans flagged successfully"),
+                Err(e) => eprintln!("❌ Failed to flag overdues: {}", e),
+            }
+        }
+
+        Commands::Recommend { loan_id } => {
+            let loan_uuid = Uuid::parse_str(&loan_id)
+                .map_err(|_| "Invalid loan UUID format")?;
+
+            match loan_tracker.get_loan(loan_uuid) {
+                Ok(Some(loan)) => {
+                    let risk_score = recovery_engine.predict_default(&loan);
+                    let action = recovery_engine.recommend_action(risk_score, 0); // Simplified: assume 0 missed payments for demo
+                    println!("📊 Loan {} - Risk Score: {:.2}", loan_id, risk_score);
+                    println!("💡 Recommended Action: {:?}", action);
+                }
+                Ok(None) => eprintln!("❌ Loan not found"),
+                Err(e) => eprintln!("❌ Failed to load loan: {}", e),
+            }
+        }
+
+        Commands::Demo => {
+            run_demo(db);
+        }
+    }
+
+    Ok(())
+}
 
 fn main() {
+    let cli = Cli::parse();
+
+    // Initialize database
+    let db = match Db::new() {
+        Ok(db) => db,
+        Err(e) => {
+            eprintln!("❌ Failed to initialize database: {}", e);
+            return;
+        }
+    };
+
+    // Check if running in CLI mode or demo mode
+    if let Some(_) = cli.command {
+        // CLI mode
+        if let Err(e) = run_cli(cli, db) {
+            eprintln!("❌ CLI Error: {}", e);
+        }
+    } else {
+        // Demo mode (no subcommand provided)
+        run_demo(db);
+    }
+}
+
+fn run_demo(db: Db) {
     println!("🚀 Smart Loan Recovery System Starting...");
 
-    // Initialize system components
-    let mut user_manager = UserManager::new();
-    let mut loan_tracker = LoanTracker::new();
+    // Initialize system components with database
+    let user_manager = UserManager::new(&db);
+    let loan_tracker = LoanTracker::new(&db);
 
     // Demo: Register users
     println!("\n📝 Registering users...");
 
-    let borrower_id = user_manager.register_user(
+    let borrower_id = match user_manager.register_user(
         "Alice Johnson".to_string(),
         UserRole::Borrower
-    ).expect("Failed to register borrower");
+    ) {
+        Ok(id) => id,
+        Err(e) => {
+            eprintln!("❌ Failed to register borrower: {}", e);
+            return;
+        }
+    };
 
-    let lender_id = user_manager.register_user(
+    let lender_id = match user_manager.register_user(
         "Bob Smith".to_string(),
         UserRole::Lender
-    ).expect("Failed to register lender");
+    ) {
+        Ok(id) => id,
+        Err(e) => {
+            eprintln!("❌ Failed to register lender: {}", e);
+            return;
+        }
+    };
 
     println!("✅ Registered borrower: {}", borrower_id);
     println!("✅ Registered lender: {}", lender_id);
@@ -32,39 +188,63 @@ fn main() {
     // Demo: Create a loan
     println!("\n💰 Creating a loan...");
 
-    let loan_id = loan_tracker.create_loan(
+    let loan_id = match loan_tracker.create_loan(
         borrower_id,
         lender_id,
         10000.0,  // $10,000 principal
         5.5,      // 5.5% interest rate
         12        // 12 months duration
-    ).expect("Failed to create loan");
+    ) {
+        Ok(id) => id,
+        Err(e) => {
+            eprintln!("❌ Failed to create loan: {}", e);
+            return;
+        }
+    };
 
     println!("✅ Created loan: {} for borrower {}", loan_id, borrower_id);
 
-    // Demo script: Get loan details
-    if let Some(loan) = loan_tracker.get_loan(loan_id) {
-        println!("\n📊 Loan Details:");
-        println!("   ID: {}", loan.id);
-        println!("   Principal: ${:.2}", loan.principal);
-        println!("   Interest Rate: {:.1}%", loan.interest_rate);
-        println!("   Status: {:?}", loan.status);
-        println!("   Risk Score: {:.2}", loan.calculate_risk_score());
+    // Demo: Get loan details
+    match loan_tracker.get_loan(loan_id) {
+        Ok(Some(loan)) => {
+            println!("\n📊 Loan Details:");
+            println!("   ID: {}", loan.id);
+            println!("   Principal: ${:.2}", loan.principal);
+            println!("   Interest Rate: {:.1}%", loan.interest_rate);
+            println!("   Status: {:?}", loan.status);
+            println!("   Risk Score: {:.2}", loan.calculate_risk_score());
+        }
+        Ok(None) => println!("❌ Loan not found"),
+        Err(e) => eprintln!("❌ Failed to load loan: {}", e),
     }
 
     // Demo: Update repayment
     println!("\n💳 Processing repayment...");
     if let Err(e) = loan_tracker.update_repayment(loan_id) {
-        println!("❌ Failed to update repayment: {}", e);
+        eprintln!("❌ Failed to update repayment: {}", e);
     } else {
         println!("✅ Repayment updated successfully");
     }
 
     // Demo: Check updated loan status
-    if let Some(loan) = loan_tracker.get_loan(loan_id) {
-        println!("\n📈 Updated Loan Status: {:?}", loan.status);
-        println!("   Risk Score: {:.2}", loan.calculate_risk_score());
+    match loan_tracker.get_loan(loan_id) {
+        Ok(Some(loan)) => {
+            println!("\n📈 Updated Loan Status: {:?}", loan.status);
+            println!("   Risk Score: {:.2}", loan.calculate_risk_score());
+        }
+        Ok(None) => println!("❌ Loan not found"),
+        Err(e) => eprintln!("❌ Failed to load loan: {}", e),
+    }
+
+    // Demo: Save to JSON backup
+    println!("\n💾 Creating JSON backup...");
+    if let Err(e) = db.save_to_json("users_backup.json", "loans_backup.json") {
+        eprintln!("❌ Failed to create JSON backup: {}", e);
+    } else {
+        println!("✅ JSON backup created successfully");
     }
 
     println!("\n🎉 Smart Loan Recovery System Demo Complete!");
+    println!("💡 Data is now persisted in SQLite database 'loans.db'");
 }
+
