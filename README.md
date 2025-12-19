@@ -20,6 +20,13 @@ An AI-enhanced loan recovery system in Rust that predicts potential defaults and
 2. Build: `cargo build`
 3. Run: `cargo run`
 
+## Current Status
+✅ **Functional Demo**: The system now includes a working demo that showcases:
+- User registration for borrowers and lenders
+- Loan creation with repayment scheduling
+- Repayment processing and status updates
+- Risk score calculation based on loan status
+
 ## Architecture
 - **Modules**: `user`, `models`, and main entry point.
 - **Key Traits**: `RiskScorable` for risk calculation.
