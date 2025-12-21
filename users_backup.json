@@ -53,5 +53,35 @@
     "id": "509283de-713b-46eb-9b59-c4616f4833cf",
     "name": "Bob Smith",
     "role": "Lender"
+  },
+  {
+    "id": "f34a7a50-1e30-489c-85bd-d5403bf03840",
+    "name": "Mich Mwaniki",
+    "role": "Borrower"
+  },
+  {
+    "id": "69149e97-0b42-415f-a2ce-fd01165a3c7b",
+    "name": "Bank Corp",
+    "role": "Lender"
+  },
+  {
+    "id": "286c6193-6cd3-4f02-b54a-eb6403eed1e4",
+    "name": "Fifi Cielo",
+    "role": "Borrower"
+  },
+  {
+    "id": "0ae5fdee-5c8a-4a61-860a-9bcefe05fe51",
+    "name": "NCBA bank",
+    "role": "Lender"
+  },
+  {
+    "id": "cfc1ba44-32fe-4940-b744-da6d89c66a95",
+    "name": "Alice Johnson",
+    "role": "Borrower"
+  },
+  {
+    "id": "917e00db-1f47-457a-bd20-4a021031bb11",
+    "name": "Bob Smith",
+    "role": "Lender"
   }
 ]

@@ -3,7 +3,11 @@ mod user;
 mod loan;
 mod db;
 mod recovery;
+mod api;
+mod config;
+mod error;
 
+use crate::config::Config;
 use crate::models::{UserRole, RiskScorable};
 use crate::user::UserManager;
 use crate::loan::LoanTracker;
@@ -11,6 +15,7 @@ use crate::recovery::RecoveryEngine;
 use crate::db::Db;
 use clap::{Parser, Subcommand};
 use uuid::Uuid;
+use actix_web;
 
 #[derive(Parser)]
 #[command(name = "smart-loan-recovery")]
@@ -126,27 +131,33 @@ fn run_cli(cli: Cli, db: Db) -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn main() {
+#[actix_web::main]  // Use actix runtime
+async fn main() -> std::io::Result<()> {
+    // Initialize logging
+    env_logger::init();
+
+    // Load configuration
+    let config = Config::from_env().expect("Failed to load configuration");
+
     let cli = Cli::parse();
 
-    // Initialize database
-    let db = match Db::new() {
-        Ok(db) => db,
-        Err(e) => {
-            eprintln!("❌ Failed to initialize database: {}", e);
-            return;
-        }
-    };
-
-    // Check if running in CLI mode or demo mode
+    // Check if running in CLI mode or server mode
     if let Some(_) = cli.command {
         // CLI mode
+        let db = match Db::new() {
+            Ok(db) => db,
+            Err(e) => {
+                eprintln!("❌ Failed to initialize database: {}", e);
+                return Ok(());
+            }
+        };
         if let Err(e) = run_cli(cli, db) {
             eprintln!("❌ CLI Error: {}", e);
         }
+        Ok(())
     } else {
-        // Demo mode (no subcommand provided)
-        run_demo(db);
+        // Server mode (no subcommand provided)
+        crate::api::run_server(config).await
     }
 }
 

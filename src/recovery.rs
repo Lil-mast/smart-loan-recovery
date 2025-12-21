@@ -1,6 +1,7 @@
 use crate::models::{Loan, RiskScorable};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum RecoveryAction {
     SendReminder,
     RenegotiateTerms,
