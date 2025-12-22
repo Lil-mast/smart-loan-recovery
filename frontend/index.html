@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Loan Recovery System</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .container {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5em;
+    }
+
+    /* Main Navigation */
+    .main-navigation {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .nav-link {
+      padding: 12px 20px;
+      text-decoration: none;
+      color: #666;
+      font-weight: 600;
+      border-radius: 5px;
+      transition: all 0.3s;
+    }
+    .nav-link:hover {
+      color: #667eea;
+      background: #f8f9fa;
+    }
+    .nav-link.active {
+      color: #667eea;
+      background: #e3f2fd;
+    }
+
+    /* Page System */
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      text-align: center;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+    .hero-section h2 {
+      margin-bottom: 15px;
+      font-size: 2.2em;
+    }
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .feature-card {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .feature-card h3 {
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    /* Auth Container */
+    .auth-container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .auth-form {
+      margin: 30px 0;
+    }
+    .auth-links {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+    .auth-links a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .auth-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .dashboard-card {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .dashboard-card h3 {
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    /* Form Improvements */
+    .form-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    .form-row .form-group {
+      flex: 1;
+    }
+    .loan-form-section {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+
+    /* Button Styles */
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: transform 0.2s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+    .btn-warning {
+      background: #ffc107;
+      color: #212529;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    .btn-warning:hover {
+      background: #e0a800;
+    }
+
+    /* Demo Indicator */
+    .demo-indicator {
+      background: #fff3cd;
+      color: #856404;
+      padding: 8px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      text-align: center;
+      font-weight: bold;
+      border: 1px solid #ffeaa7;
+    }
+
+    /* Tab Content */
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* User Profile Section */
+    .user-profile {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .user-id-display {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-family: monospace;
+      font-size: 18px;
+      font-weight: bold;
+      word-break: break-all;
+    }
+    .copy-button {
+      background: rgba(255, 255, 255, 0.3);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 10px;
+      font-size: 14px;
+    }
+    .copy-button:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    h2 {
+      color: #444;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+      margin-top: 30px;
+    }
+    form {
+      margin-bottom: 25px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #555;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    #output {
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 5px;
+      background: #f8f9fa;
+      font-family: monospace;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .success {
+      border-color: #28a745;
+      background: #d4edda;
+      color: #155724;
+    }
+    .error {
+      border-color: #dc3545;
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .info {
+      border-color: #17a2b8;
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+    .user-list, .loan-list {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e9ecef;
+      border-radius: 5px;
+    }
+    .user-item, .loan-item {
+      padding: 10px;
+      margin: 5px 0;
+      background: white;
+      border-radius: 3px;
+      border-left: 3px solid #667eea;
+    }
+    .login-status {
+      text-align: center;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .logged-in {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .logged-out {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    /* User Profile Styles */
+    .user-profile {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      border: 2px solid #2196f3;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
+    }
+    .user-profile h3 {
+      color: #1976d2;
+      margin-top: 0;
+      border-bottom: 2px solid #2196f3;
+      padding-bottom: 10px;
+    }
+    .user-id-display {
+      background: #fff;
+      border: 2px solid #2196f3;
+      border-radius: 5px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 14px;
+      word-break: break-all;
+      margin: 10px 0;
+      color: #1976d2;
+      font-weight: bold;
+    }
+    .copy-button {
+      background: #4caf50 !important;
+      margin: 10px 0;
+    }
+    .copy-button:hover {
+      background: #45a049 !important;
+    }
+
+    /* API Status Indicator */
+    .api-status {
+      text-align: center;
+      padding: 8px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .api-status.online {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .api-status.offline {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Smart Loan Recovery System</h1>
+    <div id="apiStatus" class="api-status">🔄 Checking API status...</div>
+    <div id="demoIndicator" class="demo-indicator" style="display: none;">🎭 DEMO MODE - Using sample data</div>
+
+    <!-- Navigation -->
+    <nav id="mainNav" class="main-navigation">
+      <a href="#" onclick="showPage('home', this)" class="nav-link active">🏠 Home</a>
+      <a href="#" onclick="showPage('register', this)" class="nav-link">📝 Register</a>
+      <a href="#" onclick="showPage('login', this)" class="nav-link">🔐 Login</a>
+      <a href="#" onclick="showPage('dashboard', this)" class="nav-link" id="dashboardLink" style="display: none;">📊 Dashboard</a>
+      <a href="#" onclick="logout()" class="nav-link" id="logoutLink" style="display: none;">🚪 Logout</a>
+    </nav>
+
+    <!-- Home Page -->
+    <div id="home" class="page active">
+      <div class="hero-section">
+        <h2>Welcome to Smart Loan Recovery</h2>
+        <p>AI-powered loan management and recovery system for lenders and borrowers.</p>
+        <div class="hero-actions">
+          <button onclick="showPage('register')" class="btn-primary">Get Started - Register</button>
+          <button onclick="showPage('login')" class="btn-secondary">Already have an account? Login</button>
+        </div>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <h3>👥 User Management</h3>
+          <p>Register as a borrower or lender with secure authentication.</p>
+        </div>
+        <div class="feature-card">
+          <h3>💰 Loan Tracking</h3>
+          <p>Create and manage loans with automated repayment schedules.</p>
+        </div>
+        <div class="feature-card">
+          <h3>🤖 AI Recovery</h3>
+          <p>Get intelligent recommendations for loan recovery strategies.</p>
+        </div>
+        <div class="feature-card">
+          <h3>📊 Analytics</h3>
+          <p>Track loan performance and risk assessment metrics.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Register Page -->
+    <div id="register" class="page">
+      <div class="auth-container">
+        <h2>📝 Create Your Account</h2>
+        <p>Join our loan recovery platform as a borrower or lender.</p>
+
+        <form id="registerForm" class="auth-form">
+          <div class="form-group">
+            <label>Full Name: <input type="text" id="userName" placeholder="Enter your full name" required></label>
+          </div>
+          <div class="form-group">
+            <label>Account Type:
+              <select id="userRole" required>
+                <option value="">Select account type</option>
+                <option value="borrower">🏠 Borrower - Need loans</option>
+                <option value="lender">💼 Lender - Provide loans</option>
+              </select>
+            </label>
+          </div>
+          <button type="submit" class="btn-primary">Create Account</button>
+        </form>
+
+        <div class="auth-links">
+          <p>Already have an account? <a href="#" onclick="showPage('login')">Login here</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Page -->
+    <div id="login" class="page">
+      <div class="auth-container">
+        <h2>🔐 Welcome Back</h2>
+        <p>Please enter your name to access your account.</p>
+
+        <form id="loginForm" class="auth-form">
+          <div class="form-group">
+            <label>Your Name: <input type="text" id="loginName" placeholder="Enter your registered name" required></label>
+          </div>
+          <button type="submit" class="btn-primary">Login</button>
+        </form>
+
+        <div class="auth-links">
+          <p>Don't have an account? <a href="#" onclick="showPage('register')">Register here</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboard" class="page">
+      <h2>📊 Dashboard</h2>
+
+      <!-- User Profile Section -->
+      <div id="userProfile" class="user-profile" style="display: none;">
+        <h3>👤 Your Profile</h3>
+        <p><strong>Name:</strong> <span id="profileName"></span></p>
+        <p><strong>Role:</strong> <span id="profileRole"></span></p>
+        <p><strong>Your User ID:</strong></p>
+        <div class="user-id-display" id="profileUserId">
+          <!-- User ID will be displayed here -->
+        </div>
+        <button class="copy-button" onclick="copyUserId()">📋 Copy ID</button>
+        <p><small>Use this ID when creating loans or other operations</small></p>
+      </div>
+
+      <!-- Login Status -->
+      <div id="loginStatus" class="login-status logged-out">
+        Not logged in - Please login to access loan features
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="dashboard-grid">
+        <div class="dashboard-card">
+          <h3>💰 Loans</h3>
+          <p>Manage your loans and view active agreements.</p>
+          <button onclick="showPage('loans')" class="btn-secondary">View Loans</button>
+        </div>
+
+        <div id="adminCard" class="dashboard-card" style="display: none;">
+          <h3>👥 User Management</h3>
+          <p>Admin: View all registered users.</p>
+          <button onclick="showPage('users')" class="btn-secondary">Manage Users</button>
+        </div>
+
+        <div id="recoveryCard" class="dashboard-card" style="display: none;">
+          <h3>🤖 AI Recovery</h3>
+          <p>Admin: Get AI recommendations for loan recovery.</p>
+          <button onclick="showPage('recovery')" class="btn-secondary">Recovery Tools</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Page (Admin Only) -->
+    <div id="users" class="page">
+      <h2>👥 User Management</h2>
+      <p>Admin access only - View all registered users in the system.</p>
+
+      <!-- Users List -->
+      <div id="usersList" class="user-list">
+        <h3>Registered Users</h3>
+        <div id="usersContainer"></div>
+        <button onclick="loadUsers()">Refresh Users</button>
+      </div>
+    </div>
+
+    <!-- Loans Page -->
+    <div id="loans" class="page">
+      <h2>💰 Loan Management</h2>
+
+      <!-- Create Loan Form -->
+      <div class="loan-form-section">
+        <h3>Create New Loan</h3>
+        <form id="loanForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Borrower ID: <input type="text" id="borrowerId" placeholder="UUID from registered borrower" required></label>
+            </div>
+            <div class="form-group">
+              <label>Lender ID: <input type="text" id="lenderId" placeholder="UUID from registered lender" required></label>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Principal Amount: <input type="number" id="principal" placeholder="10000" min="1" step="0.01" required></label>
+            </div>
+            <div class="form-group">
+              <label>Interest Rate (%): <input type="number" id="interestRate" placeholder="5.5" min="0" max="50" step="0.1" required></label>
+            </div>
+            <div class="form-group">
+              <label>Term (Months): <input type="number" id="months" placeholder="12" min="1" max="360" required></label>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary">Create Loan</button>
+        </form>
+      </div>
+
+      <!-- Loans List -->
+      <div id="loansList" class="loan-list">
+        <h3>Your Loans</h3>
+        <div id="loansContainer"></div>
+        <button onclick="loadLoans()">Refresh Loans</button>
+      </div>
+    </div>
+
+    <!-- Recovery Page (Admin Only) -->
+    <div id="recovery" class="page">
+      <h2>🤖 AI Recovery System</h2>
+      <p>Admin access only - Advanced tools for loan recovery management.</p>
+
+      <!-- Flag Overdues -->
+      <div class="recovery-section">
+        <h3>⚠️ Flag Overdue Loans</h3>
+        <p>Mark loans that are past their due date for recovery action.</p>
+        <form id="overdueForm">
+          <button type="submit" class="btn-warning">Flag Overdue Loans</button>
+        </form>
+      </div>
+
+      <!-- Recommend Action -->
+      <div class="recovery-section">
+        <h3>🎯 Get AI Recovery Recommendation</h3>
+        <p>Get intelligent recommendations for specific loans.</p>
+        <form id="recommendForm">
+          <div class="form-group">
+            <label>Loan ID: <input type="text" id="loanId" placeholder="UUID from existing loan" required></label>
+          </div>
+          <button type="submit" class="btn-primary">Get Recommendation</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Output Area -->
+    <div id="output"></div>
+  </div>
+
+  <script>
+    const DEMO_MODE = true; // Set to false to use real API
+    const API_URL = 'http://localhost:8000'; // API endpoint
+    let currentUser = null; // Current logged in user
+    let demoUsers = [
+      { id: '550e8400-e29b-41d4-a716-446655440000', name: 'Christian Tazma', role: 'lender' },
+      { id: '550e8400-e29b-41d4-a716-446655440001', name: 'John Doe', role: 'borrower' },
+      { id: '550e8400-e29b-41d4-a716-446655440002', name: 'Jane Smith', role: 'borrower' }
+    ];
+    let demoLoans = [
+      { id: '660e8400-e29b-41d4-a716-446655440000', borrower_id: '550e8400-e29b-41d4-a716-446655440001', lender_id: '550e8400-e29b-41d4-a716-446655440000', principal: 10000, interest_rate: 5.5, status: 'active', risk_score: 3 }
+    ];
+
+    // Page navigation functions
+    function showPage(pageName, element) {
+      // Hide all pages
+      const pages = document.querySelectorAll('.page');
+      pages.forEach(page => page.classList.remove('active'));
+
+      // Remove active class from all nav links
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => link.classList.remove('active'));
+
+      // Show selected page
+      document.getElementById(pageName).classList.add('active');
+
+      // Add active class to clicked nav link
+      if (element) {
+        element.classList.add('active');
+      }
+
+      // Update page visibility based on user permissions
+      updatePageVisibility();
+    }
+
+    // Copy user ID to clipboard
+    function copyUserId() {
+      if (currentUser && currentUser.id) {
+        navigator.clipboard.writeText(currentUser.id).then(() => {
+          showOutput('✅ User ID copied to clipboard!', 'success');
+        }).catch(err => {
+          showOutput('❌ Failed to copy: ' + err, 'error');
+        });
+      }
+    }
+
+    // Update user profile display
+    function updateUserProfile() {
+      const profile = document.getElementById('userProfile');
+      if (currentUser) {
+        profile.style.display = 'block';
+        document.getElementById('profileName').textContent = currentUser.name;
+        document.getElementById('profileRole').textContent = currentUser.role;
+        document.getElementById('profileUserId').textContent = currentUser.id;
+      } else {
+        profile.style.display = 'none';
+      }
+    }
+
+    // Update page visibility based on user permissions
+    function updatePageVisibility() {
+      const isAdmin = currentUser && currentUser.name === 'Christian Tazma';
+      const dashboardLink = document.getElementById('dashboardLink');
+      const logoutLink = document.getElementById('logoutLink');
+      const adminCard = document.getElementById('adminCard');
+      const recoveryCard = document.getElementById('recoveryCard');
+
+      if (currentUser) {
+        dashboardLink.style.display = 'inline-block';
+        logoutLink.style.display = 'inline-block';
+        if (adminCard) adminCard.style.display = isAdmin ? 'block' : 'none';
+        if (recoveryCard) recoveryCard.style.display = 'block'; // Show recovery for all logged-in users
+      } else {
+        dashboardLink.style.display = 'none';
+        logoutLink.style.display = 'none';
+        if (adminCard) adminCard.style.display = 'none';
+        if (recoveryCard) recoveryCard.style.display = 'none';
+      }
+    }
+
+    // Helper functions
+    function showOutput(message, type = 'info') {
+      const output = document.getElementById('output');
+      output.className = type;
+      output.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function updateLoginStatus() {
+      const status = document.getElementById('loginStatus');
+      if (currentUser) {
+        status.className = 'login-status logged-in';
+        status.textContent = `Logged in as: ${currentUser.name} (${currentUser.role})`;
+      } else {
+        status.className = 'login-status logged-out';
+        status.textContent = 'Not logged in - Please login to access loan features';
+      }
+      updateUserProfile();
+      updatePageVisibility();
+    }
+
+    // Logout function
+    function logout() {
+      currentUser = null;
+      updateLoginStatus();
+      showOutput('Logged out successfully', 'info');
+      showPage('home');
+    }
+
+    function validateUUID(uuid) {
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      return uuidRegex.test(uuid);
+    }
+
+    // Check API connectivity
+    async function checkAPIStatus() {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+        const response = await fetch(`${API_URL}/`, {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        return response.ok;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    // Update API status indicator
+    async function updateAPIStatus() {
+      const statusIndicator = document.getElementById('apiStatus');
+      const demoIndicator = document.getElementById('demoIndicator');
+
+      if (DEMO_MODE) {
+        statusIndicator.className = 'api-status offline';
+        statusIndicator.textContent = '🔴 API Offline - Demo Mode Active';
+        demoIndicator.style.display = 'block';
+        return;
+      }
+
+      if (!statusIndicator) return;
+
+      const isOnline = await checkAPIStatus();
+      if (isOnline) {
+        statusIndicator.className = 'api-status online';
+        statusIndicator.textContent = '🟢 API Online';
+        demoIndicator.style.display = 'none';
+      } else {
+        statusIndicator.className = 'api-status offline';
+        statusIndicator.textContent = '🔴 API Offline - Limited functionality available';
+        demoIndicator.style.display = 'none';
+      }
+    }
+
+    // Load users
+    async function loadUsers() {
+      if (DEMO_MODE) {
+        // Demo mode - show sample data
+        const container = document.getElementById('usersContainer');
+        container.innerHTML = demoUsers.map(user =>
+          `<div class="user-item">
+            <strong>${user.name}</strong> (${user.role})<br>
+            <small>ID: ${user.id}</small>
+          </div>`
+        ).join('');
+        showOutput(`Loaded ${demoUsers.length} demo users`, 'success');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/users`);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
+        }
+        const users = await response.json();
+        const container = document.getElementById('usersContainer');
+        container.innerHTML = users.map(user =>
+          `<div class="user-item">
+            <strong>${user.name}</strong> (${user.role})<br>
+            <small>ID: ${user.id}</small>
+          </div>`
+        ).join('');
+        showOutput(`Loaded ${users.length} users`, 'success');
+      } catch (error) {
+        console.error('Load users error:', error);
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          showOutput('❌ Network error: Unable to load users. Server may be offline.', 'error');
+        } else {
+          showOutput(`Error loading users: ${error.message}`, 'error');
+        }
+      }
+    }
+
+    // Load loans
+    async function loadLoans() {
+      if (DEMO_MODE) {
+        // Demo mode - show sample data
+        const container = document.getElementById('loansContainer');
+        container.innerHTML = demoLoans.map(loan =>
+          `<div class="loan-item">
+            <strong>Loan ID:</strong> ${loan.id}<br>
+            <strong>Borrower:</strong> ${loan.borrower_id}<br>
+            <strong>Lender:</strong> ${loan.lender_id}<br>
+            <strong>Principal:</strong> $${loan.principal}<br>
+            <strong>Rate:</strong> ${loan.interest_rate}%<br>
+            <strong>Status:</strong> ${loan.status}<br>
+            <strong>Risk Score:</strong> ${loan.risk_score}
+          </div>`
+        ).join('');
+        showOutput(`Loaded ${demoLoans.length} demo loans`, 'success');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/loans`);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
+        }
+        const loans = await response.json();
+        const container = document.getElementById('loansContainer');
+        container.innerHTML = loans.map(loan =>
+          `<div class="loan-item">
+            <strong>Loan ID:</strong> ${loan.id}<br>
+            <strong>Borrower:</strong> ${loan.borrower_id}<br>
+            <strong>Lender:</strong> ${loan.lender_id}<br>
+            <strong>Principal:</strong> $${loan.principal}<br>
+            <strong>Rate:</strong> ${loan.interest_rate}%<br>
+            <strong>Status:</strong> ${loan.status}<br>
+            <strong>Risk Score:</strong> ${loan.risk_score}
+          </div>`
+        ).join('');
+        showOutput(`Loaded ${loans.length} loans`, 'success');
+      } catch (error) {
+        console.error('Load loans error:', error);
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          showOutput('❌ Network error: Unable to load loans. Server may be offline.', 'error');
+        } else {
+          showOutput(`Error loading loans: ${error.message}`, 'error');
+        }
+      }
+    }
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('loginName').value.trim();
+      if (!name) {
+        showOutput('Please enter a name', 'error');
+        return;
+      }
+
+      const submitBtn = e.target.querySelector('button');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Logging in...';
+
+      try {
+        if (DEMO_MODE) {
+          // Demo mode - simulate login
+          const user = demoUsers.find(u => u.name === name);
+          if (user) {
+            currentUser = { name, role: user.role, id: user.id };
+            updateLoginStatus();
+            showOutput(`Login successful! Welcome ${name}`, 'success');
+            loadUsers();
+            loadLoans();
+            showPage('dashboard');
+          } else {
+            throw new Error('User not found in demo data');
+          }
+        } else {
+          const response = await fetch(`${API_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
+          }
+
+          const data = await response.json();
+          currentUser = { name, role: data.role, id: data.user_id };
+          updateLoginStatus();
+          showOutput(`Login successful! Welcome ${name}`, 'success');
+          loadUsers();
+          loadLoans();
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          showOutput('❌ Network error: Unable to connect to server. Please check your internet connection or try again later.', 'error');
+        } else {
+          showOutput(`Login failed: ${error.message}`, 'error');
+        }
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Login';
+      }
+    });
+
+    // Register User
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('userName').value.trim();
+      const role = document.getElementById('userRole').value;
+
+      if (!name) {
+        showOutput('Please enter a name', 'error');
+        return;
+      }
+
+      const submitBtn = e.target.querySelector('button');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Registering...';
+
+      try {
+        if (DEMO_MODE) {
+          // Demo mode - simulate registration
+          const newUser = {
+            id: '550e8400-e29b-41d4-a716-' + Math.random().toString(16).substr(2, 12),
+            name,
+            role
+          };
+          demoUsers.push(newUser);
+          showOutput(`✅ User "${name}" registered successfully! Your User ID is: ${newUser.id}`, 'success');
+          alert(`🎉 Registration Successful!\n\nUser: ${name}\nRole: ${role}\nYour User ID: ${newUser.id}\n\nPlease save this ID - you'll need it for loans and login!`);
+          document.getElementById('userName').value = '';
+          showPage('dashboard');
+          loadUsers();
+        } else {
+          const response = await fetch(`${API_URL}/users`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, role })
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
+          }
+
+          const data = await response.json();
+          showOutput(`✅ User "${name}" registered successfully! Your User ID is: ${data.id}`, 'success');
+          alert(`🎉 Registration Successful!\n\nUser: ${name}\nRole: ${role}\nYour User ID: ${data.id}\n\nPlease save this ID - you'll need it for loans and login!`);
+          document.getElementById('userName').value = '';
+          showPage('dashboard');
+          loadUsers();
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          showOutput('❌ Network error: Unable to connect to server. Please check your internet connection or try again later.', 'error');
+        } else {
+          showOutput(`❌ Registration failed: ${error.message}`, 'error');
+        }
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Register User';
+      }
+    });
+
+    // Create Loan
+    document.getElementById('loanForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!currentUser) {
+        showOutput('Please login first', 'error');
+        return;
+      }
+
+      const borrower_id = document.getElementById('borrowerId').value.trim();
+      const lender_id = document.getElementById('lenderId').value.trim();
+      const principal = parseFloat(document.getElementById('principal').value);
+      const interest_rate = parseFloat(document.getElementById('interestRate').value);
+      const months = parseInt(document.getElementById('months').value);
+
+      if (!validateUUID(borrower_id) || !validateUUID(lender_id)) {
+        showOutput('Please enter valid UUIDs for borrower and lender IDs', 'error');
+        return;
+      }
+
+      const submitBtn = e.target.querySelector('button');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating Loan...';
+
+      try {
+        const response = await fetch(`${API_URL}/loans`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ borrower_id, lender_id, principal, interest_rate, months })
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
+        showOutput(`✅ Loan created successfully! ID: ${data.id}`, 'success');
+
+        // Clear form
+        document.getElementById('borrowerId').value = '';
+        document.getElementById('lenderId').value = '';
+        document.getElementById('principal').value = '';
+        document.getElementById('interestRate').value = '';
+        document.getElementById('months').value = '';
+        loadLoans();
+      } catch (error) {
+        showOutput(`❌ Loan creation failed: ${error.message}`, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Loan';
+      }
+    });
+
+    // Flag Overdues
+    document.getElementById('overdueForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = e.target.querySelector('button');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Flagging...';
+
+      try {
+        if (DEMO_MODE) {
+          // Demo mode - simulate flagging overdues
+          let flaggedCount = 0;
+          demoLoans.forEach(loan => {
+            if (loan.risk_score >= 5 && loan.status !== 'overdue') {
+              loan.status = 'overdue';
+              flaggedCount++;
+            }
+          });
+          showOutput(`✅ Overdue loans flagged! ${flaggedCount} loans updated in demo mode.`, 'success');
+          loadLoans();
+        } else {
+          const response = await fetch(`${API_URL}/overdues`, {
+            method: 'POST'
+          });
+
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+          const data = await response.json();
+          showOutput(`✅ Overdue loans flagged! ${data.flagged_count} loans updated.`, 'success');
+          loadLoans();
+        }
+      } catch (error) {
+        showOutput(`❌ Failed to flag overdues: ${error.message}`, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Flag Overdue Loans';
+      }
+    });
+
+    // Get Recommendation
+    document.getElementById('recommendForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const loanId = document.getElementById('loanId').value.trim();
+
+      if (!validateUUID(loanId)) {
+        showOutput('Please enter a valid loan UUID', 'error');
+        return;
+      }
+
+      const submitBtn = e.target.querySelector('button');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Getting Recommendation...';
+
+      try {
+        if (DEMO_MODE) {
+          // Demo mode - simulate recommendation based on user role
+          const loan = demoLoans.find(l => l.id === loanId);
+          if (!loan) {
+            throw new Error('Loan not found in demo data');
+          }
+
+          let recommendation, actions, risk_score;
+
+          if (currentUser.role === 'borrower') {
+            // Borrower-focused recommendations
+            risk_score = loan.risk_score;
+            if (risk_score >= 7) {
+              recommendation = 'Immediate payment plan needed';
+              actions = [
+                'Set up automatic payments',
+                'Contact lender to discuss hardship options',
+                'Consider debt consolidation',
+                'Seek financial counseling'
+              ];
+            } else if (risk_score >= 4) {
+              recommendation = 'Monitor payment schedule closely';
+              actions = [
+                'Review monthly budget',
+                'Set payment reminders',
+                'Consider extra payments to reduce principal',
+                'Build emergency fund'
+              ];
+            } else {
+              recommendation = 'Loan performing well - maintain current payments';
+              actions = [
+                'Continue regular payments',
+                'Consider early payoff options',
+                'Monitor interest rate changes'
+              ];
+            }
+          } else {
+            // Lender-focused recommendations
+            risk_score = loan.risk_score;
+            if (risk_score >= 7) {
+              recommendation = 'High-risk loan - consider immediate collection actions';
+              actions = [
+                'Send formal demand letter',
+                'Consider legal action or collections',
+                'Review borrower\'s payment history',
+                'Assess collateral value if applicable'
+              ];
+            } else if (risk_score >= 4) {
+              recommendation = 'Monitor closely and offer assistance';
+              actions = [
+                'Contact borrower for payment plan',
+                'Offer loan modification options',
+                'Review credit reports',
+                'Consider forbearance if appropriate'
+              ];
+            } else {
+              recommendation = 'Low-risk loan - standard monitoring sufficient';
+              actions = [
+                'Continue standard collection procedures',
+                'Send regular payment reminders',
+                'Monitor for any changes in borrower status'
+              ];
+            }
+          }
+
+          const data = { risk_score, recommendation, actions };
+          const recommendationText = `
+🤖 AI Recovery Recommendation:
+
+📊 Risk Score: ${data.risk_score}/10
+🎯 Recommendation: ${data.recommendation}
+
+📋 Suggested Actions:
+${data.actions.map(action => `• ${action}`).join('\n')}
+
+💡 This loan has a ${data.risk_score >= 7 ? 'HIGH' : data.risk_score >= 4 ? 'MEDIUM' : 'LOW'} risk level.
+          `;
+          showOutput(recommendationText, 'success');
+        } else {
+          const response = await fetch(`${API_URL}/recommend/${loanId}`, {
+            method: 'POST'
+          });
+
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+          const data = await response.json();
+          const recommendation = `
+🤖 AI Recovery Recommendation:
+
+📊 Risk Score: ${data.risk_score}/10
+🎯 Recommendation: ${data.recommendation}
+
+📋 Suggested Actions:
+${data.actions.map(action => `• ${action}`).join('\n')}
+
+💡 This loan has a ${data.risk_score >= 7 ? 'HIGH' : data.risk_score >= 4 ? 'MEDIUM' : 'LOW'} risk level.
+          `;
+          showOutput(recommendation, 'success');
+        }
+
+        // Clear form
+        document.getElementById('loanId').value = '';
+      } catch (error) {
+        showOutput(`❌ Failed to get recommendation: ${error.message}`, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Get Recommendation';
+      }
+    });
+
+    // Initialize
+    document.getElementById('home').classList.add('active');
+    document.querySelector('a[href="#home"]').classList.add('active');
+    updateLoginStatus();
+    updateAPIStatus();
+    // Check API status every 30 seconds
+    setInterval(updateAPIStatus, 30000);
+  </script>
+</body>
+</html>

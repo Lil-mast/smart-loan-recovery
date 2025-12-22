@@ -66,16 +66,22 @@ impl<'a> LoanTracker<'a> {
         self.db.load_all_loans()
     }
 
-    pub fn flag_overdues(&self) -> Result<()> {
+    pub fn flag_overdues(&self) -> Result<usize> {
         let loans = self.db.load_all_loans()?;
         let now = Utc::now();
+        let mut flagged_count = 0;
 
         for mut loan in loans {
-            if loan.status == LoanStatus::Active && now > loan.repayment_schedule[0] {
-                loan.status = LoanStatus::Overdue;
-                self.db.save_loan(&loan)?;
+            if loan.status == LoanStatus::Active {
+                // Check if any repayment date has passed
+                let has_overdue_payment = loan.repayment_schedule.iter().any(|&due_date| now > due_date);
+                if has_overdue_payment {
+                    loan.status = LoanStatus::Overdue;
+                    self.db.save_loan(&loan)?;
+                    flagged_count += 1;
+                }
             }
         }
-        Ok(())
+        Ok(flagged_count)
     }
 }

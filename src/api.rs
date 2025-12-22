@@ -184,11 +184,11 @@ async fn flag_overdues(
     }
 
     let tracker = LoanTracker::new(&db);
-    tracker.flag_overdues()
+    let flagged_count = tracker.flag_overdues()
         .map_err(|e| AppError::Database(e))?;
 
     Ok(Ok(HttpResponse::Ok().json(serde_json::json!({
-        "message": "Overdue loans flagged successfully"
+        "flagged_count": flagged_count
     }))))
 }
 
@@ -276,7 +276,7 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
             .route("/loans", web::get().to(get_loans))
             .route("/loans", web::post().to(create_loan))
             .route("/overdues", web::post().to(flag_overdues))
-            .route("/recommend/{loan_id}", web::get().to(recommend_action))
+            .route("/recommend/{loan_id}", web::post().to(recommend_action))
     })
     .bind(config.server_addr())?
     .run()
