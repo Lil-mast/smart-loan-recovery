@@ -10,8 +10,8 @@ pub struct Db {
 }
 
 impl Db {
-    pub fn new() -> Result<Self> {
-        let conn = Connection::open("loans.db")?;
+    pub fn new_with_path(database_path: &str) -> Result<Self> {
+        let conn = Connection::open(database_path)?;
         Self::init_tables(&conn)?;
         Ok(Db { conn })
     }
@@ -262,19 +262,5 @@ impl Db {
         fs::write(loans_path, loans_json)
             .map_err(|e| rusqlite::Error::FromSqlConversionFailure(0, rusqlite::types::Type::Text, Box::new(e)))?;
         Ok(())
-    }
-
-    pub fn load_from_json<P: AsRef<Path>>(users_path: P, loans_path: P) -> Result<(Vec<User>, Vec<Loan>)> {
-        let users_json = fs::read_to_string(users_path)
-            .map_err(|e| rusqlite::Error::FromSqlConversionFailure(0, rusqlite::types::Type::Text, Box::new(e)))?;
-        let users: Vec<User> = serde_json::from_str(&users_json)
-            .map_err(|e| rusqlite::Error::FromSqlConversionFailure(0, rusqlite::types::Type::Text, Box::new(e)))?;
-
-        let loans_json = fs::read_to_string(loans_path)
-            .map_err(|e| rusqlite::Error::FromSqlConversionFailure(0, rusqlite::types::Type::Text, Box::new(e)))?;
-        let loans: Vec<Loan> = serde_json::from_str(&loans_json)
-            .map_err(|e| rusqlite::Error::FromSqlConversionFailure(0, rusqlite::types::Type::Text, Box::new(e)))?;
-
-        Ok((users, loans))
     }
 }

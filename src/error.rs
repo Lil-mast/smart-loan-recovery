@@ -28,15 +28,13 @@ pub enum AppError {
 
     #[error("Not found: {0}")]
     NotFound(String),
-
-    #[error("Internal server error")]
-    InternalServerError,
 }
 
 #[derive(Serialize)]
 struct ErrorResponse {
     error: String,
     message: String,
+    details: Option<String>,
 }
 
 impl ResponseError for AppError {
@@ -50,12 +48,12 @@ impl ResponseError for AppError {
             AppError::InsufficientPermissions => (actix_web::http::StatusCode::FORBIDDEN, "Insufficient permissions".to_string()),
             AppError::InvalidInput(msg) => (actix_web::http::StatusCode::BAD_REQUEST, msg.clone()),
             AppError::NotFound(msg) => (actix_web::http::StatusCode::NOT_FOUND, msg.clone()),
-            AppError::InternalServerError => (actix_web::http::StatusCode::INTERNAL_SERVER_ERROR, "Internal server error".to_string()),
         };
 
         let error_response = ErrorResponse {
             error: status.to_string(),
             message: message,
+            details: None,
         };
 
         HttpResponse::build(status).json(error_response)

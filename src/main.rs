@@ -144,7 +144,7 @@ async fn main() -> std::io::Result<()> {
     // Check if running in CLI mode or server mode
     if let Some(_) = cli.command {
         // CLI mode
-        let db = match Db::new() {
+        let db = match Db::new_with_path(&config.database_url) {
             Ok(db) => db,
             Err(e) => {
                 eprintln!("❌ Failed to initialize database: {}", e);

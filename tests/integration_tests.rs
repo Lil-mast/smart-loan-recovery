@@ -4,12 +4,11 @@ use serde_json::json;
 use smart_loan_recovery::api::*;
 use smart_loan_recovery::config::Config;
 use smart_loan_recovery::db::Db;
-use actix_session::{SessionMiddleware, storage::CookieSessionStore};
 
 #[actix_web::test]
 async fn test_user_registration() {
     // Initialize database for testing
-    let db = Db::new().expect("Failed to create test database");
+    let db = Db::new_with_path("test_loans.db").expect("Failed to create test database");
 
     // Create test app
     let app = test::init_service(
@@ -37,7 +36,7 @@ async fn test_user_registration() {
 #[actix_web::test]
 async fn test_get_users() {
     // Initialize database for testing
-    let db = Db::new().expect("Failed to create test database");
+    let db = Db::new_with_path("test_loans.db").expect("Failed to create test database");
 
     // Create test app
     let app = test::init_service(
@@ -54,14 +53,13 @@ async fn test_get_users() {
     let resp = test::call_service(&app, req).await;
     assert_eq!(resp.status(), StatusCode::OK);
 
-    let body: Vec<serde_json::Value> = test::read_body_json(resp).await;
-    assert!(body.is_empty() || body.len() >= 0); // Should return array
+    let _body: Vec<serde_json::Value> = test::read_body_json(resp).await;
 }
 
 #[actix_web::test]
 async fn test_invalid_user_registration() {
     // Initialize database for testing
-    let db = Db::new().expect("Failed to create test database");
+    let db = Db::new_with_path("test_loans.db").expect("Failed to create test database");
 
     // Create test app
     let app = test::init_service(
