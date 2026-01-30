@@ -6,7 +6,7 @@ use crate::db::Db;
 use crate::user::UserManager;
 use crate::loan::LoanTracker;
 use crate::recovery::RecoveryEngine;
-use crate::models::{User, UserRole, Loan};
+use crate::models::UserRole;
 use crate::config::Config;
 use crate::error::{AppError, AppResult};
 use serde::{Deserialize, Serialize};
@@ -224,10 +224,10 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
 
     log::info!("Server configured successfully");
 
-    let config_clone = config.clone();
+    let _config_clone = config.clone();
     HttpServer::new(move || {
         // Create a new DB connection for each worker
-        let db = match Db::new() {
+        let db = match Db::new_with_path(&_config_clone.database_url) {
             Ok(db) => db,
             Err(e) => {
                 log::error!("Failed to create database connection: {}", e);
@@ -236,7 +236,7 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
         };
 
         // Create session middleware for each worker
-        let key = Key::generate();
+        let key = Key::from(&_config_clone.session_secret.as_bytes()); // Use configured session secret
         let session_middleware = SessionMiddleware::builder(
             CookieSessionStore::default(),
             key,

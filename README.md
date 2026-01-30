@@ -3,8 +3,11 @@
 [![Deployed on Fly.io](https://img.shields.io/badge/Deployed%20on-Fly.io-blue)](https://smart-loan-recovery.fly.dev/)
 [![Rust](https://img.shields.io/badge/Rust-1.92-orange)](https://www.rust-lang.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue)](https://www.docker.com/)
+[![Rust Africa Hackathon](https://img.shields.io/badge/Built%20for-%23RustAfricaHackathon-brightgreen)](https://rust-africa-hackathon.io/)
 
-An AI-enhanced loan recovery system built with Rust, featuring a secure web API, authentication, and intelligent recovery recommendations.
+🚀 **Built for #RustAfricaHackathon** 🚀
+
+An innovative AI-enhanced loan recovery system built with Rust, featuring a secure web API, authentication, and intelligent recovery recommendations. This project demonstrates modern financial technology solutions optimized for African fintech challenges.
 
 ## 🌐 Live Demo
 
@@ -25,28 +28,28 @@ An AI-enhanced loan recovery system built with Rust, featuring a secure web API,
 - Principal, interest rate, and duration tracking
 
 ### 🤖 **AI-Powered Recovery**
-- Intelligent recovery action recommendations
+- Intelligent recovery action recommendations using smart algorithms
 - Risk assessment based on loan status and history
 - Automated overdue loan detection
-- Rule-based recovery strategies
+- Rule-based recovery strategies optimized for maximum recovery rates
 
-### 🗄️ **Data Persistence**
+### 💾 **Data Persistence**
 - SQLite database with automatic schema management
-- JSON backup/restore functionality
+- JSON backup/restore functionality for data resilience
 - UUID-based entity identification
 - Thread-safe database operations
 
 ### 🐳 **Containerization & Deployment**
-- Docker containerization for easy deployment
+- Docker containerization for easy deployment across environments
 - Multi-stage Docker builds for optimized images
 - Production-ready configuration
-- Environment-based configuration management
+- One-click deployment to Fly.io
 
 ### 🧪 **Testing & Quality**
-- Comprehensive integration tests
+- Comprehensive integration tests for reliability
 - Automated testing pipeline
-- Error handling with custom error types
-- Logging with structured output
+- Custom error handling with detailed error types
+- Structured logging throughout the system
 
 ## 🚀 Quick Start
 
@@ -305,19 +308,28 @@ The system provides intelligent recovery recommendations:
 
 ## 🤝 Contributing
 
+**Hackathon Participants**: We welcome contributions! Follow these steps:
+
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes and test thoroughly
+4. Add integration tests for new features
+5. Submit a pull request with a clear description
+
+**Issues & Ideas**: Have suggestions? Open an issue on GitHub!
 
 ## 📄 License
 
 This project is licensed under the APACHE License - see the LICENSE file for details.
+
+## 🌟 Built with ❤️ for #RustAfricaHackathon
+
+Special thanks to the Rust and African tech communities for the inspiration and support.
 
 ## 🙏 Acknowledgments
 
 - Built with Rust and Actix Web
 - SQLite for data persistence
 - Docker for containerization
-- Fly.io for hosting
+- Fly.io for hassle-free hosting
+- The Rust community for amazing tools and frameworks
