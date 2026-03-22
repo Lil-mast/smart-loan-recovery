@@ -14,6 +14,8 @@ The primary objectives of the Smart Loan Recovery System are:
 
 5. **Demonstrate Rust Excellence**: Showcase the capabilities of Rust programming language in building high-performance, secure financial applications.
 
+How these objectives map to the codebase and a concise comparison with other recovery approaches: **[docs/OBJECTIVES_TRACEABILITY.md](docs/OBJECTIVES_TRACEABILITY.md)**.
+
 ## Problem Statement
 
 ### Current Challenges in Loan Recovery

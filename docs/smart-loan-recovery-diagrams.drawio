@@ -1,0 +1,707 @@
+<mxfile host="65bd71144e">
+    <diagram id="fig1-arch" name="Fig1 System Architecture">
+        <mxGraphModel dx="677" dy="419" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="c1" value="HTTP clients" style="swimlane;horizontal=0;startSize=28;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="40" y="120" width="200" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="c1a" value="Web frontend&#xa;(frontend/)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="c1" vertex="1">
+                    <mxGeometry x="20" y="40" width="160" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="c1b" value="curl / Postman" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="c1" vertex="1">
+                    <mxGeometry x="20" y="120" width="160" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="d1" value="Docker container (Debian, port 3000)" style="swimlane;startSize=28;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="320" y="80" width="520" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="d1a" value="Actix Web server&#xa;• Routes /auth, /users, /loans, /overdues, /recommend/{id}&#xa;• JSON request/response" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;spacingLeft=8;" parent="d1" vertex="1">
+                    <mxGeometry x="40" y="50" width="440" height="88" as="geometry"/>
+                </mxCell>
+                <mxCell id="d1b" value="Session: actix-identity + CookieSessionStore&#xa;(encrypted cookie on client)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" parent="d1" vertex="1">
+                    <mxGeometry x="40" y="155" width="440" height="64" as="geometry"/>
+                </mxCell>
+                <mxCell id="d1c" value="Business logic: UserManager, LoanTracker, RecoveryEngine" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;align=left;spacingLeft=8;" parent="d1" vertex="1">
+                    <mxGeometry x="40" y="235" width="440" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="d1d" value="SQLite (rusqlite)&#xa;persistent loan &amp; user data" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#f8cecc;strokeColor=#b85450;" parent="d1" vertex="1">
+                    <mxGeometry x="180" y="305" width="160" height="88" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;" parent="1" source="c1" target="d1a" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1l" value="HTTPS/HTTP + JSON" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e1" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="fig2-uc" name="Fig2 Use Cases">
+        <mxGraphModel dx="677" dy="419" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="sys" value="Smart Loan Recovery API" style="swimlane;startSize=28;fillColor=#ffffff;strokeColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="280" y="60" width="560" height="420" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc1" value="Register" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" parent="sys" vertex="1">
+                    <mxGeometry x="40" y="50" width="120" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc2" value="Log in" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" parent="sys" vertex="1">
+                    <mxGeometry x="200" y="50" width="120" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc3" value="View profile&#xa;/auth/me" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" parent="sys" vertex="1">
+                    <mxGeometry x="360" y="50" width="140" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc4" value="View own loans" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="sys" vertex="1">
+                    <mxGeometry x="40" y="150" width="140" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc5" value="Create loan" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="sys" vertex="1">
+                    <mxGeometry x="220" y="150" width="120" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc6" value="View all loans" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="sys" vertex="1">
+                    <mxGeometry x="380" y="150" width="130" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc7" value="Flag overdues" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="sys" vertex="1">
+                    <mxGeometry x="40" y="250" width="130" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc8" value="Recovery recommendation&#xa;/recommend/{id}" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="sys" vertex="1">
+                    <mxGeometry x="220" y="240" width="200" height="64" as="geometry"/>
+                </mxCell>
+                <mxCell id="b" value="Borrower" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="120" y="180" width="40" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="l" value="Lender" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="120" y="320" width="40" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="eb1" style="endArrow=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;" parent="1" source="b" target="uc1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="eb2" style="endArrow=none;html=1;dashed=1;" parent="1" source="b" target="uc2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="eb3" style="endArrow=none;html=1;dashed=1;" parent="1" source="b" target="uc3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="eb4" style="endArrow=none;html=1;dashed=1;" parent="1" source="b" target="uc4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="el1" style="endArrow=none;html=1;dashed=1;" parent="1" source="l" target="uc1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="el2" style="endArrow=none;html=1;dashed=1;" parent="1" source="l" target="uc2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="el3" style="endArrow=none;html=1;dashed=1;" parent="1" source="l" target="uc3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="el4" style="endArrow=none;html=1;dashed=1;" parent="1" source="l" target="uc5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="el5" style="endArrow=none;html=1;dashed=1;" parent="1" source="l" target="uc6" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="el6" style="endArrow=none;html=1;dashed=1;" parent="1" source="l" target="uc7" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="el7" style="endArrow=none;html=1;dashed=1;" parent="1" source="l" target="uc8" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="A0hEkbTNKOZJrNcyDAwy-1" value="" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontColor=#000000;darkOpacity=0.05;fillColor=#FFF9B2;strokeColor=none;fillStyle=solid;direction=west;gradientDirection=north;gradientColor=#FFF2A1;shadow=1;size=20;pointerEvents=1;" vertex="1" parent="1">
+                    <mxGeometry x="290" y="370" width="140" height="160" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="fig3-seq-loan" name="Fig3 Seq Loan Creation">
+        <mxGraphModel dx="677" dy="419" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="p1" value="Lender" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="40" width="100" height="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="p1l" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="p1" vertex="1">
+                    <mxGeometry x="45" y="70" width="10" height="310" as="geometry"/>
+                </mxCell>
+                <mxCell id="p2" value="POST /loans&#xa;(Actix)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="40" width="120" height="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="p2l" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="p2" vertex="1">
+                    <mxGeometry x="55" y="70" width="10" height="310" as="geometry"/>
+                </mxCell>
+                <mxCell id="p3" value="LoanTracker" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="400" y="40" width="120" height="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="p3l" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="p3" vertex="1">
+                    <mxGeometry x="55" y="70" width="10" height="310" as="geometry"/>
+                </mxCell>
+                <mxCell id="p4" value="SQLite" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="40" width="100" height="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="p4l" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="p4" vertex="1">
+                    <mxGeometry x="45" y="70" width="10" height="310" as="geometry"/>
+                </mxCell>
+                <mxCell id="m1" value="loan JSON + session" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0;dashed=1;endSize=6;rounded=0;exitX=1;exitY=0.1;exitDx=0;exitDy=0;" parent="1" source="p1l" target="p2l" edge="1">
+                    <mxGeometry width="80" relative="1" as="geometry">
+                        <mxPoint x="300" y="110" as="sourcePoint"/>
+                        <mxPoint x="380" y="110" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m2" value="validate lender role, UUIDs" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;rounded=0;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" parent="1" source="p2l" target="p2l" edge="1">
+                    <mxGeometry x="-0.2" relative="1" as="geometry">
+                        <mxPoint x="260" y="150" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="300" y="148"/>
+                            <mxPoint x="300" y="168"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m3" value="create_loan(...)" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0.35;dashed=1;endSize=6;rounded=0;" parent="1" source="p2l" target="p3l" edge="1">
+                    <mxGeometry width="80" relative="1" as="geometry">
+                        <mxPoint x="340" y="180" as="sourcePoint"/>
+                        <mxPoint x="420" y="180" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m4" value="build Active loan + repayment_schedule" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;rounded=0;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="465" y="210" as="sourcePoint"/>
+                        <mxPoint x="465" y="230" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m5" value="save_loan" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0.45;dashed=1;endSize=6;rounded=0;" parent="1" source="p3l" target="p4l" edge="1">
+                    <mxGeometry width="80" relative="1" as="geometry">
+                        <mxPoint x="500" y="240" as="sourcePoint"/>
+                        <mxPoint x="600" y="240" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m6" value="INSERT loan" style="html=1;verticalAlign=bottom;endArrow=open;dashed=0;endSize=8;rounded=0;" parent="1" source="p4l" target="p3l" edge="1">
+                    <mxGeometry width="80" relative="1" as="geometry">
+                        <mxPoint x="600" y="280" as="sourcePoint"/>
+                        <mxPoint x="500" y="280" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m7" value="loan_id" style="html=1;verticalAlign=bottom;endArrow=open;dashed=0;endSize=8;rounded=0;" parent="1" source="p3l" target="p2l" edge="1">
+                    <mxGeometry width="80" relative="1" as="geometry">
+                        <mxPoint x="500" y="310" as="sourcePoint"/>
+                        <mxPoint x="300" y="310" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m8" value="200 { id }" style="html=1;verticalAlign=bottom;endArrow=open;dashed=0;endSize=8;rounded=0;" parent="1" source="p2l" target="p1l" edge="1">
+                    <mxGeometry width="80" relative="1" as="geometry">
+                        <mxPoint x="280" y="340" as="sourcePoint"/>
+                        <mxPoint x="120" y="340" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="fig4-seq-rec" name="Fig4 Seq Recovery">
+        <mxGraphModel dx="677" dy="419" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="q1" value="Lender" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="40" width="100" height="380" as="geometry"/>
+                </mxCell>
+                <mxCell id="q1l" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="q1" vertex="1">
+                    <mxGeometry x="45" y="60" width="10" height="290" as="geometry"/>
+                </mxCell>
+                <mxCell id="q2" value="/recommend/{id}" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="40" width="130" height="380" as="geometry"/>
+                </mxCell>
+                <mxCell id="q2l" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="q2" vertex="1">
+                    <mxGeometry x="60" y="60" width="10" height="290" as="geometry"/>
+                </mxCell>
+                <mxCell id="q3" value="LoanTracker / Db" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="390" y="40" width="140" height="380" as="geometry"/>
+                </mxCell>
+                <mxCell id="q3l" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="q3" vertex="1">
+                    <mxGeometry x="65" y="60" width="10" height="290" as="geometry"/>
+                </mxCell>
+                <mxCell id="q4" value="RecoveryEngine&#xa;(rules + risk)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="40" width="150" height="380" as="geometry"/>
+                </mxCell>
+                <mxCell id="q4l" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="q4" vertex="1">
+                    <mxGeometry x="70" y="60" width="10" height="290" as="geometry"/>
+                </mxCell>
+                <mxCell id="n1" value="POST + loan_id + cookie" style="html=1;verticalAlign=bottom;endArrow=block;dashed=1;endSize=6;rounded=0;" parent="1" source="q1l" target="q2l" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200" y="100" as="sourcePoint"/>
+                        <mxPoint x="280" y="100" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n2" value="get_loan(id)" style="html=1;verticalAlign=bottom;endArrow=block;dashed=1;endSize=6;rounded=0;" parent="1" source="q2l" target="q3l" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="320" y="140" as="sourcePoint"/>
+                        <mxPoint x="420" y="140" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n3" value="Loan row" style="html=1;verticalAlign=bottom;endArrow=open;dashed=0;endSize=8;rounded=0;" parent="1" source="q3l" target="q2l" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="420" y="180" as="sourcePoint"/>
+                        <mxPoint x="320" y="180" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n4" value="predict_default(&amp;loan)" style="html=1;verticalAlign=bottom;endArrow=block;dashed=1;endSize=6;rounded=0;" parent="1" source="q2l" target="q4l" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="320" y="220" as="sourcePoint"/>
+                        <mxPoint x="620" y="220" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n5" value="risk_score" style="html=1;verticalAlign=bottom;endArrow=open;dashed=0;endSize=8;rounded=0;" parent="1" source="q4l" target="q2l" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="620" y="250" as="sourcePoint"/>
+                        <mxPoint x="320" y="250" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n6" value="recommend_action(risk, history)" style="html=1;verticalAlign=bottom;endArrow=block;dashed=1;endSize=6;rounded=0;" parent="1" source="q2l" target="q4l" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="320" y="280" as="sourcePoint"/>
+                        <mxPoint x="620" y="280" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n7" value="RecoveryAction" style="html=1;verticalAlign=bottom;endArrow=open;dashed=0;endSize=8;rounded=0;" parent="1" source="q4l" target="q2l" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="620" y="310" as="sourcePoint"/>
+                        <mxPoint x="320" y="310" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n8" value="JSON response" style="html=1;verticalAlign=bottom;endArrow=open;dashed=0;endSize=8;rounded=0;" parent="1" source="q2l" target="q1l" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="280" y="340" as="sourcePoint"/>
+                        <mxPoint x="100" y="340" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="fig5-class" name="Fig5 Class Diagram">
+        <mxGraphModel dx="677" dy="419" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="clUser" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;User&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ id: Uuid&lt;br&gt;+ name: String&lt;br&gt;+ role: UserRole&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="80" width="160" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="clRole" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;&amp;lt;&amp;lt;enumeration&amp;gt;&amp;gt; UserRole&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Borrower&lt;br&gt;Lender&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="220" width="160" height="88" as="geometry"/>
+                </mxCell>
+                <mxCell id="clLoan" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Loan&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ id: Uuid&lt;br&gt;+ borrower_id, lender_id: Uuid&lt;br&gt;+ principal, interest_rate: f64&lt;br&gt;+ disbursement_date, start_date&lt;br&gt;+ repayment_schedule: Vec&amp;lt;DateTime&amp;gt;&lt;br&gt;+ last_repayment_date: Option&amp;lt;..&amp;gt;&lt;br&gt;+ status: LoanStatus&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ calculate_risk_score(): f64&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="60" width="220" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="clLS" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;&amp;lt;&amp;lt;enumeration&amp;gt;&amp;gt; LoanStatus&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Active, Overdue&lt;br&gt;Defaulted, Repaid&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="350" y="290" width="160" height="88" as="geometry"/>
+                </mxCell>
+                <mxCell id="clRE" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;RecoveryEngine&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ predict_default(loan): f64&lt;br&gt;+ recommend_action(risk, hist): RecoveryAction&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="80" width="260" height="88" as="geometry"/>
+                </mxCell>
+                <mxCell id="clRA" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;&amp;lt;&amp;lt;enumeration&amp;gt;&amp;gt; RecoveryAction&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;SendReminder&lt;br&gt;RenegotiateTerms&lt;br&gt;EscalateToCollection&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="200" width="200" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="clRR" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;RecoveryRecommendation&lt;/b&gt; (API DTO)&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ loan_id: Uuid&lt;br&gt;+ risk_score: f64&lt;br&gt;+ recommended_action&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="330" width="220" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="a1" style="endArrow=block;endFill=0;html=1;edgeStyle=orthogonalEdgeStyle;align=left;spacingLeft=2;endSize=8;rounded=0;" parent="1" source="clUser" target="clRole" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a2" style="endArrow=none;html=1;endSize=12;startArrow=diamondThin;startFill=0;startSize=12;edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=1;exitY=0.25;entryX=0;entryY=0.5;" parent="1" source="clUser" target="clLoan" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a2b" value="borrower" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="a2" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="1" relative="1" as="geometry">
+                        <mxPoint x="10" y="-9" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="a3" style="endArrow=none;html=1;endSize=12;startArrow=diamondThin;startFill=0;startSize=12;edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=1;exitY=0.6;entryX=0;entryY=0.75;" parent="1" source="clUser" target="clLoan" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a3b" value="lender" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="a3" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" y="2" relative="1" as="geometry">
+                        <mxPoint y="10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="a4" style="endArrow=block;endFill=0;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" source="clLoan" target="clLS" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a5" style="endArrow=open;dashed=1;html=1;rounded=0;exitX=1;exitY=0.35;entryX=0;entryY=0.5;" parent="1" source="clLoan" target="clRE" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a5b" value="uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="a5" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="a6" style="endArrow=block;endFill=0;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" source="clRE" target="clRA" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a7" style="endArrow=open;dashed=1;html=1;rounded=0;exitX=0.25;exitY=1;entryX=0.5;entryY=0;" parent="1" source="clRA" target="clRR" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="fig6-er" name="Fig6 ER Diagram">
+        <mxGraphModel dx="677" dy="419" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="tusers" value="users" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="120" y="120" width="200" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="tu1" value="id : TEXT (PK, UUID)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="tusers" vertex="1">
+                    <mxGeometry y="26" width="200" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="tu2" value="name : TEXT NOT NULL" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="tusers" vertex="1">
+                    <mxGeometry y="52" width="200" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="tu3" value="role : TEXT NOT NULL" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="tusers" vertex="1">
+                    <mxGeometry y="78" width="200" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="tloans" value="loans" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+                    <mxGeometry x="480" y="80" width="280" height="312" as="geometry"/>
+                </mxCell>
+                <mxCell id="tl1" value="id : TEXT (PK, UUID)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="tloans" vertex="1">
+                    <mxGeometry y="26" width="280" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="tl2" value="borrower_id : TEXT NOT NULL → users.id" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0066CC;" parent="tloans" vertex="1">
+                    <mxGeometry y="52" width="280" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="tl3" value="lender_id : TEXT NOT NULL → users.id" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0066CC;" parent="tloans" vertex="1">
+                    <mxGeometry y="78" width="280" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="tl4" value="principal, interest_rate : REAL" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="tloans" vertex="1">
+                    <mxGeometry y="104" width="280" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="tl5" value="disbursement_date, start_date : TEXT (RFC3339)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="tloans" vertex="1">
+                    <mxGeometry y="130" width="280" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="tl6" value="last_repayment_date : TEXT NULL" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="tloans" vertex="1">
+                    <mxGeometry y="156" width="280" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="tl7" value="status : TEXT NOT NULL" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="tloans" vertex="1">
+                    <mxGeometry y="182" width="280" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="tl8" value="repayment_schedule : TEXT NOT NULL (JSON)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="tloans" vertex="1">
+                    <mxGeometry y="208" width="280" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="rel1" style="endArrow=ERmany;startArrow=ERone;html=1;rounded=0;exitX=1;exitY=0.35;entryX=0;entryY=0.25;endFill=0;startFill=0;" parent="1" source="tusers" target="tloans" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="rel1l" value="borrows" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="rel1" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="rel2" style="endArrow=ERmany;startArrow=ERone;html=1;rounded=0;exitX=1;exitY=0.65;entryX=0;entryY=0.45;endFill=0;startFill=0;" parent="1" source="tusers" target="tloans" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="rel2l" value="lends" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="rel2" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="note" value="Logical ER: SQLite DDL has no REFERENCES; app enforces identity of UUIDs." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#fff9e6;strokeColor=#d6b656;align=left;size=14;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="120" y="280" width="320" height="70" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="fig7-schema" name="Fig7 Database Schema">
+        <mxGraphModel dx="677" dy="419" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="s7u" value="users" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="100" width="220" height="156" as="geometry"/>
+                </mxCell>
+                <mxCell id="s7u1" value="id TEXT PK (UUID)" style="text;strokeColor=none;fillColor=none;align=left;spacingLeft=4;fontSize=11;" parent="s7u" vertex="1">
+                    <mxGeometry y="26" width="220" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="s7u2" value="name TEXT NOT NULL" style="text;strokeColor=none;fillColor=none;align=left;spacingLeft=4;fontSize=11;" parent="s7u" vertex="1">
+                    <mxGeometry y="52" width="220" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="s7u3" value="role TEXT NOT NULL" style="text;strokeColor=none;fillColor=none;align=left;spacingLeft=4;fontSize=11;" parent="s7u" vertex="1">
+                    <mxGeometry y="78" width="220" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="s7l" value="loans" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+                    <mxGeometry x="420" y="60" width="300" height="286" as="geometry"/>
+                </mxCell>
+                <mxCell id="s7l1" value="id TEXT PK · borrower_id FK · lender_id FK" style="text;strokeColor=none;fillColor=none;align=left;spacingLeft=4;fontSize=11;fontColor=#0066CC;" parent="s7l" vertex="1">
+                    <mxGeometry y="26" width="300" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="s7l2" value="principal, interest_rate REAL" style="text;strokeColor=none;fillColor=none;align=left;spacingLeft=4;fontSize=11;" parent="s7l" vertex="1">
+                    <mxGeometry y="52" width="300" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="s7l3" value="disbursement_date, start_date TEXT (RFC3339)" style="text;strokeColor=none;fillColor=none;align=left;spacingLeft=4;fontSize=11;" parent="s7l" vertex="1">
+                    <mxGeometry y="78" width="300" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="s7l4" value="last_repayment_date TEXT NULL" style="text;strokeColor=none;fillColor=none;align=left;spacingLeft=4;fontSize=11;" parent="s7l" vertex="1">
+                    <mxGeometry y="104" width="300" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="s7l5" value="status TEXT (Active | Overdue | …)" style="text;strokeColor=none;fillColor=none;align=left;spacingLeft=4;fontSize=11;" parent="s7l" vertex="1">
+                    <mxGeometry y="130" width="300" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="s7l6" value="repayment_schedule TEXT (JSON)" style="text;strokeColor=none;fillColor=none;align=left;spacingLeft=4;fontSize=11;" parent="s7l" vertex="1">
+                    <mxGeometry y="156" width="300" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="s7e1" style="endArrow=ERmany;startArrow=ERone;html=1;exitX=1;exitY=0.35;entryX=0;entryY=0.2;endFill=0;startFill=0;" parent="1" source="s7u" target="s7l" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="s7e1l" value="borrows" style="edgeLabel;html=1;align=center;verticalAlign=middle;" parent="s7e1" vertex="1" connectable="0">
+                    <mxGeometry x="-0.05" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="s7e2" style="endArrow=ERmany;startArrow=ERone;html=1;exitX=1;exitY=0.65;entryX=0;entryY=0.35;endFill=0;startFill=0;" parent="1" source="s7u" target="s7l" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="s7e2l" value="lends" style="edgeLabel;html=1;align=center;verticalAlign=middle;" parent="s7e2" vertex="1" connectable="0">
+                    <mxGeometry x="-0.05" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="s7n" value="Db::init_tables — no SQL REFERENCES; logical FKs only." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9e6;strokeColor=#d6b656;align=left;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="280" width="280" height="56" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="fig8-status" name="Fig8 Loan Status Flow">
+        <mxGraphModel dx="677" dy="419" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="st0" value="New loan&#xa;create_loan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="60" width="140" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="st1" value="status = Active&#xa;+ repayment_schedule" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="140" width="160" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="st2" value="POST /overdues&#xa;flag_overdues" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="60" width="160" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="st3" value="Active?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="140" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="st4" value="Any installment&#xa;date passed?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="240" width="160" height="88" as="geometry"/>
+                </mxCell>
+                <mxCell id="st5" value="status = Overdue" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+                    <mxGeometry x="520" y="256" width="120" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="st6" value="update_repayment" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="260" width="140" height="48" as="geometry"/>
+                </mxCell>
+                <mxCell id="st7" value="After final&#xa;schedule date?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="330" width="140" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="st8" value="Repaid" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="240" y="340" width="100" height="48" as="geometry"/>
+                </mxCell>
+                <mxCell id="st9" value="Active" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="240" y="410" width="100" height="48" as="geometry"/>
+                </mxCell>
+                <mxCell id="stn" value="Defaulted: enum value only — no auto transition in current code." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9e6;strokeColor=#d6b656;align=left;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="380" width="320" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="ste1" style="endArrow=classic;html=1;rounded=0;" parent="1" source="st0" target="st1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ste2" style="endArrow=classic;html=1;rounded=0;" parent="1" source="st2" target="st3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ste3" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;" parent="1" source="st3" target="st4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ste3l" value="yes" style="edgeLabel;html=1;align=center;" parent="ste3" vertex="1" connectable="0">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="ste4" style="endArrow=classic;html=1;rounded=0;" parent="1" source="st4" target="st5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ste4l" value="yes" style="edgeLabel;html=1;align=center;" parent="ste4" vertex="1" connectable="0">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="ste5" style="endArrow=classic;html=1;rounded=0;" parent="1" source="st6" target="st7" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ste6" style="endArrow=classic;html=1;rounded=0;" parent="1" source="st7" target="st8" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ste6l" value="yes" style="edgeLabel;html=1;align=center;" parent="ste6" vertex="1" connectable="0">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="ste7" style="endArrow=classic;html=1;rounded=0;" parent="1" source="st7" target="st9" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ste7l" value="no" style="edgeLabel;html=1;align=center;" parent="ste7" vertex="1" connectable="0">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="fig9-recovery" name="Fig9 Recovery Flow">
+        <mxGraphModel dx="1042" dy="645" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="r0" value="POST /recommend/{loan_id}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="40" width="200" height="48" as="geometry"/>
+                </mxCell>
+                <mxCell id="r1" value="Load loan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="110" width="160" height="44" as="geometry"/>
+                </mxCell>
+                <mxCell id="r2" value="predict_default&#xa;(Overdue → 0.8, else 0.2)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="180" width="200" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="r3" value="recommend_action&#xa;(risk, history)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="260" width="200" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="r4" value="risk &gt; 0.7&#xa;OR hist &gt; 2 ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="340" width="160" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="r5" value="EscalateToCollection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+                    <mxGeometry x="440" y="360" width="160" height="48" as="geometry"/>
+                </mxCell>
+                <mxCell id="r6" value="risk &gt; 0.4&#xa;OR hist &gt; 0 ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="460" width="160" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="r7" value="RenegotiateTerms" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="440" y="486" width="150" height="48" as="geometry"/>
+                </mxCell>
+                <mxCell id="r8" value="SendReminder" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="440" y="580" width="130" height="44" as="geometry"/>
+                </mxCell>
+                <mxCell id="r9" value="JSON response" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="200" y="600" width="200" height="44" as="geometry"/>
+                </mxCell>
+                <mxCell id="rn" value="API passes history = 0 today; future UI can send real missed-payment count." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9e6;strokeColor=#d6b656;align=left;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="460" width="150" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="re1" style="endArrow=classic;html=1;" parent="1" source="r0" target="r1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="re2" style="endArrow=classic;html=1;" parent="1" source="r1" target="r2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="re3" style="endArrow=classic;html=1;" parent="1" source="r2" target="r3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="re4" style="endArrow=classic;html=1;" parent="1" source="r3" target="r4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="re5" style="endArrow=classic;html=1;" parent="1" source="r4" target="r5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="re5l" value="yes" style="edgeLabel;html=1;" parent="re5" vertex="1" connectable="0">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="re6" style="endArrow=classic;html=1;" parent="1" source="r4" target="r6" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="300" y="450" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="re6l" value="no" style="edgeLabel;html=1;" parent="re6" vertex="1" connectable="0">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="re7" style="endArrow=classic;html=1;" parent="1" source="r6" target="r7" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="re7l" value="yes" style="edgeLabel;html=1;" parent="re7" vertex="1" connectable="0">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="re8" style="endArrow=classic;html=1;" parent="1" source="r6" target="r8" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="re8l" value="no" style="edgeLabel;html=1;" parent="re8" vertex="1" connectable="0">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="re9" style="endArrow=classic;html=1;entryX=0.5;entryY=0;" parent="1" source="r5" target="r9" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="520" y="560"/>
+                            <mxPoint x="300" y="560"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="re10" style="endArrow=classic;html=1;entryX=1;entryY=0.5;" parent="1" source="r7" target="r9" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="520" y="620"/>
+                            <mxPoint x="400" y="620"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="re11" style="endArrow=classic;html=1;" parent="1" source="r8" target="r9" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="505" y="640"/>
+                            <mxPoint x="400" y="640"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="fig10-mockup" name="Fig10 Dashboard Mockup">
+        <mxGraphModel dx="1042" dy="645" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="mP" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="40" width="720" height="520" as="geometry"/>
+                </mxCell>
+                <mxCell id="mNav" value="Smart Loan Recovery&#xa;Dashboard · Lender view" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4a90d9;strokeColor=#2d6cb5;fontColor=#ffffff;fontStyle=1;fontSize=14;align=left;spacingLeft=16;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="40" width="720" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="mT" value="My loans" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontStyle=1;fontSize=16;spacingLeft=12;" parent="1" vertex="1">
+                    <mxGeometry x="90" y="110" width="200" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="mTB" value="Refresh list · Flag overdues" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="520" y="105" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="mTbl" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;" parent="1" vertex="1">
+                    <mxGeometry x="100" y="160" width="680" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="mH" value="Borrower · Principal · Rate · Status · Actions" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eeeeee;strokeColor=#999999;fontStyle=1;align=left;spacingLeft=8;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="100" y="160" width="680" height="32" as="geometry"/>
+                </mxCell>
+                <mxCell id="mR1" value="… · $10,000 · 5% · [Active] · —" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#cccccc;align=left;spacingLeft=8;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="100" y="192" width="680" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="mR2" value="… · $5,000 · 6% · [Overdue] · [ Get recommendation ]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#cc8800;align=left;spacingLeft=8;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="100" y="228" width="680" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="mR3" value="… · $2,000 · 4% · [Repaid] · —" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#cccccc;align=left;spacingLeft=8;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="100" y="268" width="680" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="mMod" value="Modal / panel:&#xa;Risk score · Recommended action&#xa;(from POST /recommend/…)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=10;fontSize=11;dashed=1;dashPattern=8 8;" parent="1" vertex="1">
+                    <mxGeometry x="420" y="300" width="340" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="mLeg" value="Future frontend mockup — maps to GET /loans, POST /overdues, POST /recommend/{id}" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9e6;strokeColor=#d6b656;align=left;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="100" y="440" width="400" height="56" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

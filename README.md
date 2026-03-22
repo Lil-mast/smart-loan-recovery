@@ -9,6 +9,8 @@
 
 An innovative AI-enhanced loan recovery system built with Rust, featuring a secure web API, authentication, and intelligent recovery recommendations. This project demonstrates modern financial technology solutions optimized for African fintech challenges.
 
+**Objectives, traceability to code, and a short comparison** to other recovery approaches: [docs/OBJECTIVES_TRACEABILITY.md](docs/OBJECTIVES_TRACEABILITY.md).
+
 ## 🌐 Live Demo
 
 **Production URL**: https://smart-loan-recovery.fly.dev/
