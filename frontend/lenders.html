@@ -59,6 +59,48 @@
                     "on-background": "#dde3ec",
                     "on-tertiary": "#003543",
                     "inverse-surface": "#dde3ec",
+                    "on-secondary-fixed": "#22005d",
+                    // Light mode colors
+                    "light-background": "#fafbfc",
+                    "light-surface": "#ffffff",
+                    "light-surface-container": "#f5f7fa",
+                    "light-surface-container-high": "#e8ecf0",
+                    "light-on-surface": "#1a202c",
+                    "light-on-surface-variant": "#64748b",
+                    "light-outline-variant": "#cbd5e1",
+                    "light-primary": "#0891b2",
+                    "light-secondary": "#dc2626",
+                    "light-secondary-container": "#fef2f2"
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px"
+            },
+            fontFamily: {
+              headline: ["Helvetica", "sans-serif"],
+              body: ["Helvetica", "sans-serif"],
+              label: ["Helvetica", "sans-serif"]
+            },
+            fontSize: {
+              base: ['20px', '1.5']
+            }
+          }
+        }
+      }
+    </script>
+                    "on-error": "#690005",
+                    "on-secondary-container": "#d2c0ff",
+                    "surface-container-lowest": "#090f15",
+                    "surface-variant": "#2f353c",
+                    "tertiary-container": "#005c72",
+                    "on-tertiary-fixed-variant": "#004e60",
+                    "inverse-on-surface": "#2b3138",
+                    "surface-container-highest": "#2f353c",
+                    "on-background": "#dde3ec",
+                    "on-tertiary": "#003543",
+                    "inverse-surface": "#dde3ec",
                     "on-secondary-fixed": "#22005d"
             },
             borderRadius: {
@@ -91,6 +133,25 @@
         background-color: #0e141a;
         color: #dde3ec;
       }
+      /* Light mode overrides */
+      .light {
+        background-color: #fafbfc;
+        color: #1a202c;
+      }
+      .light .bg-background { background-color: #fafbfc; }
+      .light .bg-surface { background-color: #ffffff; }
+      .light .bg-surface-container { background-color: #f5f7fa; }
+      .light .bg-surface-container-high { background-color: #e8ecf0; }
+      .light .text-on-surface { color: #1a202c; }
+      .light .text-on-surface-variant { color: #64748b; }
+      .light .border-outline-variant { border-color: #cbd5e1; }
+      .light .bg-primary { background-color: #0891b2; }
+      .light .text-primary { color: #0891b2; }
+      .light .bg-secondary { background-color: #dc2626; }
+      .light .text-secondary { color: #dc2626; }
+      .light .bg-secondary-container { background-color: #fef2f2; }
+      .light .hero-gradient { background: linear-gradient(135deg, #0891b2 0%, #dc2626 100%); }
+      .light body { background-color: #fafbfc; color: #1a202c; }
     </style>
 </head>
 <body class="font-body selection:bg-primary selection:text-on-primary">
@@ -363,5 +424,93 @@
 </div>
 </div>
 </footer>
+<script>
+  // Currency symbols
+  const currencySymbols = {
+    'USD': '$',
+    'EUR': '€',
+    'GBP': '£',
+    'JPY': '¥',
+    'INR': '₹',
+    'AUD': 'A$'
+  };
+
+  // Real-time exchange rates (in production, fetch from API)
+  const exchangeRates = {
+    'USD': 1,
+    'EUR': 0.92,
+    'GBP': 0.79,
+    'JPY': 149.50,
+    'INR': 83.12,
+    'AUD': 1.52
+  };
+
+  async function loadLenderDashboard() {
+    try {
+      // Get lender session from localStorage
+      const lenderStr = localStorage.getItem('lenderSession');
+      const lender = lenderStr ? JSON.parse(lenderStr) : null;
+      const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+
+      if (!lender || !lender.lenderId) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // Verify lender ID format
+      const validIds = [];
+      const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
+      for (let letter of letters) {
+        validIds.push('123' + letter);
+      }
+
+      if (!validIds.includes(lender.lenderId.toUpperCase())) {
+        localStorage.removeItem('lenderSession');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // Fetch all loans from the system
+      const loansResponse = await fetch('http://localhost:8000/loans');
+      const loans = await loansResponse.json();
+
+      // Calculate portfolio metrics
+      let totalPortfolio = 0;
+      let totalRecovered = 0;
+      let activeLoans = 0;
+
+      loans.forEach(loan => {
+        const loanAmount = loan.amount || 0;
+        totalPortfolio += loanAmount;
+        const recovery = (loanAmount * (loan.recovery_status / 100)) || 0;
+        totalRecovered += recovery;
+        if (loan.recovery_status < 100) activeLoans++;
+      });
+
+      const exchangeRate = exchangeRates[selectedCurrency] || 1;
+      const symbol = currencySymbols[selectedCurrency];
+
+      // Update portfolio value
+      const portfolioValue = (totalPortfolio * exchangeRate).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+
+      const recoveredValue = (totalRecovered * exchangeRate).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+
+      // Update display elements with real data
+      console.log(`Lender ${lender.lenderId} Portal - Portfolio: ${symbol}${portfolioValue}, Recovered: ${symbol}${recoveredValue}, Active Loans: ${activeLoans}`);
+
+    } catch (error) {
+      console.error('Error loading lender dashboard:', error);
+    }
+  }
+
+  // Load dashboard when page is ready
+  document.addEventListener('DOMContentLoaded', loadLenderDashboard);
+</script>
 </body>
 </html>

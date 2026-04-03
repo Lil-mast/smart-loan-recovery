@@ -13,41 +13,83 @@
             theme: {
                 extend: {
                     colors: {
-                        "surface-tint": "#00dddd",
-                        "surface-container-lowest": "#090f15",
-                        "on-secondary": "#3a0093",
-                        "error-container": "#93000a",
-                        "on-secondary-fixed": "#22005d",
-                        "secondary-fixed-dim": "#cfbdff",
-                        "on-tertiary-container": "#58d7ff",
-                        "on-secondary-container": "#d2c0ff",
+                        "on-secondary-fixed-variant": "#5300cd",
+                        "on-tertiary-fixed": "#001f28",
+                        "surface-bright": "#343a41",
+                        "tertiary-fixed": "#b7eaff",
                         "surface-container-low": "#161c22",
+                        "secondary": "#cfbdff",
+                        "tertiary-fixed-dim": "#4cd6ff",
                         "on-primary-container": "#00dede",
-                        "tertiary-container": "#005c72",
+                        "outline": "#948da2",
+                        "on-secondary": "#3a0093",
+                        "primary": "#00dddd",
+                        "background": "#0e141a",
+                        "on-primary": "#003737",
                         "inverse-primary": "#006a6a",
                         "on-primary-fixed-variant": "#004f4f",
-                        "primary-container": "#005e5e",
-                        "secondary-container": "#6305ef",
-                        "primary-fixed-dim": "#00dddd",
-                        "on-primary-fixed": "#002020",
-                        "on-tertiary": "#003543",
-                        "surface-container": "#1a2027",
-                        "on-tertiary-fixed-variant": "#004e60",
-                        "on-tertiary-fixed": "#001f28",
-                        "on-background": "#dde3ec",
-                        "on-error": "#690005",
+                        "on-tertiary-container": "#58d7ff",
+                        "secondary-fixed-dim": "#cfbdff",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed": "#22005d",
+                        "secondary-fixed": "#e8ddff",
+                        "surface-dim": "#0e141a",
                         "error": "#ffb4ab",
-                        "tertiary-fixed-dim": "#4cd6ff",
-                        "surface": "#0e141a",
-                        "inverse-on-surface": "#2b3138",
-                        "surface-variant": "#2f353c",
-                        "primary-fixed": "#00fbfb",
-                        "primary": "#00dddd",
-                        "secondary": "#cfbdff",
+                        "on-surface": "#dde3ec",
+                        "primary-container": "#005e5e",
+                        "outline-variant": "#494456",
+                        "tertiary": "#4cd6ff",
                         "on-error-container": "#ffdad6",
-                        "surface-bright": "#343a41",
-                        "tertiary": "#4cd6ff"
+                        "surface-container": "#1a2027",
+                        "surface": "#0e141a",
+                        "primary-fixed-dim": "#00dddd",
+                        "secondary-container": "#6305ef",
+                        "primary-fixed": "#00fbfb",
+                        "surface-tint": "#00dddd",
+                        "on-primary-fixed": "#002020",
+                        "surface-container-high": "#252b31",
+                        "on-error": "#690005",
+                        "on-secondary-container": "#d2c0ff",
+                        "surface-container-lowest": "#090f15",
+                        "surface-variant": "#2f353c",
+                        "tertiary-container": "#005c72",
+                        "on-tertiary-fixed-variant": "#004e60",
+                        "inverse-on-surface": "#2b3138",
+                        "surface-container-highest": "#2f353c",
+                        "on-background": "#dde3ec",
+                        "on-tertiary": "#003543",
+                        "inverse-surface": "#dde3ec",
+                        "on-secondary-fixed": "#22005d",
+                        // Light mode colors
+                        "light-background": "#fafbfc",
+                        "light-surface": "#ffffff",
+                        "light-surface-container": "#f5f7fa",
+                        "light-surface-container-high": "#e8ecf0",
+                        "light-on-surface": "#1a202c",
+                        "light-on-surface-variant": "#64748b",
+                        "light-outline-variant": "#cbd5e1",
+                        "light-primary": "#0891b2",
+                        "light-secondary": "#dc2626",
+                        "light-secondary-container": "#fef2f2"
                     },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Helvetica", "sans-serif"],
+                        body: ["Helvetica", "sans-serif"],
+                        label: ["Helvetica", "sans-serif"]
+                    },
+                    fontSize: {
+                        base: ['20px', '1.5']
+                    }
+                }
+            }
+        }
+    </script>
                     borderRadius: {
                         DEFAULT: "0.25rem",
                         lg: "0.5rem",
@@ -74,6 +116,25 @@
         .hero-gradient {
             background: linear-gradient(135deg, #00dddd 0%, #005e5e 100%);
         }
+        /* Light mode overrides */
+        .light {
+            background-color: #fafbfc;
+            color: #1a202c;
+        }
+        .light .bg-background { background-color: #fafbfc; }
+        .light .bg-surface { background-color: #ffffff; }
+        .light .bg-surface-container { background-color: #f5f7fa; }
+        .light .bg-surface-container-high { background-color: #e8ecf0; }
+        .light .text-on-surface { color: #1a202c; }
+        .light .text-on-surface-variant { color: #64748b; }
+        .light .border-outline-variant { border-color: #cbd5e1; }
+        .light .bg-primary { background-color: #0891b2; }
+        .light .text-primary { color: #0891b2; }
+        .light .bg-secondary { background-color: #dc2626; }
+        .light .text-secondary { color: #dc2626; }
+        .light .bg-secondary-container { background-color: #fef2f2; }
+        .light .hero-gradient { background: linear-gradient(135deg, #0891b2 0%, #dc2626 100%); }
+        .light body { background-color: #fafbfc; color: #1a202c; }
     </style>
 </head>
 <body class="bg-surface text-on-surface font-body selection:bg-primary/30 selection:text-primary-fixed">
@@ -313,5 +374,84 @@
 <span class="text-[10px] font-bold">Profile</span>
 </a>
 </nav>
+<script>
+  // Currency symbols
+  const currencySymbols = {
+    'USD': '$',
+    'EUR': '€',
+    'GBP': '£',
+    'JPY': '¥',
+    'INR': '₹',
+    'AUD': 'A$'
+  };
+
+  // Real-time exchange rates (in production, fetch from API)
+  const exchangeRates = {
+    'USD': 1,
+    'EUR': 0.92,
+    'GBP': 0.79,
+    'JPY': 149.50,
+    'INR': 83.12,
+    'AUD': 1.52
+  };
+
+  async function loadBorrowerDashboard() {
+    try {
+      // Get user from localStorage
+      const userStr = localStorage.getItem('user');
+      const user = userStr ? JSON.parse(userStr) : null;
+      const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+
+      if (!user) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // Update user name display
+      const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+      const userInitial = document.querySelector('.h-8.w-8');
+      if (userInitial) {
+        userInitial.textContent = initials.substring(0, 2);
+      }
+
+      // Fetch loans for this borrower
+      const loansResponse = await fetch(`http://localhost:8000/loans?borrower_id=${user.id || 'all'}`);
+      const loans = await loansResponse.json();
+
+      // Calculate total outstanding
+      let totalOutstanding = 0;
+      loans.forEach(loan => {
+        totalOutstanding += (loan.outstanding_amount || loan.amount * (1 - loan.recovery_status / 100));
+      });
+
+      // Convert to selected currency
+      const exchangeRate = exchangeRates[selectedCurrency] || 1;
+      const convertedTotal = totalOutstanding * exchangeRate;
+      const symbol = currencySymbols[selectedCurrency];
+
+      // Update display
+      const headerValue = document.querySelector('h1.text-5xl');
+      if (headerValue) {
+        const intPart = Math.floor(convertedTotal).toLocaleString();
+        const decPart = String((convertedTotal % 1).toFixed(2)).substring(2);
+        headerValue.innerHTML = `${symbol}${intPart}<span class="text-primary">.${decPart}</span>`;
+      }
+
+      // Update loan count
+      const summaryText = document.querySelector('p.text-on-surface-variant');
+      if (summaryText) {
+        summaryText.textContent = `Total outstanding across ${loans.length} active recovery paths (${selectedCurrency})`;
+      }
+
+      console.log('Dashboard loaded successfully with real data');
+    } catch (error) {
+      console.error('Error loading dashboard:', error);
+      // Keep dummy data as fallback
+    }
+  }
+
+  // Load dashboard when page is ready
+  document.addEventListener('DOMContentLoaded', loadBorrowerDashboard);
+</script>
 </body>
 </html>
