@@ -12,7 +12,7 @@ The budget estimate outlines all anticipated costs for the LendWise Recovery Pro
 | **Miscellaneous (Stationery)** | 2,000 | Printing, notebooks, etc. |
 | **Total** | **22,000 KES** | |
 
-## What We've Covered
+## What I've Covered
 - Full-stack Rust/Actix-web API for loan management and AI recovery
 - Authentication, role-based access, session management
 - SQLite database with backup/restore
