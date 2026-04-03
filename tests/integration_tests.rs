@@ -1,8 +1,8 @@
 use actix_web::{test, App, http::StatusCode};
 use actix_web::web;
+use lendwise_recovery::config::Config;
 use serde_json::json;
-use smart_loan_recovery::api::*;
-use smart_loan_recovery::config::Config;
+use lendwise_recovery::api::*;
 use lendwise_recovery::db::Db;
 
 #[actix_web::test]

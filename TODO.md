@@ -1,50 +1,29 @@
-# LendWise Recovery Rename & Budget Docs - Implementation TODO
+# LendWise Recovery - Complete TODO Tracking
 
-## Approved Plan Steps (Breakdown)
+## Previous Phases (Completed)
+### Phase 1-4: Rename & Budget (✅ Done)
+- All file edits complete (Cargo.toml, README.md, etc.)
+- Budget.md created.
+- Ready for git commit/rename dir if not done.
 
-### Phase 1: File Edits (AI will do these now)
-- [ ] ✅ Create this TODO.md
-- [ ] Edit Cargo.toml (package name)
-- [ ] Edit README.md (title, URLs, tags, refs)
-- [ ] Edit PROJECT_PROPOSAL.md (title/refs)
-- [ ] Edit METHODOLOGY_AND_ARCHITECTURE.md (title)
-- [ ] Edit docs/OBJECTIVES_TRACEABILITY.md (title)
-- [ ] Edit fly.toml (app name)
-- [ ] Edit CONTAINERIZATION.md (binary/image)
-- [ ] Edit DEVELOPMENT_CHALLENGES.md (title/binary)
-- [ ] Create docs/BUDGET.md
+## Phase 5: Fix Integration Tests & Create Docs (✅ Complete)
+- [✅] Edit tests/integration_tests.rs (imports fixed)
+- [✅] Create docs/testing-implementation.md
+- [✅] Create docs/maintenance.md
+- [ ] Run `cargo test` (ongoing)
+- [✅] Updated TODO.md
 
-### Phase 2: Shell Commands (User runs after edits confirm)
+## Phase 6: Verification & Deploy
 ```
-git add .
-git commit -m 'Rename project to LendWise Recovery + add budget docs'
-
-# Rename directory
-cd ..
-git mv smart-loan-recovery lendwise-recovery
-cd lendwise-recovery
-
-# Rebuild binary (new name)
+cargo test
 cargo build --release
-
-# Fly.io (if keeping same app; else fly apps create lendwise-recovery)
-fly deploy
-fly certs create  # if needed for new domain
-
-# Test
-cargo run
-# Visit new URL if changed
+fly deploy  # if changes affect binary
 ```
 
-### Phase 3: Verification
-- [ ] Binary runs as `lendwise-recovery`
-- [ ] All docs updated
-- [ ] Budget.md in docs/
-- [ ] Fly app live (update DNS if custom domain)
+### Next Steps After Phase 5
+- Test: `cargo test` (should pass 4 tests)
+- Build: `cargo build`
+- Check coverage or add loan/recovery tests if needed.
+- git add/commit/push
 
-### Phase 4: Completion
-- Push to git
-- Update repo name if GitHub
-- Archive old backups (smart-loan-recovery-fly.dev if needed)
-
-Track progress by checking off. Reply when Phase 1 complete to confirm before Phase 2.
+Track by checking off. Reply after each step for confirmation.
