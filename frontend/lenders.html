@@ -5,7 +5,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>LendWise | Lender Intelligence Dashboard</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
       tailwind.config = {
@@ -79,43 +79,24 @@
               full: "9999px"
             },
             fontFamily: {
-              headline: ["Helvetica", "sans-serif"],
-              body: ["Helvetica", "sans-serif"],
-              label: ["Helvetica", "sans-serif"]
+              sans: ["Manrope", "system-ui", "sans-serif"],
+              headline: ["Manrope", "system-ui", "sans-serif"],
+              body: ["Manrope", "system-ui", "sans-serif"],
+              label: ["Manrope", "system-ui", "sans-serif"]
             },
             fontSize: {
-              base: ['20px', '1.5']
+              base: ['1.1875rem', { lineHeight: '1.7' }],
+              lg: ['1.3125rem', { lineHeight: '1.65' }],
+              xl: ['1.5rem', { lineHeight: '1.55' }],
+              '2xl': ['1.75rem', { lineHeight: '1.45' }],
+              '3xl': ['2rem', { lineHeight: '1.35' }],
+              '4xl': ['2.5rem', { lineHeight: '1.2' }],
+              '5xl': ['3rem', { lineHeight: '1.15' }],
+              '6xl': ['3.5rem', { lineHeight: '1.1' }],
+              '7xl': ['4rem', { lineHeight: '1.05' }]
             }
           }
         }
-      }
-    </script>
-                    "on-error": "#690005",
-                    "on-secondary-container": "#d2c0ff",
-                    "surface-container-lowest": "#090f15",
-                    "surface-variant": "#2f353c",
-                    "tertiary-container": "#005c72",
-                    "on-tertiary-fixed-variant": "#004e60",
-                    "inverse-on-surface": "#2b3138",
-                    "surface-container-highest": "#2f353c",
-                    "on-background": "#dde3ec",
-                    "on-tertiary": "#003543",
-                    "inverse-surface": "#dde3ec",
-                    "on-secondary-fixed": "#22005d"
-            },
-            borderRadius: {
-                    DEFAULT: "0.25rem",
-                    lg: "0.5rem",
-                    xl: "0.75rem",
-                    full: "9999px"
-            },
-            fontFamily: {
-                    headline: ["Manrope"],
-                    body: ["Inter"],
-                    label: ["Inter"]
-            }
-          },
-        },
       }
     </script>
 <style>
@@ -132,6 +113,9 @@
       body {
         background-color: #0e141a;
         color: #dde3ec;
+        font-family: "Manrope", system-ui, sans-serif;
+        font-size: 1.1875rem;
+        line-height: 1.7;
       }
       /* Light mode overrides */
       .light {
@@ -154,16 +138,16 @@
       .light body { background-color: #fafbfc; color: #1a202c; }
     </style>
 </head>
-<body class="font-body selection:bg-primary selection:text-on-primary">
+<body class="bg-background text-on-surface text-base font-body antialiased selection:bg-primary selection:text-on-primary">
 <nav class="fixed top-0 w-full z-50 bg-[#0e141a]/80 backdrop-blur-xl">
 <div class="flex justify-between items-center px-8 py-4 w-full max-w-none">
 <div class="flex items-center gap-8">
 <span class="text-2xl font-black tracking-tighter text-[#00dddd]">LendWise</span>
 <div class="hidden md:flex gap-6 items-center">
-<a class="font-manrope text-sm font-medium tracking-wide text-[#00dddd] border-b-2 border-[#00dddd] pb-1" href="index.html">Home</a>
-<a class="font-manrope text-sm font-medium tracking-wide text-[#cbc3d9] hover:text-white transition-colors" href="borrowers.html">Loans</a>
-<a class="font-manrope text-sm font-medium tracking-wide text-[#cbc3d9] hover:text-white transition-colors" href="lenders.html">AI Insights</a>
-<a class="font-manrope text-sm font-medium tracking-wide text-[#cbc3d9] hover:text-white transition-colors" href="index.html">Profile</a>
+<a class="font-body text-sm font-medium tracking-wide text-[#00dddd] border-b-2 border-[#00dddd] pb-1" href="index.html">Home</a>
+<a class="font-body text-sm font-medium tracking-wide text-[#cbc3d9] hover:text-white transition-colors" href="borrowers.html">Loans</a>
+<a class="font-body text-sm font-medium tracking-wide text-[#cbc3d9] hover:text-white transition-colors" href="lenders.html">AI Insights</a>
+<a class="font-body text-sm font-medium tracking-wide text-[#cbc3d9] hover:text-white transition-colors" href="index.html">Profile</a>
 </div>
 </div>
 <div class="flex items-center gap-4">
@@ -181,27 +165,27 @@
 <aside class="hidden lg:flex flex-col h-[calc(100vh-64px)] w-64 border-r border-[#252b31] bg-[#161c22] fixed left-0">
 <div class="flex flex-col h-full py-6">
 <div class="px-6 mb-8">
-<h3 class="text-[#00dddd] font-bold font-manrope">Intelligence</h3>
+<h3 class="text-[#00dddd] font-bold font-body">Intelligence</h3>
 <p class="text-xs text-on-surface-variant font-medium">Active Recovery</p>
 </div>
 <nav class="flex-1 space-y-1">
-<a class="flex items-center gap-3 bg-[#6305ef] text-white rounded-r-full mr-4 px-4 py-3 font-manrope font-semibold transition-transform duration-300 ease-in-out" href="#">
+<a class="flex items-center gap-3 bg-[#6305ef] text-white rounded-r-full mr-4 px-4 py-3 font-body font-semibold transition-transform duration-300 ease-in-out" href="#">
 <span class="material-symbols-outlined">grid_view</span>
 <span>Dashboard</span>
 </a>
-<a class="flex items-center gap-3 text-[#cbc3d9] px-4 py-3 hover:translate-x-1 hover:bg-[#252b31] font-manrope font-semibold transition-transform duration-300 ease-in-out" href="#">
+<a class="flex items-center gap-3 text-[#cbc3d9] px-4 py-3 hover:translate-x-1 hover:bg-[#252b31] font-body font-semibold transition-transform duration-300 ease-in-out" href="#">
 <span class="material-symbols-outlined">account_balance_wallet</span>
 <span>Portfolio</span>
 </a>
-<a class="flex items-center gap-3 text-[#cbc3d9] px-4 py-3 hover:translate-x-1 hover:bg-[#252b31] font-manrope font-semibold transition-transform duration-300 ease-in-out" href="#">
+<a class="flex items-center gap-3 text-[#cbc3d9] px-4 py-3 hover:translate-x-1 hover:bg-[#252b31] font-body font-semibold transition-transform duration-300 ease-in-out" href="#">
 <span class="material-symbols-outlined">insights</span>
 <span>Recovery Analytics</span>
 </a>
-<a class="flex items-center gap-3 text-[#cbc3d9] px-4 py-3 hover:translate-x-1 hover:bg-[#252b31] font-manrope font-semibold transition-transform duration-300 ease-in-out" href="#">
+<a class="flex items-center gap-3 text-[#cbc3d9] px-4 py-3 hover:translate-x-1 hover:bg-[#252b31] font-body font-semibold transition-transform duration-300 ease-in-out" href="#">
 <span class="material-symbols-outlined">gavel</span>
 <span>Compliance</span>
 </a>
-<a class="flex items-center gap-3 text-[#cbc3d9] px-4 py-3 hover:translate-x-1 hover:bg-[#252b31] font-manrope font-semibold transition-transform duration-300 ease-in-out" href="#">
+<a class="flex items-center gap-3 text-[#cbc3d9] px-4 py-3 hover:translate-x-1 hover:bg-[#252b31] font-body font-semibold transition-transform duration-300 ease-in-out" href="#">
 <span class="material-symbols-outlined">inventory_2</span>
 <span>Archive</span>
 </a>
@@ -289,7 +273,7 @@
 <div class="flex-1">
 <div class="flex items-center gap-2 text-secondary mb-4">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
-<span class="font-manrope font-bold text-sm tracking-widest uppercase">AI Recovery Recommendations</span>
+<span class="font-body font-bold text-sm tracking-widest uppercase">AI Recovery Recommendations</span>
 </div>
 <h3 class="font-headline text-2xl lg:text-3xl font-extrabold text-on-surface leading-tight mb-4">
                                     3 High-priority recovery paths detected for <span class="text-secondary">Portfolio Delta</span>.
@@ -414,19 +398,33 @@
 </div>
 <footer class="bg-[#0e141a] w-full py-6 mt-12">
 <div class="flex flex-col md:flex-row justify-between items-center px-12 border-t border-[#252b31]/30 pt-8">
-<p class="font-inter text-xs uppercase tracking-widest text-[#cbc3d9] mb-4 md:mb-0">
+<p class="font-body text-sm uppercase tracking-widest text-[#cbc3d9] mb-4 md:mb-0">
                 © 2024 LendWise Recovery | System Status: Operational
             </p>
 <div class="flex gap-8">
-<a class="font-inter text-xs uppercase tracking-widest text-[#cbc3d9] hover:text-white transition-colors" href="#">Privacy Policy</a>
-<a class="font-inter text-xs uppercase tracking-widest text-[#cbc3d9] hover:text-white transition-colors" href="#">Terms of Service</a>
-<a class="font-inter text-xs uppercase tracking-widest text-[#cbc3d9] hover:text-white transition-colors" href="#">Security Architecture</a>
+<a class="font-body text-sm uppercase tracking-widest text-[#cbc3d9] hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="font-body text-sm uppercase tracking-widest text-[#cbc3d9] hover:text-white transition-colors" href="#">Terms of Service</a>
+<a class="font-body text-sm uppercase tracking-widest text-[#cbc3d9] hover:text-white transition-colors" href="#">Security Architecture</a>
 </div>
 </div>
 </footer>
 <script>
+  const API_BASE = (() => {
+    const h = window.location.hostname;
+    if (h === 'localhost' || h === '127.0.0.1') return 'http://127.0.0.1:3000';
+    return '';
+  })();
+
   // Currency symbols
   const currencySymbols = {
+    'KES': 'KSh ',
+    'NGN': '₦',
+    'ZAR': 'R ',
+    'GHS': 'GH₵',
+    'EGP': 'E£',
+    'UGX': 'USh ',
+    'TZS': 'TSh ',
+    'XOF': 'CFA ',
     'USD': '$',
     'EUR': '€',
     'GBP': '£',
@@ -435,8 +433,16 @@
     'AUD': 'A$'
   };
 
-  // Real-time exchange rates (in production, fetch from API)
+  // Display multipliers vs USD base (demo; replace with live rates in production)
   const exchangeRates = {
+    'KES': 130,
+    'NGN': 1580,
+    'ZAR': 18.5,
+    'GHS': 15.2,
+    'EGP': 48,
+    'UGX': 3850,
+    'TZS': 2570,
+    'XOF': 605,
     'USD': 1,
     'EUR': 0.92,
     'GBP': 0.79,
@@ -471,7 +477,7 @@
       }
 
       // Fetch all loans from the system
-      const loansResponse = await fetch('http://localhost:8000/loans');
+      const loansResponse = await fetch(`${API_BASE}/loans`);
       const loans = await loansResponse.json();
 
       // Calculate portfolio metrics

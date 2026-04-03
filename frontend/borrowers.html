@@ -5,7 +5,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>LendWise | Borrower Intelligence Dashboard</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
         tailwind.config = {
@@ -79,30 +79,24 @@
                         full: "9999px"
                     },
                     fontFamily: {
-                        headline: ["Helvetica", "sans-serif"],
-                        body: ["Helvetica", "sans-serif"],
-                        label: ["Helvetica", "sans-serif"]
+                        sans: ["Manrope", "system-ui", "sans-serif"],
+                        headline: ["Manrope", "system-ui", "sans-serif"],
+                        body: ["Manrope", "system-ui", "sans-serif"],
+                        label: ["Manrope", "system-ui", "sans-serif"]
                     },
                     fontSize: {
-                        base: ['20px', '1.5']
+                        base: ['1.1875rem', { lineHeight: '1.7' }],
+                        lg: ['1.3125rem', { lineHeight: '1.65' }],
+                        xl: ['1.5rem', { lineHeight: '1.55' }],
+                        '2xl': ['1.75rem', { lineHeight: '1.45' }],
+                        '3xl': ['2rem', { lineHeight: '1.35' }],
+                        '4xl': ['2.5rem', { lineHeight: '1.2' }],
+                        '5xl': ['3rem', { lineHeight: '1.15' }],
+                        '6xl': ['3.5rem', { lineHeight: '1.1' }],
+                        '7xl': ['4rem', { lineHeight: '1.05' }]
                     }
                 }
             }
-        }
-    </script>
-                    borderRadius: {
-                        DEFAULT: "0.25rem",
-                        lg: "0.5rem",
-                        xl: "0.75rem",
-                        full: "9999px"
-                    },
-                    fontFamily: {
-                        headline: ["Manrope"],
-                        body: ["Inter"],
-                        label: ["Inter"]
-                    }
-                },
-            },
         }
     </script>
 <style>
@@ -135,9 +129,14 @@
         .light .bg-secondary-container { background-color: #fef2f2; }
         .light .hero-gradient { background: linear-gradient(135deg, #0891b2 0%, #dc2626 100%); }
         .light body { background-color: #fafbfc; color: #1a202c; }
+        body {
+            font-family: "Manrope", system-ui, sans-serif;
+            font-size: 1.1875rem;
+            line-height: 1.7;
+        }
     </style>
 </head>
-<body class="bg-surface text-on-surface font-body selection:bg-primary/30 selection:text-primary-fixed">
+<body class="bg-surface text-on-surface text-base font-body antialiased selection:bg-primary/30 selection:text-primary-fixed">
 <nav class="fixed top-0 w-full z-50 bg-[#0e141a]/80 backdrop-blur-xl flex justify-between items-center px-8 py-4 max-w-none">
 <div class="flex items-center gap-8">
 <span class="text-2xl font-black tracking-tighter text-[#00dddd] font-headline">LendWise</span>
@@ -349,8 +348,8 @@
 </div>
 </main>
 <footer class="w-full py-6 bg-[#0e141a] flex flex-col md:flex-row justify-between items-center px-12 border-t border-[#252b31]/30">
-<span class="font-inter text-xs uppercase tracking-widest text-[#cbc3d9]">© 2024 LendWise Recovery | System Status: Operational</span>
-<div class="flex gap-8 mt-4 md:mt-0 font-inter text-xs uppercase tracking-widest">
+<span class="font-body text-sm uppercase tracking-widest text-[#cbc3d9]">© 2024 LendWise Recovery | System Status: Operational</span>
+<div class="flex gap-8 mt-4 md:mt-0 font-body text-sm uppercase tracking-widest">
 <a class="text-[#cbc3d9] hover:text-white transition-colors" href="#">Privacy Policy</a>
 <a class="text-[#cbc3d9] hover:text-white transition-colors" href="#">Terms of Service</a>
 <a class="text-[#cbc3d9] hover:text-white transition-colors" href="#">Security Architecture</a>
@@ -375,8 +374,22 @@
 </a>
 </nav>
 <script>
+  const API_BASE = (() => {
+    const h = window.location.hostname;
+    if (h === 'localhost' || h === '127.0.0.1') return 'http://127.0.0.1:3000';
+    return '';
+  })();
+
   // Currency symbols
   const currencySymbols = {
+    'KES': 'KSh ',
+    'NGN': '₦',
+    'ZAR': 'R ',
+    'GHS': 'GH₵',
+    'EGP': 'E£',
+    'UGX': 'USh ',
+    'TZS': 'TSh ',
+    'XOF': 'CFA ',
     'USD': '$',
     'EUR': '€',
     'GBP': '£',
@@ -385,8 +398,16 @@
     'AUD': 'A$'
   };
 
-  // Real-time exchange rates (in production, fetch from API)
+  // Display multipliers vs USD base (demo; replace with live rates in production)
   const exchangeRates = {
+    'KES': 130,
+    'NGN': 1580,
+    'ZAR': 18.5,
+    'GHS': 15.2,
+    'EGP': 48,
+    'UGX': 3850,
+    'TZS': 2570,
+    'XOF': 605,
     'USD': 1,
     'EUR': 0.92,
     'GBP': 0.79,
@@ -415,7 +436,7 @@
       }
 
       // Fetch loans for this borrower
-      const loansResponse = await fetch(`http://localhost:8000/loans?borrower_id=${user.id || 'all'}`);
+      const loansResponse = await fetch(`${API_BASE}/loans?borrower_id=${user.id || 'all'}`);
       const loans = await loansResponse.json();
 
       // Calculate total outstanding

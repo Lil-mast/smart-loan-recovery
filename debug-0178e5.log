@@ -1,0 +1,10 @@
+{"sessionId":"0178e5","hypothesisId":"H1","location":"config.rs:from_env","message":"SESSION_SECRET after dotenv","data":{"env_var_present":true,"secret_byte_len":0,"is_empty":true,"dotenv_loaded_ok":true},"timestamp":1775256194637}
+{"sessionId":"0178e5","hypothesisId":"VERIFY","location":"config.rs:from_env","message":"resolved SESSION_SECRET length","data":{"runId":"post-fix","final_session_secret_byte_len":65},"timestamp":1775256194639}
+{"sessionId":"0178e5","hypothesisId":"H3","location":"api.rs:run_server","message":"before Key::from","data":{"secret_byte_len_before_key":65},"timestamp":1775256194650}
+{"sessionId":"0178e5","hypothesisId":"H3","location":"api.rs:run_server","message":"before Key::from","data":{"secret_byte_len_before_key":65},"timestamp":1775256194664}
+{"sessionId":"0178e5","hypothesisId":"H3","location":"api.rs:run_server","message":"before Key::from","data":{"secret_byte_len_before_key":65},"timestamp":1775256194673}
+{"sessionId":"0178e5","hypothesisId":"H3","location":"api.rs:run_server","message":"before Key::from","data":{"secret_byte_len_before_key":65},"timestamp":1775256194682}
+{"sessionId":"0178e5","hypothesisId":"H3","location":"api.rs:run_server","message":"before Key::from","data":{"secret_byte_len_before_key":65},"timestamp":1775256194692}
+{"sessionId":"0178e5","hypothesisId":"H3","location":"api.rs:run_server","message":"before Key::from","data":{"secret_byte_len_before_key":65},"timestamp":1775256194700}
+{"sessionId":"0178e5","hypothesisId":"H3","location":"api.rs:run_server","message":"before Key::from","data":{"secret_byte_len_before_key":65},"timestamp":1775256194709}
+{"sessionId":"0178e5","hypothesisId":"H3","location":"api.rs:run_server","message":"before Key::from","data":{"secret_byte_len_before_key":65},"timestamp":1775256194717}

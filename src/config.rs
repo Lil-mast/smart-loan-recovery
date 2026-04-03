@@ -11,6 +11,12 @@ pub struct Config {
 impl Config {
     pub fn from_env() -> Result<Self, Box<dyn std::error::Error>> {
         dotenv::dotenv().ok();
+        let session_secret_env = env::var("SESSION_SECRET");
+
+        let session_secret = match session_secret_env {
+            Ok(s) if !s.trim().is_empty() => s,
+            _ => "super-secret-key-change-in-production-at-least-47-characters-long".to_string(),
+        };
 
         Ok(Config {
             database_url: env::var("DATABASE_URL").unwrap_or_else(|_| "loans.db".to_string()),
@@ -19,8 +25,7 @@ impl Config {
                 .unwrap_or_else(|_| "3000".to_string())
                 .parse()
                 .map_err(|_| "Invalid SERVER_PORT")?,
-            session_secret: env::var("SESSION_SECRET")
-                .unwrap_or_else(|_| "super-secret-key-change-in-production-at-least-47-characters-long".to_string()),
+            session_secret,
         })
     }
 
