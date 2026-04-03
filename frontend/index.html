@@ -59,7 +59,18 @@
               "on-background": "#dde3ec",
               "on-tertiary": "#003543",
               "inverse-surface": "#dde3ec",
-              "on-secondary-fixed": "#22005d"
+              "on-secondary-fixed": "#22005d",
+              // Light mode colors
+              "light-background": "#fafbfc",
+              "light-surface": "#ffffff",
+              "light-surface-container": "#f5f7fa",
+              "light-surface-container-high": "#e8ecf0",
+              "light-on-surface": "#1a202c",
+              "light-on-surface-variant": "#64748b",
+              "light-outline-variant": "#cbd5e1",
+              "light-primary": "#0891b2",
+              "light-secondary": "#dc2626",
+              "light-secondary-container": "#fef2f2"
             },
             borderRadius: {
               DEFAULT: "0.25rem",
@@ -68,9 +79,12 @@
               full: "9999px"
             },
             fontFamily: {
-              headline: ["Manrope"],
-              body: ["Inter"],
-              label: ["Inter"]
+              headline: ["Helvetica", "sans-serif"],
+              body: ["Helvetica", "sans-serif"],
+              label: ["Helvetica", "sans-serif"]
+            },
+            fontSize: {
+              base: ['20px', '1.5']
             }
           }
         }
@@ -92,6 +106,25 @@
         color: #dde3ec;
         font-family: Inter, sans-serif;
       }
+      /* Light mode overrides */
+      .light {
+        background-color: #fafbfc;
+        color: #1a202c;
+      }
+      .light .bg-background { background-color: #fafbfc; }
+      .light .bg-surface { background-color: #ffffff; }
+      .light .bg-surface-container { background-color: #f5f7fa; }
+      .light .bg-surface-container-high { background-color: #e8ecf0; }
+      .light .text-on-surface { color: #1a202c; }
+      .light .text-on-surface-variant { color: #64748b; }
+      .light .border-outline-variant { border-color: #cbd5e1; }
+      .light .bg-primary { background-color: #0891b2; }
+      .light .text-primary { color: #0891b2; }
+      .light .bg-secondary { background-color: #dc2626; }
+      .light .text-secondary { color: #dc2626; }
+      .light .bg-secondary-container { background-color: #fef2f2; }
+      .light .hero-gradient { background: linear-gradient(135deg, #0891b2 0%, #dc2626 100%); }
+      .light body { background-color: #fafbfc; color: #1a202c; }
     </style>
 </head>
 <body class="bg-background text-on-surface font-body selection:bg-primary/30 selection:text-primary-fixed">
@@ -101,11 +134,17 @@
       <span class="text-2xl font-black tracking-tighter text-[#00dddd]">LendWise</span>
       <div class="hidden md:flex items-center gap-8 font-headline text-sm font-medium tracking-wide">
         <a class="text-[#00dddd] border-b-2 border-[#00dddd] pb-1" href="index.html">Home</a>
-        <a class="text-[#cbc3d9] hover:text-white transition-colors" href="borrowers.html">Borrowers</a>
-        <a class="text-[#cbc3d9] hover:text-white transition-colors" href="lenders.html">Lenders</a>
+        <button onclick="openModal('registerModal')" class="text-[#cbc3d9] hover:text-white transition-colors cursor-pointer bg-none border-none p-0">Register</button>
+        <button onclick="openModal('loginModal')" class="text-[#cbc3d9] hover:text-white transition-colors cursor-pointer bg-none border-none p-0">Login</button>
       </div>
     </div>
-  </div>
+    <div class="flex items-center gap-4">
+      <button id="themeToggle" class="p-2 hover:bg-[#252b31]/50 rounded-lg transition-all scale-95 active:scale-90 duration-200">
+        <span class="material-symbols-outlined text-[#cbc3d9]">dark_mode</span>
+      </button>
+      <button onclick="openModal('registerModal')" class="px-6 py-2 rounded-full border border-primary/20 text-primary font-bold text-sm hover:bg-primary/5 transition-all">Register</button>
+      <button onclick="openModal('loginModal')" class="px-6 py-2 rounded-full border border-primary/20 text-primary font-bold text-sm hover:bg-primary/5 transition-all">Login</button>
+    </div>
   <div class="bg-gradient-to-r from-transparent via-[#252b31] to-transparent h-[1px] w-full absolute bottom-0"></div>
 </nav>
 <main class="pt-24">
@@ -202,7 +241,7 @@
             <h3 class="text-3xl font-headline font-bold text-white mb-2">Ready for Intelligence?</h3>
             <p class="text-on-surface-variant">Join 500+ institutional lenders optimizing their recovery.</p>
           </div>
-          <a class="bg-primary text-on-primary font-bold px-8 py-4 rounded-full whitespace-nowrap hover:shadow-[0_0_20px_rgba(0,221,221,0.4)] transition-all" href="lenders.html">Deploy System</a>
+          <button onclick="openModal('lenderLoginModal')" class="bg-primary text-on-primary font-bold px-8 py-4 rounded-full whitespace-nowrap hover:shadow-[0_0_20px_rgba(0,221,221,0.4)] transition-all">Deploy System</button>
         </div>
       </div>
     </div>
@@ -227,6 +266,93 @@
   </div>
 </section>
 </main>
+<!-- Modals -->
+<div id="registerModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+  <div class="bg-surface p-8 rounded-2xl w-full max-w-md mx-4">
+    <h2 class="text-2xl font-bold text-on-surface mb-6">Register</h2>
+    <form id="registerForm">
+      <div class="mb-4">
+        <label class="block text-on-surface-variant mb-2">Full Name</label>
+        <input type="text" id="userName" class="w-full px-4 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" placeholder="Your full name" required>
+      </div>
+      <div class="mb-4">
+        <label class="block text-on-surface-variant mb-2">Email</label>
+        <input type="email" id="userEmail" class="w-full px-4 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" placeholder="your@email.com" required>
+      </div>
+      <div class="mb-6">
+        <label class="block text-on-surface-variant mb-2">Preferred Currency</label>
+        <select id="userCurrency" class="w-full px-4 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" required>
+          <option value="USD">USD - US Dollar</option>
+          <option value="EUR">EUR - Euro</option>
+          <option value="GBP">GBP - British Pound</option>
+          <option value="JPY">JPY - Japanese Yen</option>
+          <option value="INR">INR - Indian Rupee</option>
+          <option value="AUD">AUD - Australian Dollar</option>
+        </select>
+      </div>
+      <p class="text-xs text-on-surface-variant mb-4">By registering, you'll access the borrower dashboard exclusively.</p>
+      <div class="flex gap-4">
+        <button type="button" onclick="closeModal('registerModal')" class="flex-1 px-4 py-2 border border-outline-variant rounded-lg text-on-surface">Cancel</button>
+        <button type="submit" class="flex-1 px-4 py-2 bg-primary text-on-primary rounded-lg font-bold">Register</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div id="loginModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+  <div class="bg-surface p-8 rounded-2xl w-full max-w-md mx-4">
+    <h2 class="text-2xl font-bold text-on-surface mb-6">Login</h2>
+    <form id="loginForm">
+      <div class="mb-4">
+        <label class="block text-on-surface-variant mb-2">Email</label>
+        <input type="email" id="loginEmail" class="w-full px-4 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" placeholder="your@email.com" required>
+      </div>
+      <div class="mb-6">
+        <label class="block text-on-surface-variant mb-2">Currency (for real-time rates)</label>
+        <select id="loginCurrency" class="w-full px-4 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" required>
+          <option value="USD">USD - US Dollar</option>
+          <option value="EUR">EUR - Euro</option>
+          <option value="GBP">GBP - British Pound</option>
+          <option value="JPY">JPY - Japanese Yen</option>
+          <option value="INR">INR - Indian Rupee</option>
+          <option value="AUD">AUD - Australian Dollar</option>
+        </select>
+      </div>
+      <p class="text-xs text-on-surface-variant mb-4">Borrower login to access your dashboard.</p>
+      <div class="flex gap-4">
+        <button type="button" onclick="closeModal('loginModal')" class="flex-1 px-4 py-2 border border-outline-variant rounded-lg text-on-surface">Cancel</button>
+        <button type="submit" class="flex-1 px-4 py-2 bg-primary text-on-primary rounded-lg font-bold">Login</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div id="lenderLoginModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+  <div class="bg-surface p-8 rounded-2xl w-full max-w-md mx-4">
+    <h2 class="text-2xl font-bold text-on-surface mb-2">Lender Portal</h2>
+    <p class="text-on-surface-variant text-sm mb-6">Authorized Lenders Only</p>
+    <form id="lenderLoginForm">
+      <div class="mb-6">
+        <label class="block text-on-surface-variant mb-2">Lender ID</label>
+        <input type="text" id="lenderId" class="w-full px-4 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface placeholder-outline-variant/50" placeholder="e.g., 123X, 123Y, 123Z..." required>
+        <p class="text-xs text-on-surface-variant mt-2">Format: 123A through 123O</p>
+      </div>
+      <div class="mb-6">
+        <label class="block text-on-surface-variant mb-2\">Preferred Currency</label>
+        <select id="lenderCurrency" class="w-full px-4 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" required>
+          <option value="USD">USD - US Dollar</option>
+          <option value="EUR">EUR - Euro</option>
+          <option value="GBP">GBP - British Pound</option>
+          <option value="JPY">JPY - Japanese Yen</option>
+          <option value="INR">INR - Indian Rupee</option>
+          <option value="AUD">AUD - Australian Dollar</option>
+        </select>
+      </div>
+      <div class="flex gap-4">
+        <button type="button" onclick="closeModal('lenderLoginModal')" class="flex-1 px-4 py-2 border border-outline-variant rounded-lg text-on-surface">Cancel</button>
+        <button type="submit" class="flex-1 px-4 py-2 bg-primary text-on-primary rounded-lg font-bold">Access Portal</button>
+      </div>
+    </form>
+  </div>
+</div>
 <footer class="bg-[#0e141a] w-full py-6 mt-12 border-t border-[#252b31]/30">
   <div class="flex flex-col md:flex-row justify-between items-center px-12 gap-6">
     <div class="font-inter text-xs uppercase tracking-widest text-[#cbc3d9]">
@@ -239,5 +365,139 @@
     </div>
   </div>
 </footer>
+<script>
+  // Theme toggle functionality
+  function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.classList.contains('dark') ? 'dark' : 'light';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.classList.remove(currentTheme);
+    html.classList.add(newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon();
+  }
+
+  function updateThemeIcon() {
+    const themeIcon = document.getElementById('themeToggle').querySelector('.material-symbols-outlined');
+    const isDark = document.documentElement.classList.contains('dark');
+    themeIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
+  }
+
+  // Modal functionality
+  function openModal(modalId) {
+    document.getElementById(modalId).classList.remove('hidden');
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+  }
+
+  // Close modal when clicking outside
+  document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('fixed')) {
+      event.target.classList.add('hidden');
+    }
+  });
+
+  // Borrower Registration
+  document.getElementById('registerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const name = document.getElementById('userName').value;
+    const email = document.getElementById('userEmail').value;
+    const currency = document.getElementById('userCurrency').value;
+
+    try {
+      const response = await fetch('http://localhost:8000/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, role: 'borrower', currency, created_at: new Date().toISOString() })
+      });
+
+      if (response.ok) {
+        const user = await response.json();
+        localStorage.setItem('user', JSON.stringify({ ...user, currency }));
+        alert('Registration successful! Welcome, ' + name);
+        closeModal('registerModal');
+        window.location.href = 'borrowers.html?user_id=' + user.id;
+      } else {
+        alert('Registration failed. Email may already be registered.');
+      }
+    } catch (error) {
+      alert('Connection error: Please ensure backend is running on localhost:8000');
+    }
+  });
+
+  // Borrower Login
+  document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const currency = document.getElementById('loginCurrency').value;
+
+    try {
+      const response = await fetch(`http://localhost:8000/users?email=${encodeURIComponent(email)}`);
+      const users = await response.json();
+
+      if (users.length > 0) {
+        const user = users[0];
+        if (user.role === 'borrower') {
+          localStorage.setItem('user', JSON.stringify({ ...user, currency }));
+          localStorage.setItem('selectedCurrency', currency);
+          alert(`Welcome back, ${user.name}!`);
+          closeModal('loginModal');
+          window.location.href = 'borrowers.html?user_id=' + user.id;
+        } else {
+          alert('Only borrowers can login here. Please use the Lender Portal.');
+        }
+      } else {
+        alert('User not found. Please register first.');
+      }
+    } catch (error) {
+      alert('Connection error: Please ensure backend is running on localhost:8000');
+    }
+  });
+
+  // Lender ID Authentication (123X format)
+  document.getElementById('lenderLoginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const lenderId = document.getElementById('lenderId').value.toUpperCase();
+    const currency = document.getElementById('lenderCurrency').value;
+
+    // Validate lender ID format (123X through 123O)
+    const validIds = [];
+    const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
+    for (let letter of letters) {
+      validIds.push('123' + letter);
+    }
+
+    if (validIds.includes(lenderId)) {
+      // Store lender session
+      localStorage.setItem('lenderSession', JSON.stringify({ 
+        lenderId, 
+        currency, 
+        loginTime: new Date().toISOString(),
+        role: 'lender'
+      }));
+      localStorage.setItem('selectedCurrency', currency);
+      alert(`Lender Portal Access Granted. ID: ${lenderId}`);
+      closeModal('lenderLoginModal');
+      window.location.href = 'lenders.html?lender_id=' + lenderId + '&currency=' + currency;
+    } else {
+      alert('Invalid Lender ID. Format: 123A through 123O');
+    }
+  });
+
+  // Initialize theme on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.classList.add(savedTheme);
+    updateThemeIcon();
+    
+    // Add theme toggle button listener
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', toggleTheme);
+    }
+  });
+</script>
 </body>
 </html>

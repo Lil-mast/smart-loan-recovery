@@ -263,7 +263,7 @@ graph TB
 - **Data Ownership**: Self-hosted solution maintains data sovereignty.
 - **Scalability**: Designed for institutional scale vs individual borrower focus.
 
-### Why Our Solution is Superior
+### Why my Solution is Superior
 
 1. **Contextual Relevance**: Specifically designed for African fintech challenges, unlike generic global solutions.
 
