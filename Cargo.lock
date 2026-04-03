@@ -1137,6 +1137,27 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d4345964bb142484797b161f473a503a434de77149dd8c7427788c6e13379388"
 
 [[package]]
+name = "lendwise-recovery"
+version = "0.1.0"
+dependencies = [
+ "actix-identity",
+ "actix-rt",
+ "actix-session",
+ "actix-web",
+ "chrono",
+ "clap",
+ "dotenv",
+ "env_logger",
+ "log",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "libc"
 version = "0.2.178"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1639,27 +1660,6 @@ name = "smallvec"
 version = "1.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
-
-[[package]]
-name = "smart-loan-recovery"
-version = "0.1.0"
-dependencies = [
- "actix-identity",
- "actix-rt",
- "actix-session",
- "actix-web",
- "chrono",
- "clap",
- "dotenv",
- "env_logger",
- "log",
- "rusqlite",
- "serde",
- "serde_json",
- "thiserror",
- "tokio",
- "uuid",
-]
 
 [[package]]
 name = "socket2"

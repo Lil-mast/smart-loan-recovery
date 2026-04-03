@@ -291,7 +291,7 @@ FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /app/target/release/smart-loan-recovery /usr/local/bin/
 EXPOSE 3000
-CMD ["smart-loan-recovery"]
+CMD ["lendwise-recovery"]
 ```
 
 ### Database Persistence

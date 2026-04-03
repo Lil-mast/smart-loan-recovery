@@ -2,7 +2,7 @@
 
 ## Objectives
 
-The primary objectives of the Smart Loan Recovery System are:
+of LendWise Recovery are:
 
 1. **Come up with an AI-Enhanced Loan Recovery Platform**: Create a robust, scalable system that leverages artificial intelligence to predict and prevent loan defaults before they occur.
 
@@ -34,7 +34,7 @@ Traditional loan recovery systems face significant challenges in emerging market
 
 ### Proposed Solution
 
-The Smart Loan Recovery System addresses these challenges through:
+LendWise Recovery addresses these challenges through:
 
 - **Predictive AI Engine**: A rule-based AI system that analyzes loan data in real-time to predict potential defaults and recommend preventive actions.
 

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LendWise | Borrower Intelligence Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-tint": "#00dddd",
+                        "surface-container-lowest": "#090f15",
+                        "on-secondary": "#3a0093",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed": "#22005d",
+                        "secondary-fixed-dim": "#cfbdff",
+                        "on-tertiary-container": "#58d7ff",
+                        "on-secondary-container": "#d2c0ff",
+                        "surface-container-low": "#161c22",
+                        "on-primary-container": "#00dede",
+                        "tertiary-container": "#005c72",
+                        "inverse-primary": "#006a6a",
+                        "on-primary-fixed-variant": "#004f4f",
+                        "primary-container": "#005e5e",
+                        "secondary-container": "#6305ef",
+                        "primary-fixed-dim": "#00dddd",
+                        "on-primary-fixed": "#002020",
+                        "on-tertiary": "#003543",
+                        "surface-container": "#1a2027",
+                        "on-tertiary-fixed-variant": "#004e60",
+                        "on-tertiary-fixed": "#001f28",
+                        "on-background": "#dde3ec",
+                        "on-error": "#690005",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed-dim": "#4cd6ff",
+                        "surface": "#0e141a",
+                        "inverse-on-surface": "#2b3138",
+                        "surface-variant": "#2f353c",
+                        "primary-fixed": "#00fbfb",
+                        "primary": "#00dddd",
+                        "secondary": "#cfbdff",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#343a41",
+                        "tertiary": "#4cd6ff"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Manrope"],
+                        body: ["Inter"],
+                        label: ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(47, 53, 60, 0.6);
+            backdrop-filter: blur(24px);
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #00dddd 0%, #005e5e 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary/30 selection:text-primary-fixed">
+<nav class="fixed top-0 w-full z-50 bg-[#0e141a]/80 backdrop-blur-xl flex justify-between items-center px-8 py-4 max-w-none">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black tracking-tighter text-[#00dddd] font-headline">LendWise</span>
+<div class="hidden md:flex gap-6 font-headline text-sm font-medium tracking-wide">
+<a class="text-[#cbc3d9] hover:text-white transition-colors" href="index.html">Home</a>
+<a class="text-[#00dddd] border-b-2 border-[#00dddd] pb-1" href="borrowers.html">Dashboard</a>
+<a class="text-[#cbc3d9] hover:text-white transition-colors" href="lenders.html">Lenders</a>
+<a class="text-[#cbc3d9] hover:text-white transition-colors" href="index.html">Profile</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-[#252b31]/50 rounded-lg transition-all scale-95 active:scale-90 duration-200">
+<span class="material-symbols-outlined text-[#cbc3d9]">notifications</span>
+</button>
+<button class="p-2 hover:bg-[#252b31]/50 rounded-lg transition-all scale-95 active:scale-90 duration-200">
+<span class="material-symbols-outlined text-[#cbc3d9]">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-secondary-container flex items-center justify-center text-xs font-bold text-white border border-outline-variant/20">
+                JD
+            </div>
+</div>
+<div class="bg-gradient-to-r from-transparent via-[#252b31] to-transparent h-[1px] w-full absolute bottom-0"></div>
+</nav>
+<main class="pt-24 pb-12 px-8 max-w-7xl mx-auto min-h-screen">
+<header class="mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<span class="text-on-surface-variant font-label text-sm uppercase tracking-widest mb-2 block">Account Overview</span>
+<h1 class="text-5xl md:text-7xl font-headline font-extrabold tracking-tighter text-white">
+                        $24,850<span class="text-primary">.00</span>
+</h1>
+<p class="text-on-surface-variant mt-2 font-medium">Total outstanding across 3 active recovery paths</p>
+</div>
+<div class="flex gap-4">
+<button class="hero-gradient px-8 py-4 rounded-full text-on-primary font-bold font-headline shadow-lg shadow-primary/10 transition-transform active:scale-95">
+                        Make a Payment
+                    </button>
+<button class="bg-surface-container-high px-8 py-4 rounded-full text-primary border border-primary/20 font-bold font-headline transition-all hover:bg-surface-bright">
+                        Path Simulator
+                    </button>
+</div>
+</div>
+</header>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+<section class="md:col-span-8 glass-panel p-8 rounded-xl border border-outline-variant/10">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<h2 class="text-2xl font-headline font-bold text-white">AI Optimization Insights</h2>
+</div>
+<span class="bg-secondary-container text-on-secondary-container text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-tighter">Real-time Analysis</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="bg-surface-container-low p-6 rounded-lg group hover:bg-surface-container-high transition-colors">
+<div class="flex gap-4 items-start">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-xl">trending_down</span>
+</div>
+<div>
+<h3 class="font-headline font-bold text-lg mb-1">Interest Reduction Path</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Based on your payment history, you qualify for a 1.5% APR reduction if you consolidate the Business Loan by next month.</p>
+<button class="mt-4 text-primary font-bold text-sm flex items-center gap-2 group-hover:gap-3 transition-all">
+                                    Apply Insight <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg group hover:bg-surface-container-high transition-colors">
+<div class="flex gap-4 items-start">
+<div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary text-xl">verified_user</span>
+</div>
+<div>
+<h3 class="font-headline font-bold text-lg mb-1">Recovery Shield Status</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Your recovery score has increased to 740. This unlocks lower collection risk tiers and favorable restructuring terms.</p>
+<button class="mt-4 text-secondary font-bold text-sm flex items-center gap-2 group-hover:gap-3 transition-all">
+                                    View Detailed Score <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-8 border-t border-outline-variant/10">
+<div class="flex items-center gap-4 overflow-x-auto pb-2 no-scrollbar">
+<span class="text-xs text-on-surface-variant font-bold uppercase tracking-widest shrink-0">Suggested Actions:</span>
+<span class="bg-surface-container-highest px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap hover:bg-surface-bright cursor-pointer transition-colors border border-outline-variant/20">Enable Auto-Pilot Recovery</span>
+<span class="bg-surface-container-highest px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap hover:bg-surface-bright cursor-pointer transition-colors border border-outline-variant/20">Schedule Repayment Consultation</span>
+<span class="bg-surface-container-highest px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap hover:bg-surface-bright cursor-pointer transition-colors border border-outline-variant/20">Debt Snowball Analysis</span>
+</div>
+</div>
+</section>
+<aside class="md:col-span-4 flex flex-col gap-6">
+<div class="bg-surface-container-low p-6 rounded-xl">
+<h2 class="text-xl font-headline font-bold text-white mb-6">Active Loans</h2>
+<div class="space-y-6">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-sm font-headline font-bold text-white">Business Growth Fund</p>
+<p class="text-xs text-on-surface-variant mt-1">Ref: LW-99283</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-primary">$12,400</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">8.4% APR</p>
+</div>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-2/3"></div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<p class="text-sm font-headline font-bold text-white">Equipment Lease</p>
+<p class="text-xs text-on-surface-variant mt-1">Ref: LW-88120</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-primary">$8,250</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">5.2% APR</p>
+</div>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-1/4"></div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<p class="text-sm font-headline font-bold text-white">Micro-Capital Loan</p>
+<p class="text-xs text-on-surface-variant mt-1">Ref: LW-11024</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-primary">$4,200</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">12% APR</p>
+</div>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-5/6"></div>
+</div>
+</div>
+</div>
+<div class="bg-secondary-container/20 p-6 rounded-xl border border-secondary-container/30 relative overflow-hidden group">
+<div class="relative z-10">
+<h3 class="text-secondary font-headline font-bold mb-2">Next Payment</h3>
+<p class="text-3xl font-headline font-extrabold text-white mb-4">$840.00</p>
+<div class="flex items-center gap-2 text-on-surface-variant text-sm mb-6">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+                            Due on October 14, 2024
+                        </div>
+<button class="w-full py-3 bg-secondary-container text-white rounded-lg font-bold text-sm hover:bg-[#7316ff] transition-colors">
+                            Pay Now
+                        </button>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-9xl text-white">account_balance_wallet</span>
+</div>
+</div>
+</aside>
+<section class="md:col-span-12 bg-surface-container-low p-8 rounded-xl">
+<div class="flex items-center justify-between mb-10">
+<h2 class="text-2xl font-headline font-bold text-white">Repayment Schedule</h2>
+<div class="flex gap-2">
+<button class="p-2 bg-surface-container-highest rounded-lg text-on-surface-variant hover:text-white"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="p-2 bg-surface-container-highest rounded-lg text-on-surface-variant hover:text-white"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+<div class="hidden md:block absolute top-12 left-0 w-full h-[1px] bg-gradient-to-r from-primary via-outline-variant/30 to-transparent"></div>
+<div class="relative pt-6">
+<div class="absolute top-0 left-0 w-4 h-4 rounded-full bg-primary border-4 border-surface shadow-[0_0_15px_rgba(0,221,221,0.5)]"></div>
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Oct 14</p>
+<h4 class="font-headline font-bold text-white">$840.00</h4>
+<p class="text-xs text-on-surface-variant mt-2">Scheduled Auto-pay</p>
+</div>
+<div class="relative pt-6">
+<div class="absolute top-0 left-0 w-4 h-4 rounded-full bg-outline-variant border-4 border-surface"></div>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Nov 14</p>
+<h4 class="font-headline font-bold text-on-surface-variant">$840.00</h4>
+<p class="text-xs text-on-surface-variant mt-2">Pending</p>
+</div>
+<div class="relative pt-6">
+<div class="absolute top-0 left-0 w-4 h-4 rounded-full bg-outline-variant border-4 border-surface"></div>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Dec 14</p>
+<h4 class="font-headline font-bold text-on-surface-variant">$1,200.00</h4>
+<p class="text-xs text-on-surface-variant mt-2">Adjusted Balloon Payment</p>
+</div>
+<div class="relative pt-6">
+<div class="absolute top-0 left-0 w-4 h-4 rounded-full bg-outline-variant border-4 border-surface"></div>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Jan 14</p>
+<h4 class="font-headline font-bold text-on-surface-variant">$420.00</h4>
+<p class="text-xs text-on-surface-variant mt-2">Cycle Reset</p>
+</div>
+</div>
+</section>
+<section class="md:col-span-12 flex flex-col md:flex-row gap-8 items-center bg-surface-container-high p-8 rounded-xl border border-outline-variant/10">
+<div class="w-full md:w-1/3 h-48 rounded-lg overflow-hidden relative">
+<img alt="Your Advisor" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80"/>
+<div class="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
+</div>
+<div class="flex-1">
+<span class="text-primary font-bold text-xs uppercase tracking-widest mb-2 block">Direct Support</span>
+<h2 class="text-3xl font-headline font-bold text-white mb-4">Dedicated Recovery Specialist</h2>
+<p class="text-on-surface-variant mb-6 leading-relaxed">Sarah is assigned to your account to help negotiate terms with creditors. She can provide custom AI models for your specific industry's cash flow cycles.</p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-surface-bright px-6 py-3 rounded-full text-white font-bold flex items-center gap-2 hover:bg-outline-variant transition-colors">
+<span class="material-symbols-outlined text-sm">chat_bubble</span> Chat with Sarah
+                        </button>
+<button class="px-6 py-3 rounded-full text-on-surface font-bold flex items-center gap-2 hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-sm">video_call</span> Book a Briefing
+                        </button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<footer class="w-full py-6 bg-[#0e141a] flex flex-col md:flex-row justify-between items-center px-12 border-t border-[#252b31]/30">
+<span class="font-inter text-xs uppercase tracking-widest text-[#cbc3d9]">© 2024 LendWise Recovery | System Status: Operational</span>
+<div class="flex gap-8 mt-4 md:mt-0 font-inter text-xs uppercase tracking-widest">
+<a class="text-[#cbc3d9] hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="text-[#cbc3d9] hover:text-white transition-colors" href="#">Terms of Service</a>
+<a class="text-[#cbc3d9] hover:text-white transition-colors" href="#">Security Architecture</a>
+</div>
+</footer>
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-[#0e141a] border-t border-[#252b31]/30 px-6 py-3 flex justify-between items-center z-50">
+<a class="flex flex-col items-center gap-1 text-[#00dddd]" href="borrowers.html">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+<span class="text-[10px] font-bold">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-[#cbc3d9]" href="lenders.html">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="text-[10px] font-bold">Loans</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-[#cbc3d9]" href="index.html">
+<span class="material-symbols-outlined">insights</span>
+<span class="text-[10px] font-bold">AI</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-[#cbc3d9]" href="index.html">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold">Profile</span>
+</a>
+</nav>
+</body>
+</html>

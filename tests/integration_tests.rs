@@ -3,7 +3,7 @@ use actix_web::web;
 use serde_json::json;
 use smart_loan_recovery::api::*;
 use smart_loan_recovery::config::Config;
-use smart_loan_recovery::db::Db;
+use lendwise_recovery::db::Db;
 
 #[actix_web::test]
 async fn test_user_registration() {
