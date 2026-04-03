@@ -1,6 +1,6 @@
-# Smart Loan Recovery System
+# LendWise Recovery
 
-[![Deployed on Fly.io](https://img.shields.io/badge/Deployed%20on-Fly.io-blue)](https://smart-loan-recovery.fly.dev/)
+[![Deployed on Fly.io](https://img.shields.io/badge/Deployed%20on-Fly.io-blue)](https://lendwise-recovery.fly.dev/)
 [![Rust](https://img.shields.io/badge/Rust-1.92-orange)](https://www.rust-lang.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue)](https://www.docker.com/)
 [![Rust Africa Hackathon](https://img.shields.io/badge/Built%20for-%23RustAfricaHackathon-brightgreen)](https://rust-africa-hackathon.io/)
@@ -13,7 +13,7 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
 
 ## 🌐 Live Demo
 
-**Production URL**: https://smart-loan-recovery.fly.dev/
+**Production URL**: https://lendwise-recovery.fly.dev/
 
 ## ✨ Features
 
@@ -64,7 +64,7 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd smart-loan-recovery
+   cd lendwise-recovery
    ```
 
 2. **Run locally**
@@ -172,7 +172,7 @@ fly launch
 fly deploy
 ```
 
-## 📖 User Guide
+## 📖 User Guide 
 
 ### Step-by-Step: Register for a Loan and Get Recovery Recommendations
 

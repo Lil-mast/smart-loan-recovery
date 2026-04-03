@@ -1,8 +1,8 @@
-# Smart Loan Recovery System: Development Methodology & Architecture
+# LendWise Recovery: Development Methodology & Architecture
 
 ## Executive Summary
 
-The Smart Loan Recovery System is an AI-enhanced loan recovery platform built with Rust, designed to address African fintech challenges through predictive analytics and automated recovery strategies. This document outlines the development methodology, system architecture, and technical implementation details.
+LendWise Recovery is an AI-enhanced loan recovery platform
 
 ## Development Methodology
 

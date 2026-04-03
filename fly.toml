@@ -3,7 +3,7 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'smart-loan-recovery'
+app = 'lendwise-recovery'
 primary_region = 'sin'
 
 [build]

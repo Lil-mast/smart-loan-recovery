@@ -1,6 +1,6 @@
 # Objectives: traceability and comparison
 
-How the Smart Loan Recovery System’s stated goals are reflected in this repository, and how the approach differs from common alternatives. The numbered objectives match [../PROJECT_PROPOSAL.md](../PROJECT_PROPOSAL.md).
+How the LendWise Recovery's stated goals
 
 ## Objectives (reference)
 
