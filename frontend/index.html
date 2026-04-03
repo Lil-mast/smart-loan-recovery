@@ -5,7 +5,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>LendWise Recovery | AI-Powered Lending Intelligence</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
       tailwind.config = {
@@ -79,12 +79,21 @@
               full: "9999px"
             },
             fontFamily: {
-              headline: ["Helvetica", "sans-serif"],
-              body: ["Helvetica", "sans-serif"],
-              label: ["Helvetica", "sans-serif"]
+              sans: ["Manrope", "system-ui", "sans-serif"],
+              headline: ["Manrope", "system-ui", "sans-serif"],
+              body: ["Manrope", "system-ui", "sans-serif"],
+              label: ["Manrope", "system-ui", "sans-serif"]
             },
             fontSize: {
-              base: ['20px', '1.5']
+              base: ['1.1875rem', { lineHeight: '1.7' }],
+              lg: ['1.3125rem', { lineHeight: '1.65' }],
+              xl: ['1.5rem', { lineHeight: '1.55' }],
+              '2xl': ['1.75rem', { lineHeight: '1.45' }],
+              '3xl': ['2rem', { lineHeight: '1.35' }],
+              '4xl': ['2.5rem', { lineHeight: '1.2' }],
+              '5xl': ['3rem', { lineHeight: '1.15' }],
+              '6xl': ['3.5rem', { lineHeight: '1.1' }],
+              '7xl': ['4rem', { lineHeight: '1.05' }]
             }
           }
         }
@@ -104,7 +113,9 @@
       body {
         background-color: #0e141a;
         color: #dde3ec;
-        font-family: Inter, sans-serif;
+        font-family: "Manrope", system-ui, sans-serif;
+        font-size: 1.1875rem;
+        line-height: 1.7;
       }
       /* Light mode overrides */
       .light {
@@ -127,12 +138,12 @@
       .light body { background-color: #fafbfc; color: #1a202c; }
     </style>
 </head>
-<body class="bg-background text-on-surface font-body selection:bg-primary/30 selection:text-primary-fixed">
+<body class="bg-background text-on-surface text-base font-body antialiased selection:bg-primary/30 selection:text-primary-fixed">
 <nav class="fixed top-0 w-full z-50 bg-[#0e141a]/80 backdrop-blur-xl">
   <div class="flex justify-between items-center px-8 py-4 w-full max-w-none">
     <div class="flex items-center gap-12">
       <span class="text-2xl font-black tracking-tighter text-[#00dddd]">LendWise</span>
-      <div class="hidden md:flex items-center gap-8 font-headline text-sm font-medium tracking-wide">
+      <div class="hidden md:flex items-center gap-8 font-headline text-base font-semibold tracking-wide">
         <a class="text-[#00dddd] border-b-2 border-[#00dddd] pb-1" href="index.html">Home</a>
         <button onclick="openModal('registerModal')" class="text-[#cbc3d9] hover:text-white transition-colors cursor-pointer bg-none border-none p-0">Register</button>
         <button onclick="openModal('loginModal')" class="text-[#cbc3d9] hover:text-white transition-colors cursor-pointer bg-none border-none p-0">Login</button>
@@ -158,7 +169,7 @@
       <h1 class="font-headline text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] mb-8">
         AI-Powered Recovery for the <span class="text-primary italic">Modern Lender</span>
       </h1>
-      <p class="text-on-surface-variant text-lg md:text-xl max-w-2xl mb-12 leading-relaxed">
+      <p class="text-on-surface-variant text-xl md:text-2xl max-w-2xl mb-12 leading-relaxed">
         Transform delinquency into liquidity with LendWise. Our prism-based intelligence clarifies complex data flows, ensuring maximum recovery with surgical precision.
       </p>
       <div class="flex flex-col sm:flex-row gap-6">
@@ -282,12 +293,24 @@
       <div class="mb-6">
         <label class="block text-on-surface-variant mb-2">Preferred Currency</label>
         <select id="userCurrency" class="w-full px-4 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" required>
-          <option value="USD">USD - US Dollar</option>
-          <option value="EUR">EUR - Euro</option>
-          <option value="GBP">GBP - British Pound</option>
-          <option value="JPY">JPY - Japanese Yen</option>
-          <option value="INR">INR - Indian Rupee</option>
-          <option value="AUD">AUD - Australian Dollar</option>
+          <optgroup label="Africa">
+            <option value="KES">KES — Kenyan Shilling</option>
+            <option value="NGN">NGN — Nigerian Naira</option>
+            <option value="ZAR">ZAR — South African Rand</option>
+            <option value="GHS">GHS — Ghanaian Cedi</option>
+            <option value="EGP">EGP — Egyptian Pound</option>
+            <option value="UGX">UGX — Ugandan Shilling</option>
+            <option value="TZS">TZS — Tanzanian Shilling</option>
+            <option value="XOF">XOF — West African CFA franc</option>
+          </optgroup>
+          <optgroup label="International">
+            <option value="USD">USD — US Dollar</option>
+            <option value="EUR">EUR — Euro</option>
+            <option value="GBP">GBP — British Pound</option>
+            <option value="JPY">JPY — Japanese Yen</option>
+            <option value="INR">INR — Indian Rupee</option>
+            <option value="AUD">AUD — Australian Dollar</option>
+          </optgroup>
         </select>
       </div>
       <p class="text-xs text-on-surface-variant mb-4">By registering, you'll access the borrower dashboard exclusively.</p>
@@ -309,12 +332,24 @@
       <div class="mb-6">
         <label class="block text-on-surface-variant mb-2">Currency (for real-time rates)</label>
         <select id="loginCurrency" class="w-full px-4 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" required>
-          <option value="USD">USD - US Dollar</option>
-          <option value="EUR">EUR - Euro</option>
-          <option value="GBP">GBP - British Pound</option>
-          <option value="JPY">JPY - Japanese Yen</option>
-          <option value="INR">INR - Indian Rupee</option>
-          <option value="AUD">AUD - Australian Dollar</option>
+          <optgroup label="Africa">
+            <option value="KES">KES — Kenyan Shilling</option>
+            <option value="NGN">NGN — Nigerian Naira</option>
+            <option value="ZAR">ZAR — South African Rand</option>
+            <option value="GHS">GHS — Ghanaian Cedi</option>
+            <option value="EGP">EGP — Egyptian Pound</option>
+            <option value="UGX">UGX — Ugandan Shilling</option>
+            <option value="TZS">TZS — Tanzanian Shilling</option>
+            <option value="XOF">XOF — West African CFA franc</option>
+          </optgroup>
+          <optgroup label="International">
+            <option value="USD">USD — US Dollar</option>
+            <option value="EUR">EUR — Euro</option>
+            <option value="GBP">GBP — British Pound</option>
+            <option value="JPY">JPY — Japanese Yen</option>
+            <option value="INR">INR — Indian Rupee</option>
+            <option value="AUD">AUD — Australian Dollar</option>
+          </optgroup>
         </select>
       </div>
       <p class="text-xs text-on-surface-variant mb-4">Borrower login to access your dashboard.</p>
@@ -338,12 +373,24 @@
       <div class="mb-6">
         <label class="block text-on-surface-variant mb-2\">Preferred Currency</label>
         <select id="lenderCurrency" class="w-full px-4 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" required>
-          <option value="USD">USD - US Dollar</option>
-          <option value="EUR">EUR - Euro</option>
-          <option value="GBP">GBP - British Pound</option>
-          <option value="JPY">JPY - Japanese Yen</option>
-          <option value="INR">INR - Indian Rupee</option>
-          <option value="AUD">AUD - Australian Dollar</option>
+          <optgroup label="Africa">
+            <option value="KES">KES — Kenyan Shilling</option>
+            <option value="NGN">NGN — Nigerian Naira</option>
+            <option value="ZAR">ZAR — South African Rand</option>
+            <option value="GHS">GHS — Ghanaian Cedi</option>
+            <option value="EGP">EGP — Egyptian Pound</option>
+            <option value="UGX">UGX — Ugandan Shilling</option>
+            <option value="TZS">TZS — Tanzanian Shilling</option>
+            <option value="XOF">XOF — West African CFA franc</option>
+          </optgroup>
+          <optgroup label="International">
+            <option value="USD">USD — US Dollar</option>
+            <option value="EUR">EUR — Euro</option>
+            <option value="GBP">GBP — British Pound</option>
+            <option value="JPY">JPY — Japanese Yen</option>
+            <option value="INR">INR — Indian Rupee</option>
+            <option value="AUD">AUD — Australian Dollar</option>
+          </optgroup>
         </select>
       </div>
       <div class="flex gap-4">
@@ -355,17 +402,23 @@
 </div>
 <footer class="bg-[#0e141a] w-full py-6 mt-12 border-t border-[#252b31]/30">
   <div class="flex flex-col md:flex-row justify-between items-center px-12 gap-6">
-    <div class="font-inter text-xs uppercase tracking-widest text-[#cbc3d9]">
+    <div class="font-body text-sm uppercase tracking-widest text-[#cbc3d9]">
       © 2024 LendWise Recovery | System Status: <span class="text-primary">Operational</span>
     </div>
     <div class="flex gap-8">
-      <a class="font-inter text-xs uppercase tracking-widest text-[#cbc3d9] hover:text-white transition-colors" href="#">Privacy Policy</a>
-      <a class="font-inter text-xs uppercase tracking-widest text-[#cbc3d9] hover:text-white transition-colors" href="#">Terms of Service</a>
-      <a class="font-inter text-xs uppercase tracking-widest text-[#cbc3d9] hover:text-white transition-colors" href="#">Security Architecture</a>
+      <a class="font-body text-sm uppercase tracking-widest text-[#cbc3d9] hover:text-white transition-colors" href="#">Privacy Policy</a>
+      <a class="font-body text-sm uppercase tracking-widest text-[#cbc3d9] hover:text-white transition-colors" href="#">Terms of Service</a>
+      <a class="font-body text-sm uppercase tracking-widest text-[#cbc3d9] hover:text-white transition-colors" href="#">Security Architecture</a>
     </div>
   </div>
 </footer>
 <script>
+  const API_BASE = (() => {
+    const h = window.location.hostname;
+    if (h === 'localhost' || h === '127.0.0.1') return 'http://127.0.0.1:3000';
+    return '';
+  })();
+
   // Theme toggle functionality
   function toggleTheme() {
     const html = document.documentElement;
@@ -407,7 +460,7 @@
     const currency = document.getElementById('userCurrency').value;
 
     try {
-      const response = await fetch('http://localhost:8000/users', {
+      const response = await fetch(`${API_BASE}/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, role: 'borrower', currency, created_at: new Date().toISOString() })
@@ -423,7 +476,7 @@
         alert('Registration failed. Email may already be registered.');
       }
     } catch (error) {
-      alert('Connection error: Please ensure backend is running on localhost:8000');
+      alert('Connection error: Please ensure the API is running (local dev: http://127.0.0.1:3000)');
     }
   });
 
@@ -434,7 +487,7 @@
     const currency = document.getElementById('loginCurrency').value;
 
     try {
-      const response = await fetch(`http://localhost:8000/users?email=${encodeURIComponent(email)}`);
+      const response = await fetch(`${API_BASE}/users?email=${encodeURIComponent(email)}`);
       const users = await response.json();
 
       if (users.length > 0) {
@@ -452,7 +505,7 @@
         alert('User not found. Please register first.');
       }
     } catch (error) {
-      alert('Connection error: Please ensure backend is running on localhost:8000');
+      alert('Connection error: Please ensure the API is running (local dev: http://127.0.0.1:3000)');
     }
   });
 
