@@ -137,17 +137,17 @@
     </style>
 </head>
 <body class="bg-surface text-on-surface text-base font-body antialiased selection:bg-primary/30 selection:text-primary-fixed">
-<nav class="fixed top-0 w-full z-50 bg-[#0e141a]/80 backdrop-blur-xl flex justify-between items-center px-8 py-4 max-w-none">
+<nav class="fixed top-0 w-full z-50 bg-[#0e141a]/80 backdrop-blur-xl relative flex justify-between items-center px-8 py-4 max-w-none">
 <div class="flex items-center gap-8">
 <span class="text-2xl font-black tracking-tighter text-[#00dddd] font-headline">LendWise</span>
 <div class="hidden md:flex gap-6 font-headline text-sm font-medium tracking-wide">
 <a class="text-[#cbc3d9] hover:text-white transition-colors" href="index.html">Home</a>
 <a class="text-[#00dddd] border-b-2 border-[#00dddd] pb-1" href="borrowers.html">Dashboard</a>
-<a class="text-[#cbc3d9] hover:text-white transition-colors" href="lenders.html">Lenders</a>
 <a class="text-[#cbc3d9] hover:text-white transition-colors" href="index.html">Profile</a>
 </div>
 </div>
-<div class="flex items-center gap-4">
+<div class="flex items-center gap-3 sm:gap-4">
+<button type="button" id="navLogoutBtn" class="px-4 py-2 rounded-full border border-outline-variant/30 text-[#cbc3d9] hover:text-white hover:bg-[#252b31]/50 text-sm font-bold transition-all">Logout</button>
 <button class="p-2 hover:bg-[#252b31]/50 rounded-lg transition-all scale-95 active:scale-90 duration-200">
 <span class="material-symbols-outlined text-[#cbc3d9]">notifications</span>
 </button>
@@ -161,14 +161,30 @@
 <div class="bg-gradient-to-r from-transparent via-[#252b31] to-transparent h-[1px] w-full absolute bottom-0"></div>
 </nav>
 <main class="pt-24 pb-12 px-8 max-w-7xl mx-auto min-h-screen">
+<div id="borrowerFlaggedBanner" class="hidden mb-8 rounded-2xl border border-error/40 bg-error/10 p-6 sm:p-8">
+  <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+    <span class="material-symbols-outlined text-error text-3xl shrink-0" style="font-variation-settings: 'FILL' 1;">warning</span>
+    <div class="min-w-0">
+      <h2 class="text-lg font-headline font-bold text-white mb-2">Your loan needs attention</h2>
+      <p id="borrowerFlaggedBannerText" class="text-on-surface-variant text-sm leading-relaxed mb-4"></p>
+      <p class="text-on-surface text-sm font-medium mb-3">Resolve it in three steps:</p>
+      <ol class="list-decimal list-inside text-sm text-on-surface-variant space-y-2 mb-4" id="borrowerResolutionStepsList">
+        <li><span class="text-on-surface">Contact your lender</span> (message, call, or in-person) and let them know you saw an alert in your LendWise borrower dashboard.</li>
+        <li>Ask them to open their <span class="text-primary font-semibold">lender dashboard</span> — they can see the same loan and the <span class="text-primary font-semibold">AI recovery recommendation</span> (e.g. reminder, renegotiation, or collections path).</li>
+        <li>Work with them to follow that plan: payment catch-up, revised terms, or the next step the AI suggests, so everything stays tracked in one place.</li>
+      </ol>
+      <a href="#borrowerAiGuidance" class="inline-flex items-center gap-2 text-primary font-bold text-sm hover:underline">View AI guidance for your loans <span class="material-symbols-outlined text-base">arrow_downward</span></a>
+    </div>
+  </div>
+</div>
 <header class="mb-12">
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
 <div>
 <span class="text-on-surface-variant font-label text-sm uppercase tracking-widest mb-2 block">Account Overview</span>
 <h1 class="text-5xl md:text-7xl font-headline font-extrabold tracking-tighter text-white">
-                        $24,850<span class="text-primary">.00</span>
+                        $0<span class="text-primary">.00</span>
 </h1>
-<p id="borrowerOutstandingSummary" class="text-on-surface-variant mt-2 font-medium">Total outstanding across 3 active recovery paths</p>
+<p id="borrowerOutstandingSummary" class="text-on-surface-variant mt-2 font-medium">Loading your account…</p>
 </div>
 <div class="flex gap-4">
 <button class="hero-gradient px-8 py-4 rounded-full text-on-primary font-bold font-headline shadow-lg shadow-primary/10 transition-transform active:scale-95">
@@ -181,108 +197,68 @@
 </div>
 </header>
 <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
-<section class="md:col-span-8 glass-panel p-8 rounded-xl border border-outline-variant/10">
+<section id="borrowerAiGuidance" class="md:col-span-8 glass-panel p-8 rounded-xl border border-outline-variant/10 scroll-mt-24">
 <div class="flex items-center justify-between mb-8">
 <div class="flex items-center gap-3">
 <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">psychology</span>
-<h2 class="text-2xl font-headline font-bold text-white">AI Optimization Insights</h2>
+<h2 class="text-2xl font-headline font-bold text-white">AI guidance</h2>
 </div>
-<span class="bg-secondary-container text-on-secondary-container text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-tighter">Real-time Analysis</span>
+<span id="borrowerAiBadge" class="bg-secondary-container text-on-secondary-container text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-tighter">Portfolio</span>
 </div>
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div id="aiInsightsWhenFlagged" class="hidden space-y-4"></div>
+<div id="aiInsightsWhenOk" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 <div class="bg-surface-container-low p-6 rounded-lg group hover:bg-surface-container-high transition-colors">
 <div class="flex gap-4 items-start">
 <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-<span class="material-symbols-outlined text-primary text-xl">trending_down</span>
+<span class="material-symbols-outlined text-primary text-xl">savings</span>
 </div>
 <div>
-<h3 class="font-headline font-bold text-lg mb-1">Interest Reduction Path</h3>
-<p class="text-on-surface-variant text-sm leading-relaxed">Based on your payment history, you qualify for a 1.5% APR reduction if you consolidate the Business Loan by next month.</p>
-<button class="mt-4 text-primary font-bold text-sm flex items-center gap-2 group-hover:gap-3 transition-all">
-                                    Apply Insight <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</button>
+<h3 class="font-headline font-bold text-lg mb-1">Stay ahead of flags</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">If your lender runs an overdue scan and a loan is flagged, you’ll see a red alert above with steps to contact them and follow the AI path they see on their side.</p>
 </div>
 </div>
 </div>
 <div class="bg-surface-container-low p-6 rounded-lg group hover:bg-surface-container-high transition-colors">
 <div class="flex gap-4 items-start">
 <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center shrink-0">
-<span class="material-symbols-outlined text-secondary text-xl">verified_user</span>
+<span class="material-symbols-outlined text-secondary text-xl">handshake</span>
 </div>
 <div>
-<h3 class="font-headline font-bold text-lg mb-1">Recovery Shield Status</h3>
-<p class="text-on-surface-variant text-sm leading-relaxed">Your recovery score has increased to 740. This unlocks lower collection risk tiers and favorable restructuring terms.</p>
-<button class="mt-4 text-secondary font-bold text-sm flex items-center gap-2 group-hover:gap-3 transition-all">
-                                    View Detailed Score <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</button>
+<h3 class="font-headline font-bold text-lg mb-1">Same system, two views</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">You use the borrower dashboard; your lender uses theirs. Recovery recommendations are generated for each loan so you can agree on real steps—not guesswork.</p>
 </div>
 </div>
 </div>
 </div>
 <div class="mt-8 pt-8 border-t border-outline-variant/10">
 <div class="flex items-center gap-4 overflow-x-auto pb-2 no-scrollbar">
-<span class="text-xs text-on-surface-variant font-bold uppercase tracking-widest shrink-0">Suggested Actions:</span>
-<span class="bg-surface-container-highest px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap hover:bg-surface-bright cursor-pointer transition-colors border border-outline-variant/20">Enable Auto-Pilot Recovery</span>
-<span class="bg-surface-container-highest px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap hover:bg-surface-bright cursor-pointer transition-colors border border-outline-variant/20">Schedule Repayment Consultation</span>
-<span class="bg-surface-container-highest px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap hover:bg-surface-bright cursor-pointer transition-colors border border-outline-variant/20">Debt Snowball Analysis</span>
+<span class="text-xs text-on-surface-variant font-bold uppercase tracking-widest shrink-0">When a loan is flagged:</span>
+<span class="bg-surface-container-highest px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap border border-outline-variant/20">Visit or message your lender</span>
+<span class="bg-surface-container-highest px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap border border-outline-variant/20">Ask them to match the AI recommendation</span>
+<span class="bg-surface-container-highest px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap border border-outline-variant/20">Confirm the plan in LendWise</span>
 </div>
 </div>
 </section>
 <aside class="md:col-span-4 flex flex-col gap-6">
 <div class="bg-surface-container-low p-6 rounded-xl">
 <h2 class="text-xl font-headline font-bold text-white mb-6">Active Loans</h2>
-<div class="space-y-6">
-<div class="flex justify-between items-start">
-<div>
-<p class="text-sm font-headline font-bold text-white">Business Growth Fund</p>
-<p class="text-xs text-on-surface-variant mt-1">Ref: LW-99283</p>
+<div id="activeLoansEmpty" class="text-on-surface-variant text-sm leading-relaxed">
+<p>When your lender creates a loan for your account, it will show up here.</p>
 </div>
-<div class="text-right">
-<p class="text-sm font-bold text-primary">$12,400</p>
-<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">8.4% APR</p>
+<div id="activeLoansListWrap" class="hidden space-y-6">
+<div id="activeLoansList" class="space-y-6"></div>
 </div>
 </div>
-<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
-<div class="bg-primary h-full w-2/3"></div>
-</div>
-<div class="flex justify-between items-start">
-<div>
-<p class="text-sm font-headline font-bold text-white">Equipment Lease</p>
-<p class="text-xs text-on-surface-variant mt-1">Ref: LW-88120</p>
-</div>
-<div class="text-right">
-<p class="text-sm font-bold text-primary">$8,250</p>
-<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">5.2% APR</p>
-</div>
-</div>
-<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
-<div class="bg-primary h-full w-1/4"></div>
-</div>
-<div class="flex justify-between items-start">
-<div>
-<p class="text-sm font-headline font-bold text-white">Micro-Capital Loan</p>
-<p class="text-xs text-on-surface-variant mt-1">Ref: LW-11024</p>
-</div>
-<div class="text-right">
-<p class="text-sm font-bold text-primary">$4,200</p>
-<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">12% APR</p>
-</div>
-</div>
-<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
-<div class="bg-primary h-full w-5/6"></div>
-</div>
-</div>
-</div>
-<div class="bg-secondary-container/20 p-6 rounded-xl border border-secondary-container/30 relative overflow-hidden group">
+<div id="nextPaymentSection" class="hidden bg-secondary-container/20 p-6 rounded-xl border border-secondary-container/30 relative overflow-hidden group">
 <div class="relative z-10">
-<h3 class="text-secondary font-headline font-bold mb-2">Next Payment</h3>
-<p class="text-3xl font-headline font-extrabold text-white mb-4">$840.00</p>
+<h3 class="text-secondary font-headline font-bold mb-2">Outstanding (primary loan)</h3>
+<p id="nextPaymentAmount" class="text-3xl font-headline font-extrabold text-white mb-4">—</p>
 <div class="flex items-center gap-2 text-on-surface-variant text-sm mb-6">
-<span class="material-symbols-outlined text-sm">calendar_today</span>
-                            Due on October 14, 2024
-                        </div>
-<button class="w-full py-3 bg-secondary-container text-white rounded-lg font-bold text-sm hover:bg-[#7316ff] transition-colors">
-                            Pay Now
+<span class="material-symbols-outlined text-sm">info</span>
+<span id="nextPaymentHint">Amounts reflect data from your lender.</span>
+</div>
+<button type="button" class="w-full py-3 bg-secondary-container text-white rounded-lg font-bold text-sm hover:bg-[#7316ff] transition-colors">
+                            Make a Payment
                         </button>
 </div>
 <div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
@@ -290,65 +266,17 @@
 </div>
 </div>
 </aside>
-<section class="md:col-span-12 bg-surface-container-low p-8 rounded-xl">
-<div class="flex items-center justify-between mb-10">
-<h2 class="text-2xl font-headline font-bold text-white">Repayment Schedule</h2>
-<div class="flex gap-2">
-<button class="p-2 bg-surface-container-highest rounded-lg text-on-surface-variant hover:text-white"><span class="material-symbols-outlined">chevron_left</span></button>
-<button class="p-2 bg-surface-container-highest rounded-lg text-on-surface-variant hover:text-white"><span class="material-symbols-outlined">chevron_right</span></button>
+<section id="repaymentScheduleSection" class="hidden md:col-span-12 bg-surface-container-low p-8 rounded-xl">
+<div class="mb-6">
+<h2 class="text-2xl font-headline font-bold text-white">Your loans</h2>
+<p class="text-on-surface-variant text-sm mt-2">Summary from loans your lender has linked to you.</p>
 </div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
-<div class="hidden md:block absolute top-12 left-0 w-full h-[1px] bg-gradient-to-r from-primary via-outline-variant/30 to-transparent"></div>
-<div class="relative pt-6">
-<div class="absolute top-0 left-0 w-4 h-4 rounded-full bg-primary border-4 border-surface shadow-[0_0_15px_rgba(0,221,221,0.5)]"></div>
-<p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Oct 14</p>
-<h4 class="font-headline font-bold text-white">$840.00</h4>
-<p class="text-xs text-on-surface-variant mt-2">Scheduled Auto-pay</p>
-</div>
-<div class="relative pt-6">
-<div class="absolute top-0 left-0 w-4 h-4 rounded-full bg-outline-variant border-4 border-surface"></div>
-<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Nov 14</p>
-<h4 class="font-headline font-bold text-on-surface-variant">$840.00</h4>
-<p class="text-xs text-on-surface-variant mt-2">Pending</p>
-</div>
-<div class="relative pt-6">
-<div class="absolute top-0 left-0 w-4 h-4 rounded-full bg-outline-variant border-4 border-surface"></div>
-<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Dec 14</p>
-<h4 class="font-headline font-bold text-on-surface-variant">$1,200.00</h4>
-<p class="text-xs text-on-surface-variant mt-2">Adjusted Balloon Payment</p>
-</div>
-<div class="relative pt-6">
-<div class="absolute top-0 left-0 w-4 h-4 rounded-full bg-outline-variant border-4 border-surface"></div>
-<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Jan 14</p>
-<h4 class="font-headline font-bold text-on-surface-variant">$420.00</h4>
-<p class="text-xs text-on-surface-variant mt-2">Cycle Reset</p>
-</div>
-</div>
-</section>
-<section class="md:col-span-12 flex flex-col md:flex-row gap-8 items-center bg-surface-container-high p-8 rounded-xl border border-outline-variant/10">
-<div class="w-full md:w-1/3 h-48 rounded-lg overflow-hidden relative">
-<img alt="Your Advisor" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80"/>
-<div class="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
-</div>
-<div class="flex-1">
-<span class="text-primary font-bold text-xs uppercase tracking-widest mb-2 block">Direct Support</span>
-<h2 class="text-3xl font-headline font-bold text-white mb-4">Dedicated Recovery Specialist</h2>
-<p class="text-on-surface-variant mb-6 leading-relaxed">Sarah is assigned to your account to help negotiate terms with creditors. She can provide custom AI models for your specific industry's cash flow cycles.</p>
-<div class="flex flex-wrap gap-4">
-<button class="bg-surface-bright px-6 py-3 rounded-full text-white font-bold flex items-center gap-2 hover:bg-outline-variant transition-colors">
-<span class="material-symbols-outlined text-sm">chat_bubble</span> Chat with Sarah
-                        </button>
-<button class="px-6 py-3 rounded-full text-on-surface font-bold flex items-center gap-2 hover:bg-surface-container-highest transition-colors">
-<span class="material-symbols-outlined text-sm">video_call</span> Book a Briefing
-                        </button>
-</div>
-</div>
+<div id="repaymentScheduleBody" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 </section>
 </div>
 </main>
 <footer class="w-full py-6 bg-[#0e141a] flex flex-col md:flex-row justify-between items-center px-12 border-t border-[#252b31]/30">
-<span class="font-body text-sm uppercase tracking-widest text-[#cbc3d9]">© 2024 LendWise Recovery | System Status: Operational</span>
+<span class="font-body text-sm uppercase tracking-widest text-[#cbc3d9]">© 2026 LendWise Recovery | System Status: Operational</span>
 <div class="flex gap-8 mt-4 md:mt-0 font-body text-sm uppercase tracking-widest">
 <a class="text-[#cbc3d9] hover:text-white transition-colors" href="#">Privacy Policy</a>
 <a class="text-[#cbc3d9] hover:text-white transition-colors" href="#">Terms of Service</a>
@@ -360,13 +288,9 @@
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">grid_view</span>
 <span class="text-[10px] font-bold">Dashboard</span>
 </a>
-<a class="flex flex-col items-center gap-1 text-[#cbc3d9]" href="lenders.html">
-<span class="material-symbols-outlined">account_balance_wallet</span>
-<span class="text-[10px] font-bold">Loans</span>
-</a>
 <a class="flex flex-col items-center gap-1 text-[#cbc3d9]" href="index.html">
-<span class="material-symbols-outlined">insights</span>
-<span class="text-[10px] font-bold">AI</span>
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-bold">Home</span>
 </a>
 <a class="flex flex-col items-center gap-1 text-[#cbc3d9]" href="index.html">
 <span class="material-symbols-outlined">person</span>
@@ -431,6 +355,33 @@
     'AUD': 1.52
   };
 
+  function loanStatusNorm(loan) {
+    return String(loan.status || '').toLowerCase();
+  }
+
+  function humanizeAiRecommendation(key) {
+    var k = String(key || '').toLowerCase();
+    if (k === 'send_reminder') {
+      return 'The AI suggests a structured reminder and follow-up cadence. Ask your lender what dates and amounts they’ve set so you can match them.';
+    }
+    if (k === 'renegotiate_terms') {
+      return 'The AI points toward renegotiation (payment amount, rate, or term). Visit your lender so they can propose options that fit this path.';
+    }
+    if (k === 'escalate_to_collection') {
+      return 'The model indicates a stronger recovery track. Contact your lender immediately to settle or restructure—have them show you the exact step the AI recommends.';
+    }
+    return 'Ask your lender to open this loan on their lender dashboard and read the current AI recovery recommendation with you.';
+  }
+
+  /** @returns {'flagged'|'elevated'|null} */
+  function loanAttentionKind(loan) {
+    var s = loanStatusNorm(loan);
+    if (s === 'overdue' || s === 'defaulted') return 'flagged';
+    var r = Number(loan.risk_score);
+    if (s === 'active' && Number.isFinite(r) && r >= 0.55) return 'elevated';
+    return null;
+  }
+
   async function loadBorrowerDashboard() {
     try {
       const userStr = localStorage.getItem('user');
@@ -463,14 +414,81 @@
       }
       const loans = await loansResponse.json();
 
-      var totalOutstanding = 0;
-      loans.forEach(function (loan) {
+      var flaggedLoans = loans.filter(function (l) { return loanAttentionKind(l) === 'flagged'; });
+      var elevatedLoans = loans.filter(function (l) { return loanAttentionKind(l) === 'elevated'; });
+      var bannerEl = document.getElementById('borrowerFlaggedBanner');
+      var bannerText = document.getElementById('borrowerFlaggedBannerText');
+      if (bannerEl && bannerText) {
+        if (flaggedLoans.length > 0) {
+          bannerEl.classList.remove('hidden');
+          bannerText.textContent =
+            'One or more loans were flagged when your lender (or the system) marked repayments as overdue or off-track. ' +
+            'You resolve this by working with your lender inside LendWise: they use the lender dashboard, tune the case to the AI recommendation, and you follow the agreed plan here.';
+        } else if (elevatedLoans.length > 0) {
+          bannerEl.classList.remove('hidden');
+          bannerText.textContent =
+            'At least one active loan shows elevated AI risk. You are not necessarily flagged yet—contact your lender now so they can align the account with the AI path before it becomes a formal flag.';
+        } else {
+          bannerEl.classList.add('hidden');
+        }
+      }
+
+      var aiFlag = document.getElementById('aiInsightsWhenFlagged');
+      var aiOk = document.getElementById('aiInsightsWhenOk');
+      var aiBadge = document.getElementById('borrowerAiBadge');
+      var needsGuidance = flaggedLoans.length > 0 || elevatedLoans.length > 0;
+      if (aiFlag && aiOk) {
+        if (needsGuidance) {
+          aiOk.classList.add('hidden');
+          aiFlag.classList.remove('hidden');
+          var parts = [];
+          loans.forEach(function (loan) {
+            var kind = loanAttentionKind(loan);
+            if (!kind) return;
+            var sid = String(loan.id != null ? loan.id : '').slice(0, 8);
+            var label = kind === 'flagged' ? 'Needs resolution — loan flagged' : 'Early heads-up — elevated risk';
+            var rec = humanizeAiRecommendation(loan.ai_recommendation);
+            var border = kind === 'flagged' ? 'border-error/40' : 'border-secondary/30';
+            parts.push(
+              '<div class="bg-surface-container-low p-5 rounded-xl border ' + border + '">' +
+                '<p class="text-xs font-mono text-on-surface-variant mb-1">Loan …' + sid + '</p>' +
+                '<p class="text-sm font-bold text-white mb-2">' + label + '</p>' +
+                '<p class="text-on-surface-variant text-sm leading-relaxed mb-3">' + rec + '</p>' +
+                '<p class="text-primary text-sm font-semibold">Tune with your lender: have them open their dashboard, review the AI recommendation for this loan, and agree your next step together.</p>' +
+              '</div>'
+            );
+          });
+          aiFlag.innerHTML = parts.join('');
+        } else {
+          aiOk.classList.remove('hidden');
+          aiFlag.classList.add('hidden');
+          aiFlag.innerHTML = '';
+        }
+      }
+      if (aiBadge) {
+        if (needsGuidance) {
+          aiBadge.textContent = 'Action needed';
+          aiBadge.className =
+            'bg-error/20 text-error text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-tighter';
+        } else {
+          aiBadge.textContent = 'On track';
+          aiBadge.className =
+            'bg-secondary-container text-on-secondary-container text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-tighter';
+        }
+      }
+
+      function loanOutstanding(loan) {
         var raw = loan.outstanding_amount;
         if (raw == null && loan.amount != null && loan.recovery_status != null) {
           raw = loan.amount * (1 - Number(loan.recovery_status) / 100);
         }
         var n = Number(raw);
-        if (Number.isFinite(n)) totalOutstanding += n;
+        return Number.isFinite(n) ? n : 0;
+      }
+
+      var totalOutstanding = 0;
+      loans.forEach(function (loan) {
+        totalOutstanding += loanOutstanding(loan);
       });
 
       const exchangeRate = exchangeRates[selectedCurrency] || 1;
@@ -488,9 +506,103 @@
       const summaryText = document.getElementById('borrowerOutstandingSummary');
       if (summaryText) {
         if (loans.length === 0) {
-          summaryText.textContent = 'No loans on file yet — outstanding is ' + symbol + '0. Your lender must create a loan tied to your account.';
+          summaryText.textContent = 'No loans on file yet — outstanding is ' + symbol + '0. Your lender will add a loan when ready.';
         } else {
-          summaryText.textContent = 'Total outstanding across ' + loans.length + ' loan(s) (' + selectedCurrency + ').';
+          summaryText.textContent = 'Total outstanding across ' + loans.length + ' active loan(s) (' + selectedCurrency + ').';
+        }
+      }
+
+      const emptyEl = document.getElementById('activeLoansEmpty');
+      const listWrap = document.getElementById('activeLoansListWrap');
+      const listEl = document.getElementById('activeLoansList');
+      const nextSec = document.getElementById('nextPaymentSection');
+      const nextAmt = document.getElementById('nextPaymentAmount');
+      const repSec = document.getElementById('repaymentScheduleSection');
+      const repBody = document.getElementById('repaymentScheduleBody');
+
+      if (loans.length === 0) {
+        if (emptyEl) emptyEl.classList.remove('hidden');
+        if (listWrap) listWrap.classList.add('hidden');
+        if (nextSec) nextSec.classList.add('hidden');
+        if (repSec) repSec.classList.add('hidden');
+      } else {
+        if (emptyEl) emptyEl.classList.add('hidden');
+        if (listWrap) listWrap.classList.remove('hidden');
+        if (nextSec) nextSec.classList.remove('hidden');
+        if (repSec) repSec.classList.remove('hidden');
+
+        if (listEl) {
+          listEl.innerHTML = '';
+          loans.forEach(function (loan) {
+            var pct = Number(loan.recovery_status);
+            if (!Number.isFinite(pct)) pct = 0;
+            pct = Math.max(0, Math.min(100, pct));
+            var principal = Number(loan.amount != null ? loan.amount : loan.principal) || 0;
+            var apr = Number(loan.interest_rate);
+            if (!Number.isFinite(apr)) apr = 0;
+            var oid = String(loan.id != null ? loan.id : '').slice(0, 8);
+            var att = loanAttentionKind(loan);
+            var alertBox = '';
+            if (att === 'flagged') {
+              alertBox =
+                '<div class="mt-2 text-xs text-error bg-error/10 border border-error/30 rounded-lg p-2 leading-relaxed">' +
+                '<strong>Flagged.</strong> Message or visit your lender and ask them to match the <strong>AI recommendation</strong> on their lender dashboard for this loan.</div>';
+            } else if (att === 'elevated') {
+              alertBox =
+                '<div class="mt-2 text-xs text-secondary bg-secondary-container/10 border border-secondary/25 rounded-lg p-2 leading-relaxed">' +
+                '<strong>Elevated risk.</strong> Contact your lender early so you can follow the AI-guided path before a formal flag.</div>';
+            }
+            var row = document.createElement('div');
+            row.className = 'space-y-2';
+            row.innerHTML =
+              '<div class="flex justify-between items-start">' +
+              '<div><p class="text-sm font-headline font-bold text-white">Loan</p>' +
+              '<p class="text-xs text-on-surface-variant mt-1 font-mono">ID …' + oid + '</p></div>' +
+              '<div class="text-right">' +
+              '<p class="text-sm font-bold text-primary">' + symbol + principal.toLocaleString(undefined, { maximumFractionDigits: 0 }) + '</p>' +
+              '<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">' + apr.toFixed(1) + '% APR · ' + (loan.status || '') + '</p>' +
+              '</div></div>' +
+              '<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">' +
+              '<div class="bg-primary h-full transition-all" style="width:' + pct + '%"></div></div>' +
+              alertBox;
+            listEl.appendChild(row);
+          });
+        }
+
+        if (nextAmt && loans[0]) {
+          var o0 = loanOutstanding(loans[0]) * exchangeRate;
+          if (!Number.isFinite(o0)) o0 = 0;
+          var ip = Math.floor(o0).toLocaleString();
+          var dp = String((o0 % 1).toFixed(2)).substring(2);
+          nextAmt.innerHTML = symbol + ip + '<span class="text-primary">.' + dp + '</span>';
+        }
+
+        if (repBody) {
+          repBody.innerHTML = '';
+          loans.forEach(function (loan) {
+            var o = loanOutstanding(loan) * exchangeRate;
+            if (!Number.isFinite(o)) o = 0;
+            var card = document.createElement('div');
+            card.className = 'bg-surface-container-high/60 p-4 rounded-xl border border-outline-variant/10';
+            var pid = String(loan.id != null ? loan.id : '').slice(0, 8);
+            var att2 = loanAttentionKind(loan);
+            var flagNote = '';
+            if (att2 === 'flagged') {
+              flagNote =
+                '<p class="text-xs text-error mt-3 leading-relaxed border-t border-error/20 pt-2">' +
+                '<strong>Flagged loan:</strong> reach your lender, then align on the AI recovery step they see in LendWise.</p>';
+            } else if (att2 === 'elevated') {
+              flagNote =
+                '<p class="text-xs text-secondary mt-3 leading-relaxed border-t border-secondary/20 pt-2">' +
+                '<strong>Elevated risk:</strong> schedule time with your lender to tune the plan to the AI recommendation.</p>';
+            }
+            card.innerHTML =
+              '<p class="text-xs text-on-surface-variant uppercase tracking-widest mb-1">Loan …' + pid + '</p>' +
+              '<p class="text-lg font-headline font-bold text-white">Outstanding ' + symbol + o.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</p>' +
+              '<p class="text-xs text-on-surface-variant mt-2">Status: ' + (loan.status || '—') + '</p>' +
+              flagNote;
+            repBody.appendChild(card);
+          });
         }
       }
     } catch (error) {
@@ -500,7 +612,18 @@
   }
 
   // Load dashboard when page is ready
-  document.addEventListener('DOMContentLoaded', loadBorrowerDashboard);
+  function lendwiseLogout() {
+    localStorage.removeItem('user');
+    localStorage.removeItem('lenderSession');
+    localStorage.removeItem('selectedCurrency');
+    window.location.href = 'index.html';
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const lo = document.getElementById('navLogoutBtn');
+    if (lo) lo.addEventListener('click', lendwiseLogout);
+    loadBorrowerDashboard();
+  });
 </script>
 </body>
 </html>
