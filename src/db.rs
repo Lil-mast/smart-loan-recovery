@@ -78,7 +78,7 @@ impl Db {
                 "22222222-2222-4222-8222-222222222222",
                 "Demo Lender",
                 "Lender",
-                Option::<String>::None,
+                "demo.lender@lendwise.test"
             ],
         )?;
 

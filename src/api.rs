@@ -26,12 +26,17 @@ pub struct RegisterUserReq {
 pub struct UsersQuery {
     #[serde(default)]
     email: Option<String>,
+    /// Optional filter: `borrower` or `lender` (case-insensitive).
+    #[serde(default)]
+    role: Option<String>,
 }
 
 #[derive(Deserialize)]
 pub struct LoansQuery {
     #[serde(default)]
     borrower_id: Option<String>,
+    #[serde(default)]
+    lender_id: Option<String>,
 }
 
 /// Shape expected by `frontend/borrowers.html` and `frontend/lenders.html`.
@@ -46,6 +51,8 @@ struct LoanApiJson {
     status: String,
     recovery_status: f64,
     outstanding_amount: f64,
+    risk_score: f64,
+    ai_recommendation: String,
 }
 
 fn loan_api_json(loan: &Loan) -> LoanApiJson {
@@ -57,6 +64,15 @@ fn loan_api_json(loan: &Loan) -> LoanApiJson {
     };
     let amount = loan.principal;
     let outstanding_amount = amount * (1.0 - recovery_status / 100.0);
+    let recovery = RecoveryEngine;
+    let risk_score = recovery.predict_default(loan);
+    let action = recovery.recommend_action(risk_score, 0);
+    let ai_recommendation = match action {
+        crate::recovery::RecoveryAction::SendReminder => "send_reminder",
+        crate::recovery::RecoveryAction::RenegotiateTerms => "renegotiate_terms",
+        crate::recovery::RecoveryAction::EscalateToCollection => "escalate_to_collection",
+    }
+    .to_string();
     LoanApiJson {
         id: loan.id,
         borrower_id: loan.borrower_id,
@@ -67,6 +83,8 @@ fn loan_api_json(loan: &Loan) -> LoanApiJson {
         status: format!("{:?}", loan.status).to_lowercase(),
         recovery_status,
         outstanding_amount,
+        risk_score,
+        ai_recommendation,
     }
 }
 
@@ -96,9 +114,9 @@ pub async fn register_user(
     };
 
     let email = data.email.clone().filter(|e| !e.trim().is_empty());
-    if matches!(role, UserRole::Borrower) && email.is_none() {
+    if email.is_none() {
         return Err(AppError::InvalidInput(
-            "Borrower registration requires an email".to_string(),
+            "Registration requires an email".to_string(),
         ));
     }
 
@@ -128,7 +146,12 @@ pub async fn register_user(
 
 #[derive(Deserialize)]
 pub struct LoginReq {
-    name: String,
+    /// Match legacy clients: login by display name.
+    #[serde(default)]
+    name: Option<String>,
+    /// Preferred when present: case-insensitive email match (unique).
+    #[serde(default)]
+    email: Option<String>,
 }
 
 pub async fn login(
@@ -139,15 +162,36 @@ pub async fn login(
 ) -> AppResult<ActixResult<HttpResponse>> {
     let mgr = UserManager::new(&db);
 
-    // Find user by name
-    let users = mgr.get_all_users()
-        .map_err(|e| AppError::Database(e))?;
+    let user = if let Some(ref em) = data.email {
+        let needle = em.trim();
+        if !needle.is_empty() {
+            db.find_user_by_email_ci(needle)
+                .map_err(AppError::Database)?
+        } else {
+            None
+        }
+    } else {
+        None
+    };
 
-    let user = users.into_iter()
-        .find(|u| u.name == data.name)
-        .ok_or_else(|| AppError::NotFound("User not found".to_string()))?;
+    let user = if let Some(u) = user {
+        u
+    } else {
+        let name = data
+            .name
+            .as_ref()
+            .map(|s| s.trim())
+            .filter(|s| !s.is_empty())
+            .ok_or_else(|| {
+                AppError::InvalidInput("Provide `email` or non-empty `name` to log in".to_string())
+            })?;
+        mgr.get_all_users()
+            .map_err(AppError::Database)?
+            .into_iter()
+            .find(|u| u.name == name)
+            .ok_or_else(|| AppError::NotFound("User not found".to_string()))?
+    };
 
-    // Log the user in by storing their ID in the session
     let _identity = Identity::login(&req.extensions(), user.id.to_string())?;
 
     Ok(Ok(HttpResponse::Ok().json(serde_json::json!({
@@ -201,6 +245,17 @@ pub async fn get_users(
         }
     }
 
+    if let Some(ref r) = query.role {
+        let rl = r.trim().to_ascii_lowercase();
+        if !rl.is_empty() {
+            users.retain(|u| match rl.as_str() {
+                "borrower" => matches!(u.role, UserRole::Borrower),
+                "lender" => matches!(u.role, UserRole::Lender),
+                _ => true,
+            });
+        }
+    }
+
     Ok(Ok(HttpResponse::Ok().json(users)))
 }
 
@@ -234,6 +289,10 @@ async fn create_loan(
     let lender_uuid = Uuid::parse_str(&data.lender_id)
         .map_err(|_| AppError::InvalidInput("Invalid lender UUID format".to_string()))?;
 
+    if lender_uuid != uuid {
+        return Err(AppError::InsufficientPermissions);
+    }
+
     let loan_id = tracker.create_loan(borrower_uuid, lender_uuid, data.principal, data.interest_rate, data.months)
         .map_err(|e| AppError::Database(e))?;
 
@@ -253,6 +312,15 @@ async fn get_loans(
             let uuid = Uuid::parse_str(b)
                 .map_err(|_| AppError::InvalidInput("Invalid borrower_id (expected UUID)".to_string()))?;
             loans.retain(|l| l.borrower_id == uuid);
+        }
+    }
+
+    if let Some(ref lid) = query.lender_id {
+        let l = lid.trim();
+        if !l.is_empty() {
+            let uuid = Uuid::parse_str(l)
+                .map_err(|_| AppError::InvalidInput("Invalid lender_id (expected UUID)".to_string()))?;
+            loans.retain(|loan| loan.lender_id == uuid);
         }
     }
 

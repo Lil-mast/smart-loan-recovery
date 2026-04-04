@@ -139,267 +139,115 @@
     </style>
 </head>
 <body class="bg-background text-on-surface text-base font-body antialiased selection:bg-primary selection:text-on-primary">
-<nav class="fixed top-0 w-full z-50 bg-[#0e141a]/80 backdrop-blur-xl">
-<div class="flex justify-between items-center px-8 py-4 w-full max-w-none">
-<div class="flex items-center gap-8">
-<span class="text-2xl font-black tracking-tighter text-[#00dddd]">LendWise</span>
-<div class="hidden md:flex gap-6 items-center">
-<a class="font-body text-sm font-medium tracking-wide text-[#00dddd] border-b-2 border-[#00dddd] pb-1" href="index.html">Home</a>
-<a class="font-body text-sm font-medium tracking-wide text-[#cbc3d9] hover:text-white transition-colors" href="borrowers.html">Loans</a>
-<a class="font-body text-sm font-medium tracking-wide text-[#cbc3d9] hover:text-white transition-colors" href="lenders.html">AI Insights</a>
-<a class="font-body text-sm font-medium tracking-wide text-[#cbc3d9] hover:text-white transition-colors" href="index.html">Profile</a>
-</div>
-</div>
-<div class="flex items-center gap-4">
-<button class="p-2 hover:bg-[#252b31]/50 rounded-lg transition-all scale-95 active:scale-90 duration-200">
-<span class="material-symbols-outlined text-[#cbc3d9]">notifications</span>
-</button>
-<button class="p-2 hover:bg-[#252b31]/50 rounded-lg transition-all scale-95 active:scale-90 duration-200">
-<span class="material-symbols-outlined text-[#cbc3d9]">settings</span>
-</button>
-</div>
-</div>
-<div class="bg-gradient-to-r from-transparent via-[#252b31] to-transparent h-[1px] w-full absolute bottom-0"></div>
+<nav class="fixed top-0 w-full z-50 bg-[#0e141a]/80 backdrop-blur-xl relative">
+  <div class="flex justify-between items-center px-6 sm:px-8 py-4 w-full max-w-none">
+    <div class="flex items-center gap-4">
+      <a href="index.html" class="text-2xl font-black tracking-tighter text-[#00dddd] no-underline">LendWise</a>
+      <span class="hidden sm:inline text-on-surface-variant text-sm font-medium">Lender dashboard</span>
+    </div>
+    <div class="flex items-center gap-3 sm:gap-4">
+      <a href="borrowers.html" class="hidden sm:inline text-sm text-[#cbc3d9] hover:text-white transition-colors no-underline">Borrower view</a>
+      <button type="button" id="navLogoutBtn" class="px-4 py-2 rounded-full border border-outline-variant/30 text-[#cbc3d9] hover:text-white hover:bg-[#252b31]/50 text-sm font-bold transition-all">Logout</button>
+    </div>
+  </div>
+  <div class="bg-gradient-to-r from-transparent via-[#252b31] to-transparent h-[1px] w-full absolute bottom-0 left-0 right-0"></div>
 </nav>
-<div class="flex pt-16 min-h-screen">
-<aside class="hidden lg:flex flex-col h-[calc(100vh-64px)] w-64 border-r border-[#252b31] bg-[#161c22] fixed left-0">
-<div class="flex flex-col h-full py-6">
-<div class="px-6 mb-8">
-<h3 class="text-[#00dddd] font-bold font-body">Intelligence</h3>
-<p class="text-xs text-on-surface-variant font-medium">Active Recovery</p>
-</div>
-<nav class="flex-1 space-y-1">
-<a class="flex items-center gap-3 bg-[#6305ef] text-white rounded-r-full mr-4 px-4 py-3 font-body font-semibold transition-transform duration-300 ease-in-out" href="#">
-<span class="material-symbols-outlined">grid_view</span>
-<span>Dashboard</span>
-</a>
-<a class="flex items-center gap-3 text-[#cbc3d9] px-4 py-3 hover:translate-x-1 hover:bg-[#252b31] font-body font-semibold transition-transform duration-300 ease-in-out" href="#">
-<span class="material-symbols-outlined">account_balance_wallet</span>
-<span>Portfolio</span>
-</a>
-<a class="flex items-center gap-3 text-[#cbc3d9] px-4 py-3 hover:translate-x-1 hover:bg-[#252b31] font-body font-semibold transition-transform duration-300 ease-in-out" href="#">
-<span class="material-symbols-outlined">insights</span>
-<span>Recovery Analytics</span>
-</a>
-<a class="flex items-center gap-3 text-[#cbc3d9] px-4 py-3 hover:translate-x-1 hover:bg-[#252b31] font-body font-semibold transition-transform duration-300 ease-in-out" href="#">
-<span class="material-symbols-outlined">gavel</span>
-<span>Compliance</span>
-</a>
-<a class="flex items-center gap-3 text-[#cbc3d9] px-4 py-3 hover:translate-x-1 hover:bg-[#252b31] font-body font-semibold transition-transform duration-300 ease-in-out" href="#">
-<span class="material-symbols-outlined">inventory_2</span>
-<span>Archive</span>
-</a>
-</nav>
-<div class="px-4 mt-auto space-y-4">
-<button class="w-full py-3 hero-gradient rounded-full text-on-primary font-bold text-sm shadow-lg shadow-primary/10">
-                        Generate Report
-                    </button>
-<div class="pt-4 border-t border-[#252b31]/50 space-y-1">
-<a class="flex items-center gap-3 text-[#cbc3d9] px-4 py-2 hover:text-white transition-colors text-sm" href="#">
-<span class="material-symbols-outlined text-sm">help_outline</span>
-                            Support
-                        </a>
-<a class="flex items-center gap-3 text-[#cbc3d9] px-4 py-2 hover:text-white transition-colors text-sm" href="#">
-<span class="material-symbols-outlined text-sm">terminal</span>
-                            System Log
-                        </a>
-</div>
-</div>
-</div>
-</aside>
-<main class="flex-1 lg:ml-64 p-8 lg:p-12 max-w-7xl mx-auto">
-<header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-<div>
-<div class="flex items-center gap-3 mb-2">
-<span class="bg-secondary-container/20 text-secondary px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase">Lender Status: Pro</span>
-<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-</div>
-<h1 class="font-headline text-4xl lg:text-5xl font-extrabold tracking-tight text-on-surface">Juma Owino</h1>
-<div class="flex items-center gap-3 mt-3 text-on-surface-variant bg-surface-container-low w-fit px-4 py-2 rounded-lg">
-<span class="text-xs font-mono">USER_ID: LW-992-QX-2024</span>
-<button class="hover:text-primary transition-colors flex items-center">
-<span class="material-symbols-outlined text-lg">content_copy</span>
-</button>
-</div>
-</div>
-<div class="flex items-center gap-4">
-<div class="text-right hidden md:block">
-<p class="text-xs text-on-surface-variant font-medium uppercase tracking-widest">Global Ranking</p>
-<p class="text-2xl font-headline font-bold text-primary">Top 2%</p>
-</div>
-<img alt="Juma Owino" class="w-16 h-16 rounded-2xl object-cover border-2 border-primary/20 p-1" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=80"/>
-</div>
+<main class="pt-20 px-4 sm:px-8 pb-16 max-w-7xl mx-auto min-h-screen">
+<header class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
+  <div>
+    <h1 id="lenderDisplayName" class="font-headline text-3xl sm:text-4xl font-extrabold tracking-tight text-on-surface">Lender</h1>
+    <p id="lenderDisplayUserId" class="text-xs font-mono text-on-surface-variant mt-2">—</p>
+    <p id="sessionHint" class="text-xs text-on-surface-variant mt-2 hidden">Open this app from the same origin as the API (e.g. <span class="font-mono text-primary">/app/</span>) so loan actions can use your secure session.</p>
+  </div>
+  <div class="flex flex-wrap gap-3">
+    <button type="button" id="btnNewLoan" class="px-5 py-2.5 hero-gradient rounded-full text-on-primary text-sm font-bold shadow-lg shadow-primary/10">Register new loan</button>
+    <button type="button" id="btnFlagOverdues" class="px-5 py-2.5 rounded-full border border-secondary/40 text-secondary text-sm font-bold hover:bg-secondary-container/10">Flag overdue loans</button>
+  </div>
 </header>
-<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-<div class="md:col-span-2 lg:col-span-2 bg-surface-container-low p-8 rounded-xl flex flex-col justify-between">
-<div>
-<span class="text-on-surface-variant text-xs font-bold uppercase tracking-widest block mb-1">Active Loans</span>
-<h2 class="font-headline text-5xl font-black text-on-surface mb-4">42</h2>
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+  <div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/10">
+    <span class="text-on-surface-variant text-xs font-bold uppercase tracking-widest">Loans (your book)</span>
+    <p id="statLoanCount" class="font-headline text-4xl font-black text-on-surface mt-2">—</p>
+    <p class="text-on-surface-variant text-sm mt-1">Principal in <span id="statCurrencyLabel">USD</span></p>
+  </div>
+  <div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/10">
+    <span class="text-on-surface-variant text-xs font-bold uppercase tracking-widest">Total disbursed</span>
+    <p id="statDisbursed" class="font-headline text-3xl font-black text-primary mt-2">—</p>
+  </div>
+  <div class="bg-surface-container-low p-6 rounded-xl border border-error/30">
+    <span class="text-on-surface-variant text-xs font-bold uppercase tracking-widest">High risk / overdue</span>
+    <p id="statHighRisk" class="font-headline text-4xl font-black text-error mt-2">—</p>
+    <p class="text-on-surface-variant text-xs mt-1">Risk score ≥ 45% or status overdue/defaulted</p>
+  </div>
 </div>
-<div class="space-y-4">
-<div class="flex justify-between items-end border-b border-outline-variant/15 pb-2">
-<span class="text-on-surface-variant text-sm">Total Disbursed</span>
-<span class="font-headline text-xl font-bold text-primary">$1.2M</span>
+
+<div id="aiPanel" class="glass-card p-6 sm:p-8 rounded-2xl border border-outline-variant/15 mb-8">
+  <div class="flex items-center gap-2 text-secondary mb-3">
+    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
+    <span class="font-bold text-sm tracking-widest uppercase">AI recovery &amp; risk</span>
+  </div>
+  <p id="aiSummary" class="text-on-surface text-lg font-headline font-bold mb-2">Loading portfolio signals…</p>
+  <p id="aiDetail" class="text-on-surface-variant text-sm max-w-3xl mb-4"></p>
+  <ul id="aiLoanList" class="text-sm text-on-surface-variant space-y-2 list-disc list-inside"></ul>
 </div>
-<button class="w-full py-3 bg-surface-container-high hover:bg-surface-bright transition-all rounded-lg text-primary text-sm font-bold flex items-center justify-center gap-2">
-                            View Loans <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</button>
-</div>
-</div>
-<div class="bg-surface-container-low p-8 rounded-xl flex flex-col border-l-4 border-error/50">
-<div class="mb-auto">
-<span class="text-on-surface-variant text-xs font-bold uppercase tracking-widest block mb-1">Overdue Amount</span>
-<h2 class="font-headline text-4xl font-black text-error">$14,205</h2>
-</div>
-<div class="mt-6 flex items-center gap-2 text-error text-xs font-medium">
-<span class="material-symbols-outlined text-sm">trending_up</span>
-                        +2.4% from last month
-                    </div>
-</div>
-<div class="bg-surface-container-low p-8 rounded-xl flex flex-col border-l-4 border-primary/50">
-<div class="mb-auto">
-<span class="text-on-surface-variant text-xs font-bold uppercase tracking-widest block mb-1">Recovery Rate</span>
-<h2 class="font-headline text-4xl font-black text-primary">94.2%</h2>
-</div>
-<div class="mt-6 flex items-center gap-2 text-primary text-xs font-medium">
-<span class="material-symbols-outlined text-sm">verified</span>
-                        Above platform average
-                    </div>
-</div>
-<div class="md:col-span-3 lg:col-span-4 glass-card p-8 rounded-2xl relative overflow-hidden group">
-<div class="absolute -right-20 -top-20 w-64 h-64 bg-secondary-container/10 rounded-full blur-3xl group-hover:bg-secondary-container/20 transition-all duration-700"></div>
-<div class="relative z-10">
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-<div class="flex-1">
-<div class="flex items-center gap-2 text-secondary mb-4">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
-<span class="font-body font-bold text-sm tracking-widest uppercase">AI Recovery Recommendations</span>
-</div>
-<h3 class="font-headline text-2xl lg:text-3xl font-extrabold text-on-surface leading-tight mb-4">
-                                    3 High-priority recovery paths detected for <span class="text-secondary">Portfolio Delta</span>.
-                                </h3>
-<p class="text-on-surface-variant max-w-2xl mb-8 leading-relaxed">
-                                    Our predictive prism analytics suggest automated negotiation triggers for accounts in the 30-day delinquency bucket. Estimated recovery uplift: 14%.
-                                </p>
-<div class="flex flex-wrap gap-4">
-<button class="px-8 py-3 hero-gradient rounded-full text-on-primary font-bold transition-transform active:scale-95">
-                                        Recovery Tools
-                                    </button>
-<button class="px-8 py-3 bg-surface-container-highest/50 border border-secondary/20 rounded-full text-secondary font-bold hover:bg-surface-container-highest transition-all">
-                                        Analyze Risks
-                                    </button>
-</div>
-</div>
-<div class="hidden lg:grid grid-cols-2 gap-4 w-1/3">
-<div class="bg-surface-container-highest/40 p-4 rounded-xl backdrop-blur-md border border-outline-variant/10">
-<p class="text-[10px] text-secondary font-bold uppercase mb-2">Confidence</p>
-<p class="text-2xl font-headline font-black text-on-surface">98%</p>
-</div>
-<div class="bg-surface-container-highest/40 p-4 rounded-xl backdrop-blur-md border border-outline-variant/10">
-<p class="text-[10px] text-secondary font-bold uppercase mb-2">Automated</p>
-<p class="text-2xl font-headline font-black text-on-surface">12/15</p>
-</div>
-<div class="col-span-2 bg-secondary-container/10 p-4 rounded-xl border border-secondary/20">
-<p class="text-xs text-on-secondary-container italic">"Predictive model refreshed 4 mins ago"</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="md:col-span-3 lg:col-span-3 bg-surface-container-low rounded-xl overflow-hidden">
-<div class="px-8 py-6 border-b border-outline-variant/10 flex justify-between items-center">
-<h4 class="font-headline font-bold text-lg">Recent Loan Performance</h4>
-<span class="text-xs text-on-surface-variant">Showing last 5</span>
-</div>
-<div class="p-4">
-<table class="w-full text-left border-separate border-spacing-y-2">
-<thead>
-<tr class="text-on-surface-variant text-[10px] uppercase tracking-widest">
-<th class="px-4 py-2 font-bold">Borrower</th>
-<th class="px-4 py-2 font-bold">Amount</th>
-<th class="px-4 py-2 font-bold">Status</th>
-<th class="px-4 py-2 font-bold">Health</th>
-<th class="px-4 py-2 font-bold text-right">Action</th>
-</tr>
-</thead>
-<tbody>
-<tr class="bg-surface-container-high/40 hover:bg-surface-container-high transition-colors rounded-lg group">
-<td class="px-4 py-4 rounded-l-lg">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">SK</div>
-<span class="text-sm font-semibold">Sarah Kimani</span>
-</div>
-</td>
-<td class="px-4 py-4 text-sm font-mono">$4,200</td>
-<td class="px-4 py-4">
-<span class="px-2 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase">Current</span>
-</td>
-<td class="px-4 py-4">
-<div class="w-24 h-1 bg-surface-container-highest rounded-full overflow-hidden">
-<div class="w-[90%] h-full bg-primary"></div>
-</div>
-</td>
-<td class="px-4 py-4 text-right rounded-r-lg">
-<button class="text-on-surface-variant hover:text-white transition-colors">
-<span class="material-symbols-outlined text-lg">more_vert</span>
-</button>
-</td>
-</tr>
-<tr class="bg-surface-container-high/40 hover:bg-surface-container-high transition-colors rounded-lg group">
-<td class="px-4 py-4 rounded-l-lg">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-error/10 flex items-center justify-center text-error font-bold text-xs">RM</div>
-<span class="text-sm font-semibold">Robert Mutua</span>
-</div>
-</td>
-<td class="px-4 py-4 text-sm font-mono">$1,850</td>
-<td class="px-4 py-4">
-<span class="px-2 py-1 rounded-full bg-error/10 text-error text-[10px] font-bold uppercase">Overdue</span>
-</td>
-<td class="px-4 py-4">
-<div class="w-24 h-1 bg-surface-container-highest rounded-full overflow-hidden">
-<div class="w-[35%] h-full bg-error"></div>
-</div>
-</td>
-<td class="px-4 py-4 text-right rounded-r-lg">
-<button class="text-on-surface-variant hover:text-white transition-colors">
-<span class="material-symbols-outlined text-lg">more_vert</span>
-</button>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="lg:col-span-1 bg-surface-container-low rounded-xl p-8 flex flex-col">
-<h4 class="font-headline font-bold text-lg mb-6">System Health</h4>
-<div class="space-y-6 flex-1">
-<div class="flex items-center justify-between">
-<span class="text-xs text-on-surface-variant font-medium">Auto-Recovery</span>
-<span class="text-xs text-primary font-bold">ACTIVE</span>
-</div>
-<div class="flex items-center justify-between">
-<span class="text-xs text-on-surface-variant font-medium">Compliance API</span>
-<span class="text-xs text-primary font-bold">ONLINE</span>
-</div>
-<div class="flex items-center justify-between">
-<span class="text-xs text-on-surface-variant font-medium">Data Integrity</span>
-<span class="text-xs text-primary font-bold">99.9%</span>
-</div>
-</div>
-<div class="mt-8 pt-6 border-t border-outline-variant/10">
-<p class="text-[10px] text-on-surface-variant leading-relaxed">
-                            All recovery actions are logged and encrypted using LendWise Protocol v4.2. Secure session active.
-                        </p>
-</div>
-</div>
+
+<div class="bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/10">
+  <div class="px-6 py-4 border-b border-outline-variant/10 flex flex-wrap justify-between items-center gap-2">
+    <h2 class="font-headline font-bold text-lg">Your loans</h2>
+    <span id="loansTableHint" class="text-xs text-on-surface-variant"></span>
+  </div>
+  <div class="overflow-x-auto p-4">
+    <table class="w-full text-left text-sm min-w-[720px]">
+      <thead>
+        <tr class="text-on-surface-variant text-[10px] uppercase tracking-widest border-b border-outline-variant/20">
+          <th class="px-3 py-2 font-bold">Borrower</th>
+          <th class="px-3 py-2 font-bold">Principal</th>
+          <th class="px-3 py-2 font-bold">Status</th>
+          <th class="px-3 py-2 font-bold">Risk</th>
+          <th class="px-3 py-2 font-bold">AI action</th>
+          <th class="px-3 py-2 font-bold text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="lenderLoansTbody"></tbody>
+    </table>
+    <p id="loansEmpty" class="text-on-surface-variant text-sm py-8 text-center hidden">No loans yet. Register a borrower in the app, then add a loan here.</p>
+  </div>
 </div>
 </main>
+
+<div id="newLoanModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] hidden p-4">
+  <div class="bg-surface border border-outline-variant/20 rounded-2xl w-full max-w-md p-6 shadow-xl">
+    <h3 class="text-xl font-bold text-on-surface mb-1">Register a loan</h3>
+    <p class="text-on-surface-variant text-sm mb-4">Creates a loan for a borrower already registered in the system.</p>
+    <form id="newLoanForm" class="space-y-4">
+      <div>
+        <label class="block text-on-surface-variant text-sm mb-1">Borrower</label>
+        <select id="newLoanBorrower" class="w-full px-3 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" required></select>
+      </div>
+      <div>
+        <label class="block text-on-surface-variant text-sm mb-1">Principal</label>
+        <input type="number" id="newLoanPrincipal" step="0.01" min="1" class="w-full px-3 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" required placeholder="e.g. 10000"/>
+      </div>
+      <div>
+        <label class="block text-on-surface-variant text-sm mb-1">Interest rate (% annual)</label>
+        <input type="number" id="newLoanRate" step="0.1" min="0" class="w-full px-3 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" required placeholder="e.g. 8.5"/>
+      </div>
+      <div>
+        <label class="block text-on-surface-variant text-sm mb-1">Term (months)</label>
+        <input type="number" id="newLoanMonths" step="1" min="1" max="360" class="w-full px-3 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" required value="12"/>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="button" id="newLoanCancel" class="flex-1 py-2 border border-outline-variant rounded-lg text-on-surface">Cancel</button>
+        <button type="submit" class="flex-1 py-2 bg-primary text-on-primary rounded-lg font-bold">Create loan</button>
+      </div>
+    </form>
+  </div>
 </div>
 <footer class="bg-[#0e141a] w-full py-6 mt-12">
 <div class="flex flex-col md:flex-row justify-between items-center px-12 border-t border-[#252b31]/30 pt-8">
 <p class="font-body text-sm uppercase tracking-widest text-[#cbc3d9] mb-4 md:mb-0">
-                © 2024 LendWise Recovery | System Status: Operational
+                © 2026 LendWise Recovery | System Status: Operational
             </p>
 <div class="flex gap-8">
 <a class="font-body text-sm uppercase tracking-widest text-[#cbc3d9] hover:text-white transition-colors" href="#">Privacy Policy</a>
@@ -466,76 +314,355 @@
     'AUD': 1.52
   };
 
+  function isValidUuid(id) {
+    return typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+  }
+
+  let dashboardLender = null;
+
+  function aiActionLabel(key) {
+    const k = String(key == null ? '' : key).trim();
+    const low = k.toLowerCase();
+    if (low === 'send_reminder' || k === 'SendReminder') return 'Send reminder';
+    if (low === 'renegotiate_terms' || k === 'RenegotiateTerms') return 'Renegotiate';
+    if (low === 'escalate_to_collection' || k === 'EscalateToCollection') return 'Escalate';
+    return k || '—';
+  }
+
+  async function ensureAuthSession(lender) {
+    const payload = {};
+    if (lender.email && String(lender.email).trim()) payload.email = String(lender.email).trim();
+    else if (lender.name) payload.name = lender.name;
+    else return false;
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      return data && (data.role === 'lender' || data.user_id);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function closeNewLoanModal() {
+    const m = document.getElementById('newLoanModal');
+    if (m) m.classList.add('hidden');
+  }
+
+  async function openNewLoanModal() {
+    if (!dashboardLender) return;
+    const sessionHint = document.getElementById('sessionHint');
+    const ok = await ensureAuthSession(dashboardLender);
+    if (!ok) {
+      if (sessionHint) sessionHint.classList.remove('hidden');
+      alert(
+        'Could not start a secure browser session for loan actions. Open the app from the API host (e.g. http://127.0.0.1:3000/app/lenders.html) while logged in as a lender, not as a raw file URL.'
+      );
+      return;
+    }
+    if (sessionHint) sessionHint.classList.add('hidden');
+
+    const sel = document.getElementById('newLoanBorrower');
+    if (!sel) return;
+    try {
+      const res = await fetch(`${API_BASE}/users?role=borrower`, { credentials: 'include' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const users = await res.json();
+      sel.innerHTML = '';
+      const opt0 = document.createElement('option');
+      opt0.value = '';
+      opt0.textContent = users.length ? 'Select borrower…' : 'No borrowers in system';
+      opt0.disabled = !users.length;
+      opt0.selected = true;
+      sel.appendChild(opt0);
+      users.forEach(function (u) {
+        const o = document.createElement('option');
+        o.value = String(u.id);
+        o.textContent = (u.name || 'Borrower') + (u.email ? ' · ' + u.email : '');
+        sel.appendChild(o);
+      });
+    } catch (e) {
+      alert('Could not load borrowers. Is the API running?');
+      return;
+    }
+
+    const modal = document.getElementById('newLoanModal');
+    if (modal) modal.classList.remove('hidden');
+  }
+
   async function loadLenderDashboard() {
     try {
-      // Get lender session from localStorage
       const lenderStr = localStorage.getItem('lenderSession');
-      const lender = lenderStr ? JSON.parse(lenderStr) : null;
+      let lender = null;
+      try {
+        lender = lenderStr ? JSON.parse(lenderStr) : null;
+      } catch (_) {
+        lender = null;
+      }
       const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
 
-      if (!lender || !lender.lenderId) {
-        window.location.href = 'index.html';
-        return;
-      }
-
-      // Verify lender ID format
-      const validIds = [];
-      const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
-      for (let letter of letters) {
-        validIds.push('123' + letter);
-      }
-
-      if (!validIds.includes(lender.lenderId.toUpperCase())) {
+      if (!lender || !isValidUuid(lender.id)) {
         localStorage.removeItem('lenderSession');
         window.location.href = 'index.html';
         return;
       }
 
-      // Fetch all loans from the system
-      const loansResponse = await fetch(`${API_BASE}/loans`);
+      dashboardLender = lender;
+
+      const nameEl = document.getElementById('lenderDisplayName');
+      const idEl = document.getElementById('lenderDisplayUserId');
+      const curLabel = document.getElementById('statCurrencyLabel');
+      if (nameEl) nameEl.textContent = lender.name || 'Lender';
+      if (idEl) idEl.textContent = 'USER_ID: ' + lender.id;
+      if (curLabel) curLabel.textContent = selectedCurrency;
+
+      const lid = encodeURIComponent(lender.id);
+      const loansResponse = await fetch(`${API_BASE}/loans?lender_id=${lid}`);
       if (!loansResponse.ok) {
         console.error('Loans API HTTP', loansResponse.status);
         return;
       }
       const loans = await loansResponse.json();
 
-      // Calculate portfolio metrics
-      let totalPortfolio = 0;
-      let totalRecovered = 0;
-      let activeLoans = 0;
+      const symbol = currencySymbols[selectedCurrency] || '$';
+      const ex = exchangeRates[selectedCurrency] || 1;
 
-      loans.forEach(loan => {
-        const loanAmount = loan.amount || 0;
-        totalPortfolio += loanAmount;
-        const recovery = (loanAmount * (loan.recovery_status / 100)) || 0;
-        totalRecovered += recovery;
-        if (loan.recovery_status < 100) activeLoans++;
+      let totalPrincipal = 0;
+      let highRisk = 0;
+      loans.forEach(function (loan) {
+        const amt = Number(loan.amount != null ? loan.amount : loan.principal) || 0;
+        totalPrincipal += amt;
+        const st = String(loan.status || '').toLowerCase();
+        const r = Number(loan.risk_score);
+        if (st === 'overdue' || st === 'defaulted' || (Number.isFinite(r) && r >= 0.45)) highRisk += 1;
       });
 
-      const exchangeRate = exchangeRates[selectedCurrency] || 1;
-      const symbol = currencySymbols[selectedCurrency];
+      const statCount = document.getElementById('statLoanCount');
+      const statDisb = document.getElementById('statDisbursed');
+      const statHR = document.getElementById('statHighRisk');
+      if (statCount) statCount.textContent = String(loans.length);
+      if (statDisb) {
+        const v = totalPrincipal * ex;
+        statDisb.textContent = symbol + v.toLocaleString(undefined, { maximumFractionDigits: 0 });
+      }
+      if (statHR) statHR.textContent = String(highRisk);
 
-      // Update portfolio value
-      const portfolioValue = (totalPortfolio * exchangeRate).toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+      const aiSummary = document.getElementById('aiSummary');
+      const aiDetail = document.getElementById('aiDetail');
+      const aiList = document.getElementById('aiLoanList');
+      const risky = loans.filter(function (l) {
+        const st = String(l.status || '').toLowerCase();
+        const r = Number(l.risk_score);
+        return st === 'overdue' || st === 'defaulted' || (Number.isFinite(r) && r >= 0.45);
       });
+      if (aiSummary && aiDetail && aiList) {
+        if (risky.length === 0) {
+          aiSummary.textContent = 'Portfolio risk looks manageable';
+          aiDetail.textContent =
+            'No loans are currently in the high-risk band. Run “Flag overdue loans” after due dates pass to refresh statuses.';
+          aiList.innerHTML = '';
+        } else {
+          aiSummary.textContent = risky.length + ' loan(s) need attention';
+          aiDetail.textContent =
+            'Prioritize borrowers below. Actions follow the recovery engine: reminders, renegotiation, or escalation.';
+          aiList.innerHTML = '';
+          risky.slice(0, 8).forEach(function (loan) {
+            const li = document.createElement('li');
+            const idShort = String(loan.id || '').slice(0, 8);
+            const r = Number.isFinite(Number(loan.risk_score)) ? Math.round(Number(loan.risk_score) * 100) : '—';
+            li.textContent =
+              'Loan …' + idShort + ' · risk ~' + r + '% · ' + aiActionLabel(loan.ai_recommendation);
+            aiList.appendChild(li);
+          });
+        }
+      }
 
-      const recoveredValue = (totalRecovered * exchangeRate).toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
+      const tbody = document.getElementById('lenderLoansTbody');
+      const empty = document.getElementById('loansEmpty');
+      const hint = document.getElementById('loansTableHint');
+      if (hint) hint.textContent = loans.length ? loans.length + ' loan(s)' : '';
+      if (tbody) {
+        tbody.innerHTML = '';
+        loans.forEach(function (loan) {
+          const tr = document.createElement('tr');
+          tr.className = 'border-b border-outline-variant/10';
+          const bid = String(loan.borrower_id || '').slice(0, 8);
+          const pr = Number(loan.amount != null ? loan.amount : loan.principal) || 0;
+          const rs = Number(loan.risk_score);
+          const riskPct = Number.isFinite(rs) ? Math.round(rs * 100) + '%' : '—';
+          const lidFull = String(loan.id || '');
+          tr.innerHTML =
+            '<td class="px-3 py-3 font-mono text-xs">…' +
+            bid +
+            '</td>' +
+            '<td class="px-3 py-3">' +
+            symbol +
+            pr.toLocaleString(undefined, { maximumFractionDigits: 0 }) +
+            '</td>' +
+            '<td class="px-3 py-3 capitalize">' +
+            (loan.status || '—') +
+            '</td>' +
+            '<td class="px-3 py-3">' +
+            riskPct +
+            '</td>' +
+            '<td class="px-3 py-3 text-xs">' +
+            aiActionLabel(loan.ai_recommendation) +
+            '</td>' +
+            '<td class="px-3 py-3 text-right whitespace-nowrap">' +
+            '<button type="button" class="text-primary text-xs font-bold hover:underline mr-2" data-ai-loan="' +
+            lidFull +
+            '">AI</button>' +
+            '</td>';
+          tbody.appendChild(tr);
+        });
 
-      // Update display elements with real data
-      console.log(`Lender ${lender.lenderId} Portal - Portfolio: ${symbol}${portfolioValue}, Recovered: ${symbol}${recoveredValue}, Active Loans: ${activeLoans}`);
-
+        tbody.querySelectorAll('[data-ai-loan]').forEach(function (btn) {
+          btn.addEventListener('click', async function () {
+            const id = btn.getAttribute('data-ai-loan');
+            if (!id || !dashboardLender) return;
+            if (!(await ensureAuthSession(dashboardLender))) {
+              alert('Session required. Open from /app/ on the API host.');
+              return;
+            }
+            try {
+              const r = await fetch(`${API_BASE}/recommend/${encodeURIComponent(id)}`, {
+                method: 'POST',
+                credentials: 'include'
+              });
+              const j = r.ok ? await r.json() : null;
+              if (!r.ok) {
+                alert('Could not load AI recommendation (HTTP ' + r.status + ').');
+                return;
+              }
+              alert(
+                'Risk score: ' +
+                  (j.risk_score != null ? Math.round(Number(j.risk_score) * 100) + '%' : '—') +
+                  '\nRecommended: ' +
+                  aiActionLabel(j.recommended_action)
+              );
+            } catch (e) {
+              alert('Request failed.');
+            }
+          });
+        });
+      }
+      if (empty) {
+        if (loans.length === 0) empty.classList.remove('hidden');
+        else empty.classList.add('hidden');
+      }
     } catch (error) {
       console.error('Error loading lender dashboard:', error);
     }
   }
 
-  // Load dashboard when page is ready
-  document.addEventListener('DOMContentLoaded', loadLenderDashboard);
+  function lendwiseLogout() {
+    localStorage.removeItem('user');
+    localStorage.removeItem('lenderSession');
+    localStorage.removeItem('selectedCurrency');
+    fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' }).catch(function () {});
+    window.location.href = 'index.html';
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const lo = document.getElementById('navLogoutBtn');
+    if (lo) lo.addEventListener('click', lendwiseLogout);
+
+    const btnNew = document.getElementById('btnNewLoan');
+    if (btnNew) btnNew.addEventListener('click', function () { openNewLoanModal(); });
+
+    const btnFlag = document.getElementById('btnFlagOverdues');
+    if (btnFlag) {
+      btnFlag.addEventListener('click', async function () {
+        if (!dashboardLender) return;
+        if (!(await ensureAuthSession(dashboardLender))) {
+          alert('Session required. Open lenders.html from http://127.0.0.1:3000/app/lenders.html (same origin as API).');
+          return;
+        }
+        try {
+          const res = await fetch(`${API_BASE}/overdues`, { method: 'POST', credentials: 'include' });
+          const j = res.ok ? await res.json() : null;
+          if (!res.ok) {
+            alert('Flag overdues failed (HTTP ' + res.status + ').');
+            return;
+          }
+          alert('Updated ' + (j.flagged_count != null ? j.flagged_count : 0) + ' loan(s) to overdue where applicable.');
+          loadLenderDashboard();
+        } catch (e) {
+          alert('Request failed.');
+        }
+      });
+    }
+
+    const modal = document.getElementById('newLoanModal');
+    if (modal) {
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeNewLoanModal();
+      });
+    }
+    const cancel = document.getElementById('newLoanCancel');
+    if (cancel) cancel.addEventListener('click', closeNewLoanModal);
+
+    const form = document.getElementById('newLoanForm');
+    if (form) {
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        if (!dashboardLender) return;
+        const borrowerId = document.getElementById('newLoanBorrower').value;
+        if (!borrowerId) {
+          alert('Choose a borrower.');
+          return;
+        }
+        const principal = parseFloat(document.getElementById('newLoanPrincipal').value, 10);
+        const interest_rate = parseFloat(document.getElementById('newLoanRate').value, 10);
+        const months = parseInt(document.getElementById('newLoanMonths').value, 10);
+        if (!Number.isFinite(principal) || principal <= 0 || !Number.isFinite(interest_rate) || !Number.isFinite(months) || months < 1) {
+          alert('Enter valid principal, rate, and term.');
+          return;
+        }
+        if (!(await ensureAuthSession(dashboardLender))) {
+          alert('Session required. Open from /app/ on the API host.');
+          return;
+        }
+        try {
+          const res = await fetch(`${API_BASE}/loans`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              borrower_id: borrowerId,
+              lender_id: dashboardLender.id,
+              principal: principal,
+              interest_rate: interest_rate,
+              months: months
+            })
+          });
+          if (!res.ok) {
+            let msg = 'Could not create loan (HTTP ' + res.status + ').';
+            try {
+              const err = await res.json();
+              if (err && err.message) msg = err.message;
+            } catch (x) {}
+            alert(msg);
+            return;
+          }
+          closeNewLoanModal();
+          form.reset();
+          document.getElementById('newLoanMonths').value = '12';
+          alert('Loan created.');
+          loadLenderDashboard();
+        } catch (err) {
+          alert('Connection error.');
+        }
+      });
+    }
+
+    loadLenderDashboard();
+  });
 </script>
 </body>
 </html>

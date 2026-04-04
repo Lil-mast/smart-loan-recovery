@@ -2,141 +2,193 @@
   {
     "id": "5bed4297-61b2-4d55-b1af-4724e391cefa",
     "name": "Alice Johnson",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "5971a327-8e85-48a5-865a-e587c567f60f",
     "name": "Bob Smith",
-    "role": "Lender"
+    "role": "lender",
+    "email": null
   },
   {
     "id": "0b1329b7-4e5c-4b6f-bd6d-856089876058",
     "name": "Alice Johnson",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "82a33eb6-e8eb-4e37-8415-00b8103f85b0",
     "name": "Bob Smith",
-    "role": "Lender"
+    "role": "lender",
+    "email": null
   },
   {
     "id": "4544ad2d-c078-47f9-bb02-215cd0553170",
     "name": "Alice Johnson",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "7325f294-8256-4766-9a35-10e77796ad98",
     "name": "Alice Johnson",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "e011db73-1286-4df7-afd7-eea32f60ec4c",
     "name": "Bob Smith",
-    "role": "Lender"
+    "role": "lender",
+    "email": null
   },
   {
     "id": "8b76fdaa-165d-402e-8e84-d05c6ffc7569",
     "name": "Test User",
-    "role": "Lender"
+    "role": "lender",
+    "email": null
   },
   {
     "id": "eaeed2d3-88f8-4862-8ac0-94da99e541af",
     "name": "Levi",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "5ed5879c-51c6-40b8-abc1-34f59de4a76d",
     "name": "Alice Johnson",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "509283de-713b-46eb-9b59-c4616f4833cf",
     "name": "Bob Smith",
-    "role": "Lender"
+    "role": "lender",
+    "email": null
   },
   {
     "id": "f34a7a50-1e30-489c-85bd-d5403bf03840",
     "name": "Mich Mwaniki",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "69149e97-0b42-415f-a2ce-fd01165a3c7b",
     "name": "Bank Corp",
-    "role": "Lender"
+    "role": "lender",
+    "email": null
   },
   {
     "id": "286c6193-6cd3-4f02-b54a-eb6403eed1e4",
     "name": "Fifi Cielo",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "0ae5fdee-5c8a-4a61-860a-9bcefe05fe51",
     "name": "NCBA bank",
-    "role": "Lender"
+    "role": "lender",
+    "email": null
   },
   {
     "id": "cfc1ba44-32fe-4940-b744-da6d89c66a95",
     "name": "Alice Johnson",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "917e00db-1f47-457a-bd20-4a021031bb11",
     "name": "Bob Smith",
-    "role": "Lender"
+    "role": "lender",
+    "email": null
   },
   {
     "id": "14c564c7-2c80-4ea8-8177-55f8b4e6ccc8",
     "name": "Test User",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "50b41b96-093f-451d-a23b-e2135741b435",
     "name": "Test User",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "75c39ac8-697d-48f1-803e-b5add04dc8fd",
     "name": "Test User",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "a02cdf86-1c90-4cf5-9998-d1739a776f4b",
     "name": "Test User",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "677fc7df-621c-49f3-98cb-b2f1e885fd20",
     "name": "Test User",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "2f18ef3c-53ad-4fe7-b5b2-250559eeb03a",
     "name": "Test User",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "2d5ad450-47a8-49fc-9e3d-edaab2488a7d",
     "name": "Test User",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "12011d33-448d-40fc-8cb1-0605d1cf837b",
     "name": "Alice Johnson",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "306e9478-8264-4240-ac31-26c2a6676999",
     "name": "Bob Smith",
-    "role": "Lender"
+    "role": "lender",
+    "email": null
   },
   {
     "id": "1185cb13-c393-4f3d-b9c4-bf843fffd43d",
     "name": "Alice Johnson",
-    "role": "Borrower"
+    "role": "borrower",
+    "email": null
   },
   {
     "id": "9fab3b80-4153-463e-84e6-4f58714d6190",
     "name": "Bob Smith",
-    "role": "Lender"
+    "role": "lender",
+    "email": null
+  },
+  {
+    "id": "384ccc61-65fe-4bd6-a5d8-957025d2640e",
+    "name": "Noel",
+    "role": "lender",
+    "email": null
+  },
+  {
+    "id": "3516f98c-a1e7-409b-a269-fc171da3248c",
+    "name": "Neol",
+    "role": "borrower",
+    "email": null
+  },
+  {
+    "id": "ec2d6ff9-2213-4548-a1bf-6094a1579a15",
+    "name": "Alice Johnson",
+    "role": "borrower",
+    "email": null
+  },
+  {
+    "id": "28c8a37b-3042-4759-adc1-301f0bf15f5d",
+    "name": "Bob Smith",
+    "role": "lender",
+    "email": null
   }
 ]

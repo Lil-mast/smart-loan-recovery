@@ -44,12 +44,20 @@ pub trait RiskScorable {
 }
 
 impl RiskScorable for Loan {
+    /// Score in [0, 1]: higher means higher predicted default / recovery difficulty.
     fn calculate_risk_score(&self) -> f64 {
-        // Simple rule: higher if overdue
-        if let LoanStatus::Overdue = self.status {
-            0.8 // High risk
+        let status_base: f64 = match self.status {
+            LoanStatus::Defaulted => 0.92,
+            LoanStatus::Overdue => 0.78,
+            LoanStatus::Repaid => 0.06,
+            LoanStatus::Active => 0.22,
+        };
+        // Slightly lift risk for high coupon active loans (demo heuristic)
+        let rate_bump: f64 = if matches!(self.status, LoanStatus::Active) && self.interest_rate > 15.0 {
+            0.12
         } else {
-            0.2 // Low risk
-        }
+            0.0
+        };
+        f64::min(status_base + rate_bump, 0.99)
     }
 }
