@@ -67,11 +67,14 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
    cd lendwise-recovery
    ```
 
-2. **Run locally**
+2. **Run the backend** (from the repository root so `frontend/` is found for `/app/`)
    ```bash
    cargo run
    ```
-   The server will start on `http://127.0.0.1:3000`
+   - API root: `http://127.0.0.1:3000` (JSON status at `GET /`)
+   - **Web UI (recommended):** `http://127.0.0.1:3000/app/` — same origin as the API
+   - Optional: `RUST_LOG=info cargo run` for request logs
+   - Ensure `.env` does not set `SESSION_SECRET` to an empty value (or omit it to use the built-in dev default)
 
 3. **Run with Docker**
    ```bash

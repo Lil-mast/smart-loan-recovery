@@ -4,7 +4,9 @@ COPY . .
 RUN cargo build --release
 
 FROM debian:bookworm-slim
-COPY --from=builder /app/target/release/smart-loan-recovery /usr/local/bin/
+COPY --from=builder /app/target/release/lendwise-recovery /usr/local/bin/
+COPY --from=builder /app/frontend /usr/local/share/lendwise-frontend
 EXPOSE 3000
 ENV SERVER_HOST=0.0.0.0
-CMD ["smart-loan-recovery"]
+ENV FRONTEND_DIR=/usr/local/share/lendwise-frontend
+CMD ["lendwise-recovery"]

@@ -168,7 +168,7 @@
 <h1 class="text-5xl md:text-7xl font-headline font-extrabold tracking-tighter text-white">
                         $24,850<span class="text-primary">.00</span>
 </h1>
-<p class="text-on-surface-variant mt-2 font-medium">Total outstanding across 3 active recovery paths</p>
+<p id="borrowerOutstandingSummary" class="text-on-surface-variant mt-2 font-medium">Total outstanding across 3 active recovery paths</p>
 </div>
 <div class="flex gap-4">
 <button class="hero-gradient px-8 py-4 rounded-full text-on-primary font-bold font-headline shadow-lg shadow-primary/10 transition-transform active:scale-95">
@@ -375,8 +375,23 @@
 </nav>
 <script>
   const API_BASE = (() => {
+    const o = localStorage.getItem('LENDWISE_API_BASE');
+    if (o && o.trim()) return o.replace(/\/$/, '');
+    const p = window.location.pathname || '';
+    if (p === '/app' || p.startsWith('/app/')) return '';
     const h = window.location.hostname;
-    if (h === 'localhost' || h === '127.0.0.1') return 'http://127.0.0.1:3000';
+    const proto = window.location.protocol;
+    const port = window.location.port;
+    if (proto === 'http:' && port === '3000') return '';
+    if (proto === 'https:' && (port === '' || port === '443')) return '';
+    if (
+      proto === 'file:' ||
+      !h ||
+      h === 'localhost' ||
+      h === '127.0.0.1'
+    ) {
+      return 'http://127.0.0.1:3000';
+    }
     return '';
   })();
 
@@ -418,7 +433,6 @@
 
   async function loadBorrowerDashboard() {
     try {
-      // Get user from localStorage
       const userStr = localStorage.getItem('user');
       const user = userStr ? JSON.parse(userStr) : null;
       const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
@@ -428,46 +442,60 @@
         return;
       }
 
-      // Update user name display
-      const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+      const displayName = (user.name && String(user.name).trim()) || (user.email && String(user.email).trim()) || 'Member';
+      const parts = displayName.split(/\s+/).filter(Boolean);
+      const initials = (parts.length ? parts.map(function (n) { return n[0]; }).join('') : 'LW').toUpperCase().substring(0, 2);
       const userInitial = document.querySelector('.h-8.w-8');
       if (userInitial) {
-        userInitial.textContent = initials.substring(0, 2);
+        userInitial.textContent = initials;
       }
 
-      // Fetch loans for this borrower
-      const loansResponse = await fetch(`${API_BASE}/loans?borrower_id=${user.id || 'all'}`);
+      const bid = encodeURIComponent(user.id != null ? String(user.id) : 'all');
+      const loansResponse = await fetch(`${API_BASE}/loans?borrower_id=${bid}`);
+      if (!loansResponse.ok) {
+        var errMsg = 'Loans request failed (HTTP ' + loansResponse.status + ').';
+        try {
+          var ej = await loansResponse.json();
+          if (ej && ej.message) errMsg = ej.message;
+        } catch (e) {}
+        alert(errMsg);
+        return;
+      }
       const loans = await loansResponse.json();
 
-      // Calculate total outstanding
-      let totalOutstanding = 0;
-      loans.forEach(loan => {
-        totalOutstanding += (loan.outstanding_amount || loan.amount * (1 - loan.recovery_status / 100));
+      var totalOutstanding = 0;
+      loans.forEach(function (loan) {
+        var raw = loan.outstanding_amount;
+        if (raw == null && loan.amount != null && loan.recovery_status != null) {
+          raw = loan.amount * (1 - Number(loan.recovery_status) / 100);
+        }
+        var n = Number(raw);
+        if (Number.isFinite(n)) totalOutstanding += n;
       });
 
-      // Convert to selected currency
       const exchangeRate = exchangeRates[selectedCurrency] || 1;
-      const convertedTotal = totalOutstanding * exchangeRate;
-      const symbol = currencySymbols[selectedCurrency];
+      var convertedTotal = totalOutstanding * exchangeRate;
+      if (!Number.isFinite(convertedTotal)) convertedTotal = 0;
+      const symbol = currencySymbols[selectedCurrency] || '';
 
-      // Update display
       const headerValue = document.querySelector('h1.text-5xl');
       if (headerValue) {
         const intPart = Math.floor(convertedTotal).toLocaleString();
         const decPart = String((convertedTotal % 1).toFixed(2)).substring(2);
-        headerValue.innerHTML = `${symbol}${intPart}<span class="text-primary">.${decPart}</span>`;
+        headerValue.innerHTML = symbol + intPart + '<span class="text-primary">.' + decPart + '</span>';
       }
 
-      // Update loan count
-      const summaryText = document.querySelector('p.text-on-surface-variant');
+      const summaryText = document.getElementById('borrowerOutstandingSummary');
       if (summaryText) {
-        summaryText.textContent = `Total outstanding across ${loans.length} active recovery paths (${selectedCurrency})`;
+        if (loans.length === 0) {
+          summaryText.textContent = 'No loans on file yet — outstanding is ' + symbol + '0. Your lender must create a loan tied to your account.';
+        } else {
+          summaryText.textContent = 'Total outstanding across ' + loans.length + ' loan(s) (' + selectedCurrency + ').';
+        }
       }
-
-      console.log('Dashboard loaded successfully with real data');
     } catch (error) {
       console.error('Error loading dashboard:', error);
-      // Keep dummy data as fallback
+      alert('Could not load your dashboard. Open the app from /app/ with the API running, then try again.');
     }
   }
 

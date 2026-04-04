@@ -6,6 +6,8 @@ pub struct Config {
     pub server_host: String,
     pub server_port: u16,
     pub session_secret: String,
+    /// Directory containing static HTML/CSS assets (served at `/app`).
+    pub frontend_dir: String,
 }
 
 impl Config {
@@ -26,6 +28,7 @@ impl Config {
                 .parse()
                 .map_err(|_| "Invalid SERVER_PORT")?,
             session_secret,
+            frontend_dir: env::var("FRONTEND_DIR").unwrap_or_else(|_| "frontend".to_string()),
         })
     }
 

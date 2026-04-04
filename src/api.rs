@@ -1,3 +1,5 @@
+use actix_cors::Cors;
+use actix_files::Files;
 use actix_web::{web, App, HttpResponse, HttpServer, HttpRequest, HttpMessage, Result as ActixResult, middleware::Logger};
 use actix_identity::{Identity, IdentityMiddleware};
 use actix_web::cookie::Key;
@@ -6,7 +8,7 @@ use crate::db::Db;
 use crate::user::UserManager;
 use crate::loan::LoanTracker;
 use crate::recovery::RecoveryEngine;
-use crate::models::UserRole;
+use crate::models::{Loan, LoanStatus, UserRole};
 use crate::config::Config;
 use crate::error::{AppError, AppResult};
 use serde::{Deserialize, Serialize};
@@ -15,12 +17,57 @@ use uuid::Uuid;
 #[derive(Deserialize)]
 pub struct RegisterUserReq {
     name: String,
-    role: String,  // "borrower" or "lender"
+    role: String, // "borrower" or "lender"
+    #[serde(default)]
+    email: Option<String>,
 }
 
+#[derive(Deserialize)]
+pub struct UsersQuery {
+    #[serde(default)]
+    email: Option<String>,
+}
+
+#[derive(Deserialize)]
+pub struct LoansQuery {
+    #[serde(default)]
+    borrower_id: Option<String>,
+}
+
+/// Shape expected by `frontend/borrowers.html` and `frontend/lenders.html`.
 #[derive(Serialize)]
-struct RegisterUserRes {
+struct LoanApiJson {
     id: Uuid,
+    borrower_id: Uuid,
+    lender_id: Uuid,
+    principal: f64,
+    amount: f64,
+    interest_rate: f64,
+    status: String,
+    recovery_status: f64,
+    outstanding_amount: f64,
+}
+
+fn loan_api_json(loan: &Loan) -> LoanApiJson {
+    let recovery_status = match loan.status {
+        LoanStatus::Repaid => 100.0,
+        LoanStatus::Active => 42.0,
+        LoanStatus::Overdue => 28.0,
+        LoanStatus::Defaulted => 12.0,
+    };
+    let amount = loan.principal;
+    let outstanding_amount = amount * (1.0 - recovery_status / 100.0);
+    LoanApiJson {
+        id: loan.id,
+        borrower_id: loan.borrower_id,
+        lender_id: loan.lender_id,
+        principal: loan.principal,
+        amount,
+        interest_rate: loan.interest_rate,
+        status: format!("{:?}", loan.status).to_lowercase(),
+        recovery_status,
+        outstanding_amount,
+    }
 }
 
 #[derive(Deserialize)]
@@ -48,10 +95,35 @@ pub async fn register_user(
         _ => return Err(AppError::InvalidInput("Role must be 'borrower' or 'lender'".to_string())),
     };
 
-    let user_id = mgr.register_user(data.name.clone(), role)
-        .map_err(|e| AppError::Database(e))?;
+    let email = data.email.clone().filter(|e| !e.trim().is_empty());
+    if matches!(role, UserRole::Borrower) && email.is_none() {
+        return Err(AppError::InvalidInput(
+            "Borrower registration requires an email".to_string(),
+        ));
+    }
 
-    Ok(Ok(HttpResponse::Ok().json(RegisterUserRes { id: user_id })))
+    if let Some(ref em) = email {
+        if db
+            .find_user_by_email_ci(em)
+            .map_err(AppError::Database)?
+            .is_some()
+        {
+            return Err(AppError::InvalidInput(
+                "Email already registered".to_string(),
+            ));
+        }
+    }
+
+    let user_id = mgr
+        .register_user(data.name.clone(), email.clone(), role)
+        .map_err(AppError::Database)?;
+
+    let user = mgr
+        .get_user(user_id)
+        .map_err(AppError::Database)?
+        .ok_or_else(|| AppError::NotFound("User not found after insert".to_string()))?;
+
+    Ok(Ok(HttpResponse::Ok().json(user)))
 }
 
 #[derive(Deserialize)]
@@ -110,10 +182,24 @@ async fn get_current_user(
     Err(AppError::AuthRequired)
 }
 
-pub async fn get_users(db: web::Data<Db>) -> AppResult<ActixResult<HttpResponse>> {
+pub async fn get_users(
+    query: web::Query<UsersQuery>,
+    db: web::Data<Db>,
+) -> AppResult<ActixResult<HttpResponse>> {
     let mgr = UserManager::new(&db);
-    let users = mgr.get_all_users()
-        .map_err(|e| AppError::Database(e))?;
+    let mut users = mgr.get_all_users().map_err(AppError::Database)?;
+
+    if let Some(ref em) = query.email {
+        let needle = em.trim();
+        if !needle.is_empty() {
+            users.retain(|u| {
+                u.email
+                    .as_ref()
+                    .map(|e| e.trim().eq_ignore_ascii_case(needle))
+                    .unwrap_or(false)
+            });
+        }
+    }
 
     Ok(Ok(HttpResponse::Ok().json(users)))
 }
@@ -154,12 +240,24 @@ async fn create_loan(
     Ok(Ok(HttpResponse::Ok().json(CreateLoanRes { id: loan_id })))
 }
 
-async fn get_loans(db: web::Data<Db>) -> AppResult<ActixResult<HttpResponse>> {
+async fn get_loans(
+    query: web::Query<LoansQuery>,
+    db: web::Data<Db>,
+) -> AppResult<ActixResult<HttpResponse>> {
     let tracker = LoanTracker::new(&db);
-    let loans = tracker.get_all_loans()
-        .map_err(|e| AppError::Database(e))?;
+    let mut loans = tracker.get_all_loans().map_err(AppError::Database)?;
 
-    Ok(Ok(HttpResponse::Ok().json(loans)))
+    if let Some(ref bid) = query.borrower_id {
+        let b = bid.trim();
+        if !b.is_empty() && b != "all" {
+            let uuid = Uuid::parse_str(b)
+                .map_err(|_| AppError::InvalidInput("Invalid borrower_id (expected UUID)".to_string()))?;
+            loans.retain(|l| l.borrower_id == uuid);
+        }
+    }
+
+    let payload: Vec<LoanApiJson> = loans.iter().map(loan_api_json).collect();
+    Ok(Ok(HttpResponse::Ok().json(payload)))
 }
 
 async fn flag_overdues(
@@ -221,10 +319,23 @@ async fn recommend_action(
 
 pub async fn run_server(config: Config) -> std::io::Result<()> {
     log::info!("🚀 Smart Loan Recovery Server starting at http://{}", config.server_addr());
+    log::info!(
+        "Web UI (same-origin, avoids CORS): http://{}/app/",
+        config.server_addr()
+    );
+
+    let fe = std::path::Path::new(&config.frontend_dir);
+    if !fe.is_dir() {
+        log::warn!(
+            "FRONTEND_DIR {:?} is not a directory — GET /app/ will fail. Run `cargo run` from the repo root or set FRONTEND_DIR.",
+            fe
+        );
+    }
 
     log::info!("Server configured successfully");
 
     let _config_clone = config.clone();
+    let frontend_dir = _config_clone.frontend_dir.clone();
     HttpServer::new(move || {
         // Create a new DB connection for each worker
         let db = match Db::new_with_path(&_config_clone.database_url) {
@@ -249,12 +360,21 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
             .wrap(IdentityMiddleware::default())
             .wrap(session_middleware)
             .wrap(Logger::default())
+            // Outermost: must run first so OPTIONS / cross-origin work before session touches the request
+            .wrap(
+                Cors::default()
+                    .allow_any_origin()
+                    .allow_any_method()
+                    .allow_any_header()
+                    .max_age(3600),
+            )
             // Public routes
             .route("/", web::get().to(|| async {
                 Ok::<_, AppError>(HttpResponse::Ok().json(serde_json::json!({
                     "message": "Smart Loan Recovery API is running!",
                     "version": "1.0.0",
                     "endpoints": {
+                        "ui": ["/app/", "/app/index.html"],
                         "auth": ["/auth/login", "/auth/logout", "/auth/me"],
                         "users": ["/users"],
                         "loans": ["/loans"],
@@ -263,6 +383,11 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
                 })))
             }))
             .route("/test", web::post().to(|| async { HttpResponse::Ok().body("POST test successful!") }))
+            .service(
+                Files::new("/app", frontend_dir.clone())
+                    .index_file("index.html")
+                    .prefer_utf8(true),
+            )
             // Auth routes
             .service(
                 web::scope("/auth")

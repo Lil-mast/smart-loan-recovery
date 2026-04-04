@@ -12,9 +12,14 @@ impl<'a> UserManager<'a> {
         UserManager { db }
     }
 
-    pub fn register_user(&self, name: String, role: UserRole) -> Result<Uuid> {
+    pub fn register_user(&self, name: String, email: Option<String>, role: UserRole) -> Result<Uuid> {
         let id = Uuid::new_v4();
-        let user = User { id, name, role };
+        let user = User {
+            id,
+            name,
+            role,
+            email,
+        };
         self.db.save_user(&user)?;
         Ok(id)
     }
