@@ -7,6 +7,7 @@ use lendwise_recovery::db::Db;
 
 #[actix_web::test]
 async fn test_user_registration() {
+    let unique_mail = format!("test.user.{}@example.com", uuid::Uuid::new_v4());
     // Initialize database for testing
     let db = Db::new_with_path("test_loans.db").expect("Failed to create test database");
 
@@ -22,7 +23,8 @@ async fn test_user_registration() {
         .uri("/users")
         .set_json(&json!({
             "name": "Test User",
-            "role": "borrower"
+            "role": "borrower",
+            "email": unique_mail
         }))
         .to_request();
 
@@ -31,6 +33,7 @@ async fn test_user_registration() {
 
     let body: serde_json::Value = test::read_body_json(resp).await;
     assert!(body.get("id").is_some());
+    assert_eq!(body.get("email").and_then(|e| e.as_str()), Some(unique_mail.as_str()));
 }
 
 #[actix_web::test]

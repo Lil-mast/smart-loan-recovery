@@ -1,6 +1,6 @@
 use rusqlite::{Connection, Result, params};
 use crate::models::{User, UserRole, Loan, LoanStatus};
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Duration, Utc};
 use uuid::Uuid;
 use std::fs;
 use std::path::Path;
@@ -26,6 +26,8 @@ impl Db {
             [],
         )?;
 
+        Self::migrate_users_email_column(conn)?;
+
         conn.execute(
             "CREATE TABLE IF NOT EXISTS loans (
                 id TEXT PRIMARY KEY,
@@ -41,34 +43,115 @@ impl Db {
             )",
             [],
         )?;
+
+        Self::seed_demo_if_no_loans(conn)?;
+
         Ok(())
+    }
+
+    /// One sample borrower + lender + loan so `/app/` login works without a separate lender API flow.
+    fn seed_demo_if_no_loans(conn: &Connection) -> Result<()> {
+        let n: i64 = conn.query_row("SELECT COUNT(*) FROM loans", [], |r| r.get(0))?;
+        if n > 0 {
+            return Ok(());
+        }
+
+        let now = Utc::now();
+        let schedule = serde_json::to_string(&vec![now + Duration::days(30), now + Duration::days(60)])
+            .map_err(|e| {
+                rusqlite::Error::ToSqlConversionFailure(Box::new(e))
+            })?;
+
+        conn.execute(
+            "INSERT OR IGNORE INTO users (id, name, role, email) VALUES (?1, ?2, ?3, ?4)",
+            params![
+                "11111111-1111-4111-8111-111111111111",
+                "Demo Borrower",
+                "Borrower",
+                "demo.borrower@lendwise.test"
+            ],
+        )?;
+
+        conn.execute(
+            "INSERT OR IGNORE INTO users (id, name, role, email) VALUES (?1, ?2, ?3, ?4)",
+            params![
+                "22222222-2222-4222-8222-222222222222",
+                "Demo Lender",
+                "Lender",
+                Option::<String>::None,
+            ],
+        )?;
+
+        conn.execute(
+            "INSERT OR IGNORE INTO loans (id, borrower_id, lender_id, principal, interest_rate, disbursement_date, start_date, last_repayment_date, status, repayment_schedule)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, NULL, ?8, ?9)",
+            params![
+                "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa",
+                "11111111-1111-4111-8111-111111111111",
+                "22222222-2222-4222-8222-222222222222",
+                24_850.0_f64,
+                8.4_f64,
+                now.to_rfc3339(),
+                now.to_rfc3339(),
+                "Active",
+                schedule
+            ],
+        )?;
+
+        Ok(())
+    }
+
+    fn migrate_users_email_column(conn: &Connection) -> Result<()> {
+        let _ = conn.execute("ALTER TABLE users ADD COLUMN email TEXT", []);
+        Ok(())
+    }
+
+    fn row_to_user(row: &rusqlite::Row<'_>) -> Result<User> {
+        let id_str: String = row.get(0)?;
+        let name: String = row.get(1)?;
+        let role_str: String = row.get(2)?;
+        let email: Option<String> = row.get(3)?;
+
+        let id = Uuid::parse_str(&id_str).map_err(|_| {
+            rusqlite::Error::InvalidColumnType(0, "UUID".to_string(), rusqlite::types::Type::Text)
+        })?;
+        let role = match role_str.as_str() {
+            "Borrower" => UserRole::Borrower,
+            "Lender" => UserRole::Lender,
+            _ => {
+                return Err(rusqlite::Error::InvalidColumnType(
+                    2,
+                    "UserRole".to_string(),
+                    rusqlite::types::Type::Text,
+                ))
+            }
+        };
+
+        Ok(User {
+            id,
+            name,
+            role,
+            email,
+        })
     }
 
     // User operations
     pub fn save_user(&self, user: &User) -> Result<()> {
         self.conn.execute(
-            "INSERT OR REPLACE INTO users (id, name, role) VALUES (?1, ?2, ?3)",
-            params![user.id.to_string(), user.name, format!("{:?}", user.role)],
+            "INSERT OR REPLACE INTO users (id, name, role, email) VALUES (?1, ?2, ?3, ?4)",
+            params![
+                user.id.to_string(),
+                user.name,
+                format!("{:?}", user.role),
+                user.email
+            ],
         )?;
         Ok(())
     }
 
     pub fn load_user(&self, id: Uuid) -> Result<Option<User>> {
-        let mut stmt = self.conn.prepare("SELECT id, name, role FROM users WHERE id = ?1")?;
-        let mut rows = stmt.query_map(params![id.to_string()], |row| {
-            let id_str: String = row.get(0)?;
-            let name: String = row.get(1)?;
-            let role_str: String = row.get(2)?;
-
-            let id = Uuid::parse_str(&id_str).map_err(|_| rusqlite::Error::InvalidColumnType(0, "UUID".to_string(), rusqlite::types::Type::Text))?;
-            let role = match role_str.as_str() {
-                "Borrower" => UserRole::Borrower,
-                "Lender" => UserRole::Lender,
-                _ => return Err(rusqlite::Error::InvalidColumnType(2, "UserRole".to_string(), rusqlite::types::Type::Text)),
-            };
-
-            Ok(User { id, name, role })
-        })?;
+        let mut stmt = self.conn.prepare("SELECT id, name, role, email FROM users WHERE id = ?1")?;
+        let mut rows = stmt.query_map(params![id.to_string()], Self::row_to_user)?;
 
         match rows.next() {
             Some(user) => Ok(Some(user?)),
@@ -77,23 +160,23 @@ impl Db {
     }
 
     pub fn load_all_users(&self) -> Result<Vec<User>> {
-        let mut stmt = self.conn.prepare("SELECT id, name, role FROM users")?;
-        let users = stmt.query_map([], |row| {
-            let id_str: String = row.get(0)?;
-            let name: String = row.get(1)?;
-            let role_str: String = row.get(2)?;
-
-            let id = Uuid::parse_str(&id_str).map_err(|_| rusqlite::Error::InvalidColumnType(0, "UUID".to_string(), rusqlite::types::Type::Text))?;
-            let role = match role_str.as_str() {
-                "Borrower" => UserRole::Borrower,
-                "Lender" => UserRole::Lender,
-                _ => return Err(rusqlite::Error::InvalidColumnType(2, "UserRole".to_string(), rusqlite::types::Type::Text)),
-            };
-
-            Ok(User { id, name, role })
-        })?;
-
+        let mut stmt = self.conn.prepare("SELECT id, name, role, email FROM users")?;
+        let users = stmt.query_map([], Self::row_to_user)?;
         users.collect()
+    }
+
+    pub fn find_user_by_email_ci(&self, email: &str) -> Result<Option<User>> {
+        let needle = email.trim().to_lowercase();
+        if needle.is_empty() {
+            return Ok(None);
+        }
+        let users = self.load_all_users()?;
+        Ok(users.into_iter().find(|u| {
+            u.email
+                .as_ref()
+                .map(|e| e.trim().to_lowercase() == needle)
+                .unwrap_or(false)
+        }))
     }
 
     // Loan operations

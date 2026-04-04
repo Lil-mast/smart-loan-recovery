@@ -410,8 +410,23 @@
 </footer>
 <script>
   const API_BASE = (() => {
+    const o = localStorage.getItem('LENDWISE_API_BASE');
+    if (o && o.trim()) return o.replace(/\/$/, '');
+    const p = window.location.pathname || '';
+    if (p === '/app' || p.startsWith('/app/')) return '';
     const h = window.location.hostname;
-    if (h === 'localhost' || h === '127.0.0.1') return 'http://127.0.0.1:3000';
+    const proto = window.location.protocol;
+    const port = window.location.port;
+    if (proto === 'http:' && port === '3000') return '';
+    if (proto === 'https:' && (port === '' || port === '443')) return '';
+    if (
+      proto === 'file:' ||
+      !h ||
+      h === 'localhost' ||
+      h === '127.0.0.1'
+    ) {
+      return 'http://127.0.0.1:3000';
+    }
     return '';
   })();
 
@@ -478,6 +493,10 @@
 
       // Fetch all loans from the system
       const loansResponse = await fetch(`${API_BASE}/loans`);
+      if (!loansResponse.ok) {
+        console.error('Loans API HTTP', loansResponse.status);
+        return;
+      }
       const loans = await loansResponse.json();
 
       // Calculate portfolio metrics

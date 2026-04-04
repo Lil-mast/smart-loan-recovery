@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum UserRole {
     Borrower,
     Lender,
@@ -13,7 +14,7 @@ pub struct User {
     pub id: Uuid,
     pub name: String,
     pub role: UserRole,
-    // for future use add more attributes like emails, phone numbers etc.
+    pub email: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
