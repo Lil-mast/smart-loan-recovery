@@ -24,7 +24,8 @@ async fn test_user_registration() {
         .set_json(&json!({
             "name": "Test User",
             "role": "borrower",
-            "email": unique_mail
+            "email": unique_mail,
+            "lender_name": "Demo Lender"
         }))
         .to_request();
 

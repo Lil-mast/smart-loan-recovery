@@ -1,8 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum UserRole {
     Borrower,
@@ -11,10 +10,14 @@ pub enum UserRole {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct User {
-    pub id: Uuid,
+    pub id: String, // 4-char alphanumeric A-Z0-9a-z
     pub name: String,
     pub role: UserRole,
     pub email: Option<String>,
+    /// For borrowers: the lender they chose
+    pub lender_id: Option<String>,
+    /// For lenders: the organization they belong to
+    pub organization: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -27,9 +30,9 @@ pub enum LoanStatus {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Loan {
-    pub id: Uuid,
-    pub borrower_id: Uuid,
-    pub lender_id: Uuid,
+    pub id: uuid::Uuid,
+    pub borrower_id: uuid::Uuid,
+    pub lender_id: uuid::Uuid,
     pub principal: f64,
     pub interest_rate: f64, // Annual interest rate in percentage
     pub disbursement_date: DateTime<Utc>,
@@ -61,3 +64,4 @@ impl RiskScorable for Loan {
         f64::min(status_base + rate_bump, 0.99)
     }
 }
+

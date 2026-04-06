@@ -82,7 +82,7 @@ fn run_cli(cli: Cli, db: Db) -> Result<(), Box<dyn std::error::Error>> {
                 }
             };
 
-            match user_manager.register_user(name.clone(), None, user_role) {
+            match user_manager.register_user(name.clone(), None, user_role, None, None) {
                 Ok(user_id) => println!("✅ Registered {} as {} with ID: {}", name, role, user_id),
                 Err(e) => eprintln!("❌ Failed to register user: {}", e),
             }
@@ -174,7 +174,9 @@ fn run_demo(db: Db) {
     let borrower_id = match user_manager.register_user(
         "Alice Johnson".to_string(),
         None,
-        UserRole::Borrower
+        UserRole::Borrower,
+        None,
+        None
     ) {
         Ok(id) => id,
         Err(e) => {
@@ -186,7 +188,9 @@ fn run_demo(db: Db) {
     let lender_id = match user_manager.register_user(
         "Bob Smith".to_string(),
         None,
-        UserRole::Lender
+        UserRole::Lender,
+        None,
+        Some("Demo Bank".to_string())
     ) {
         Ok(id) => id,
         Err(e) => {
