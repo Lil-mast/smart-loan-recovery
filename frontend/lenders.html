@@ -330,10 +330,7 @@
   }
 
   async function ensureAuthSession(lender) {
-    const payload = {};
-    if (lender.email && String(lender.email).trim()) payload.email = String(lender.email).trim();
-    else if (lender.name) payload.name = lender.name;
-    else return false;
+    const payload = { user_id: lender.id };
     try {
       const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
@@ -343,7 +340,7 @@
       });
       if (!res.ok) return false;
       const data = await res.json();
-      return data && (data.role === 'lender' || data.user_id);
+      return data && data.role === 'lender';
     } catch (_) {
       return false;
     }
@@ -370,7 +367,7 @@
     const sel = document.getElementById('newLoanBorrower');
     if (!sel) return;
     try {
-      const res = await fetch(`${API_BASE}/users?role=borrower`, { credentials: 'include' });
+      const res = await fetch(`${API_BASE}/users?role=borrower&lender_id=${encodeURIComponent(lender.id)}`, { credentials: 'include' });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const users = await res.json();
       sel.innerHTML = '';

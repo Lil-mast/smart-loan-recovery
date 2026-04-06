@@ -15,12 +15,15 @@ impl<'a> LoanTracker<'a> {
 
     pub fn create_loan(
         &self,
-        borrower_id: Uuid,
-        lender_id: Uuid,
+        borrower_id_str: String,
+        lender_id_str: String,
         principal: f64,
         interest_rate: f64,
         duration_months: i64,
     ) -> Result<Uuid> {
+        let borrower_id = Uuid::parse_str(&borrower_id_str).map_err(|_| rusqlite::Error::InvalidColumnType(0, "UUID".to_string(), rusqlite::types::Type::Text))?;
+        let lender_id = Uuid::parse_str(&lender_id_str).map_err(|_| rusqlite::Error::InvalidColumnType(1, "UUID".to_string(), rusqlite::types::Type::Text))?;
+        
         let id = Uuid::new_v4();
         let now = Utc::now();
         let mut schedule = Vec::new();
@@ -85,3 +88,4 @@ impl<'a> LoanTracker<'a> {
         Ok(flagged_count)
     }
 }
+

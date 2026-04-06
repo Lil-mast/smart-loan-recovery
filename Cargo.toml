@@ -21,6 +21,7 @@ log = "0.4"
 thiserror = "1.0"
 actix-rt = "2.10"  # For runtime
 tokio = { version = "1.40", features = ["full"] }  # Async support
+rand = { version = "0.10.0", features = ["std_rng"] }
 
 [dev-dependencies]
 actix-web = { version = "4.9", features = ["macros"] }
