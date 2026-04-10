@@ -136,8 +136,15 @@ async fn main() -> std::io::Result<()> {
     // Initialize logging
     env_logger::init();
 
-    // Load configuration
+    // Load main application configuration
     let config = Config::from_env().expect("Failed to load configuration");
+
+    // Load Firebase authentication configuration (optional, for server mode)
+    if dotenv::from_filename(".env.firebase").is_ok() {
+        log::info!("🔐 Loaded Firebase configuration from .env.firebase");
+    } else {
+        log::info!("ℹ️  No .env.firebase file found. Firebase auth may not be available.");
+    }
 
     let cli = Cli::parse();
 

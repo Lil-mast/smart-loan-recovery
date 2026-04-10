@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use crate::models::UserRole;
 
 /// Firebase User Claims stored in JWT
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FirebaseClaims {
     /// User ID (Firebase UID)
     pub sub: String,

@@ -31,6 +31,7 @@ oauth2 = "4.4"
 base64 = "0.22"
 sha2 = "0.10"
 hmac = "0.12"
+futures-util = "0.3"
 
 [dev-dependencies]
 actix-web = { version = "4.9", features = ["macros"] }
