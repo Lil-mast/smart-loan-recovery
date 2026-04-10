@@ -94,7 +94,7 @@ fn run_cli(cli: Cli, db: Db) -> Result<(), Box<dyn std::error::Error>> {
             let lender_uuid = Uuid::parse_str(&lender_id)
                 .map_err(|_| "Invalid lender UUID format")?;
 
-            match loan_tracker.create_loan(borrower_uuid, lender_uuid, principal, interest_rate, months) {
+            match loan_tracker.create_loan(borrower_uuid.to_string(), lender_uuid.to_string(), principal, interest_rate, months) {
                 Ok(loan_id) => println!("✅ Created loan with ID: {}", loan_id),
                 Err(e) => eprintln!("❌ Failed to create loan: {}", e),
             }
@@ -169,7 +169,7 @@ fn run_demo(db: Db) {
     let loan_tracker = LoanTracker::new(&db);
 
     // Demo: Register users
-    println!("\n📝 Registering users...");
+    println!(" 📝 Registering users...");
 
     let borrower_id = match user_manager.register_user(
         "Alice Johnson".to_string(),
@@ -203,10 +203,10 @@ fn run_demo(db: Db) {
     println!("✅ Registered lender: {}", lender_id);
 
     // Demo: Create a loan
-    println!("\n💰 Creating a loan...");
+    println!(" 💰 Creating a loan...");
 
     let loan_id = match loan_tracker.create_loan(
-        borrower_id,
+        borrower_id.clone(),
         lender_id,
         10000.0,  // $10,000 principal
         5.5,      // 5.5% interest rate
@@ -224,7 +224,7 @@ fn run_demo(db: Db) {
     // Demo: Get loan details
     match loan_tracker.get_loan(loan_id) {
         Ok(Some(loan)) => {
-            println!("\n📊 Loan Details:");
+            println!(" 📊 Loan Details:");
             println!("   ID: {}", loan.id);
             println!("   Principal: ${:.2}", loan.principal);
             println!("   Interest Rate: {:.1}%", loan.interest_rate);
@@ -236,7 +236,7 @@ fn run_demo(db: Db) {
     }
 
     // Demo: Update repayment
-    println!("\n💳 Processing repayment...");
+    println!(" 💳 Processing repayment...");
     if let Err(e) = loan_tracker.update_repayment(loan_id) {
         eprintln!("❌ Failed to update repayment: {}", e);
     } else {
@@ -246,7 +246,7 @@ fn run_demo(db: Db) {
     // Demo: Check updated loan status
     match loan_tracker.get_loan(loan_id) {
         Ok(Some(loan)) => {
-            println!("\n📈 Updated Loan Status: {:?}", loan.status);
+            println!(" 📈 Updated Loan Status: {:?}", loan.status);
             println!("   Risk Score: {:.2}", loan.calculate_risk_score());
         }
         Ok(None) => println!("❌ Loan not found"),
@@ -254,14 +254,14 @@ fn run_demo(db: Db) {
     }
 
     // Demo: Save to JSON backup
-    println!("\n💾 Creating JSON backup...");
+    println!(" 💾 Creating JSON backup...");
     if let Err(e) = db.save_to_json("users_backup.json", "loans_backup.json") {
         eprintln!("❌ Failed to create JSON backup: {}", e);
     } else {
         println!("✅ JSON backup created successfully");
     }
 
-    println!("\n🎉 Smart Loan Recovery System Demo Complete!");
+    println!(" 🎉 Smart Loan Recovery System Demo Complete!");
     println!("💡 Data is now persisted in SQLite database 'loans.db'");
 }
 

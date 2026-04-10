@@ -21,7 +21,16 @@ log = "0.4"
 thiserror = "1.0"
 actix-rt = "2.10"  # For runtime
 tokio = { version = "1.40", features = ["full"] }  # Async support
-rand = { version = "0.10.0", features = ["std_rng"] }
+rand = { version = "0.8.5", features = ["std"] }
+
+# Firebase Authentication & JWT
+firebase-auth = "0.4"
+jsonwebtoken = "9.3"
+reqwest = { version = "0.12", features = ["json"] }
+oauth2 = "4.4"
+base64 = "0.22"
+sha2 = "0.10"
+hmac = "0.12"
 
 [dev-dependencies]
 actix-web = { version = "4.9", features = ["macros"] }
