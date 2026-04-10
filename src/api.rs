@@ -11,7 +11,9 @@ use crate::recovery::RecoveryEngine;
 use crate::models::{Loan, LoanStatus, UserRole};
 use crate::config::Config;
 use crate::error::{AppError, AppResult};
+use crate::auth::{config_auth_routes, init_auth_services, AuthState, middleware::auth::JwtAuth, services::TokenBlacklist};
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 fn is_valid_4char_id(id: &str) -> bool {
     id.len() == 4 && id.chars().all(|c| c.is_alphanumeric())
@@ -358,6 +360,24 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
         config.server_addr()
     );
 
+    // Initialize Firebase authentication services
+    log::info!("🔐 Initializing Firebase authentication...");
+    let auth_state = match init_auth_services().await {
+        Ok(state) => {
+            log::info!("✅ Firebase authentication initialized successfully");
+            web::Data::new(state)
+        }
+        Err(e) => {
+            log::error!("❌ Failed to initialize Firebase authentication: {}", e);
+            log::warn!("⚠️  Starting server WITHOUT Firebase authentication - only demo mode will work");
+            // Create a minimal auth state for demo mode
+            panic!("Firebase auth initialization failed. Please check .env.firebase configuration.");
+        }
+    };
+
+    // Initialize token blacklist for logout functionality
+    let token_blacklist = web::Data::new(Arc::new(TokenBlacklist::new()));
+
     let fe = std::path::Path::new(&config.frontend_dir);
     if !fe.is_dir() {
         log::warn!(
@@ -370,6 +390,11 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
 
     let _config_clone = config.clone();
     let frontend_dir = _config_clone.frontend_dir.clone();
+    
+    // Clone auth state for use in closure
+    let auth_state_clone = auth_state.clone();
+    let token_blacklist_clone = token_blacklist.clone();
+    
     HttpServer::new(move || {
         let db = match Db::new_with_path(&_config_clone.database_url) {
             Ok(db) => db,
@@ -387,8 +412,14 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
         .cookie_secure(false)
         .build();
 
+        // Initialize JWT auth middleware
+        let token_blacklist_arc = Arc::new(TokenBlacklist::new());
+        let jwt_auth = JwtAuth::new(auth_state.jwt.clone(), token_blacklist_arc);
+
         App::new()
             .app_data(web::Data::new(db))
+            .app_data(auth_state.clone())
+            .app_data(token_blacklist.clone())
             .wrap(IdentityMiddleware::default())
             .wrap(session_middleware)
             .wrap(Logger::default())
@@ -403,9 +434,23 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
                 Ok::<_, AppError>(HttpResponse::Ok().json(serde_json::json!({
                     "message": "Smart Loan Recovery API is running!",
                     "version": "1.0.0",
+                    "features": {
+                        "firebase_auth": true,
+                        "jwt_tokens": true,
+                        "role_based_access": true,
+                        "google_signin": true
+                    },
                     "endpoints": {
                         "ui": ["/app/", "/app/index.html"],
-                        "auth": ["/auth/login", "/auth/logout", "/auth/me"],
+                        "auth": [
+                            "/auth/register",
+                            "/auth/login",
+                            "/auth/logout",
+                            "/auth/refresh",
+                            "/auth/verify",
+                            "/auth/me",
+                            "/auth/google"
+                        ],
                         "users": ["/users"],
                         "loans": ["/loans"],
                         "recovery": ["/overdues", "/recommend/{loan_id}"]
@@ -418,12 +463,20 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
                     .index_file("index.html")
                     .prefer_utf8(true),
             )
+            // Firebase authentication routes (no JWT required)
+            .configure(config_auth_routes)
+            // Protected routes with JWT authentication
             .service(
-                web::scope("/auth")
-                    .route("/login", web::post().to(login))
-                    .route("/logout", web::post().to(logout))
-                    .route("/me", web::get().to(get_current_user))
+                web::scope("/api")
+                    .wrap(jwt_auth.clone())
+                    .route("/users", web::get().to(get_users))
+                    .route("/users", web::post().to(register_user))
+                    .route("/loans", web::get().to(get_loans))
+                    .route("/loans", web::post().to(create_loan))
+                    .route("/overdues", web::post().to(flag_overdues))
+                    .route("/recommend/{loan_id}", web::post().to(recommend_action))
             )
+            // Legacy routes (kept for backward compatibility during transition)
             .route("/users", web::get().to(get_users))
             .route("/users", web::post().to(register_user))
             .route("/loans", web::get().to(get_loans))

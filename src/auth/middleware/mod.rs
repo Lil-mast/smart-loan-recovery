@@ -15,6 +15,7 @@ use crate::auth::models::FirebaseClaims;
 use crate::models::UserRole;
 
 /// Request extension to store authenticated user claims
+#[derive(Clone)]
 pub struct AuthContext {
     pub claims: FirebaseClaims,
     pub role: UserRole,

@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 pub enum UserRole {
     Borrower,
     Lender,
+    Admin,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
