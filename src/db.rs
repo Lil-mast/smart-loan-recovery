@@ -196,6 +196,7 @@ impl Db {
         users.collect()
     }
 
+    #[allow(dead_code)]
     pub fn find_user_by_email_ci(&self, email: &str) -> Result<Option<User>> {
         let needle = email.trim().to_lowercase();
         if needle.is_empty() {
