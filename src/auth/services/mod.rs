@@ -5,6 +5,8 @@
 pub mod firebase;
 pub mod jwt;
 
+pub use firebase::FirebaseAuthService;
+
 use std::collections::HashSet;
 use std::sync::Mutex;
 

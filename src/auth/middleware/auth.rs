@@ -19,6 +19,7 @@ use crate::auth::services::TokenBlacklist;
 use crate::auth::middleware::AuthContext;
 
 /// JWT Authentication Middleware
+#[derive(Clone)]
 pub struct JwtAuth {
     jwt_service: Arc<JwtService>,
     token_blacklist: Arc<TokenBlacklist>,
@@ -142,8 +143,8 @@ where
 
             // Attach claims to request extensions
             let auth_context = AuthContext::new(claims);
-            let mut req = fut.await?;
-            req.request_mut().extensions_mut().insert(auth_context);
+            let req = fut.await?;
+            req.request().extensions_mut().insert(auth_context);
 
             Ok(req)
         })
