@@ -49,6 +49,19 @@ impl Db {
 
         Self::seed_demo_if_no_loans(conn)?;
 
+        // Create table for Firebase user links
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS firebase_user_links (
+                firebase_uid TEXT PRIMARY KEY,
+                local_user_id TEXT NOT NULL UNIQUE,
+                email TEXT NOT NULL,
+                role TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )",
+            [],
+        )?;
+
         Ok(())
     }
 
@@ -377,6 +390,118 @@ impl Db {
         fs::write(loans_path, loans_json)
             .map_err(|e| rusqlite::Error::FromSqlConversionFailure(0, rusqlite::types::Type::Text, Box::new(e)))?;
         Ok(())
+    }
+
+    // Firebase user link methods
+    pub fn create_linked_user(
+        &self,
+        name: String,
+        email: Option<String>,
+        role: UserRole,
+        lender_id: Option<String>,
+        organization: Option<String>,
+        firebase_uid: String,
+    ) -> Result<String> {
+        let id = Uuid::new_v4().to_string();
+        self.conn.execute(
+            "INSERT INTO users (id, name, role, email, lender_id, organization) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+            params![id, name, format!("{:?}", role), email, lender_id, organization],
+        )?;
+        Ok(id)
+    }
+
+    pub fn save_user_link(&self, link: &crate::auth::models::UserLink) -> Result<()> {
+        self.conn.execute(
+            "INSERT OR REPLACE INTO firebase_user_links (firebase_uid, local_user_id, email, role, created_at, updated_at)
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+            params![
+                link.firebase_uid,
+                link.local_user_id,
+                link.email,
+                format!("{:?}", link.role),
+                link.created_at.to_rfc3339(),
+                link.updated_at.to_rfc3339()
+            ],
+        )?;
+        Ok(())
+    }
+
+    pub fn get_user_link(&self, firebase_uid: &str) -> Result<Option<crate::auth::models::UserLink>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT firebase_uid, local_user_id, email, role, created_at, updated_at 
+             FROM firebase_user_links WHERE firebase_uid = ?1"
+        )?;
+
+        let result = stmt.query_row(params![firebase_uid], |row| {
+            use chrono::DateTime;
+            let role_str: String = row.get(3)?;
+            let role = match role_str.as_str() {
+                "Borrower" => UserRole::Borrower,
+                "Lender" => UserRole::Lender,
+                "Admin" => UserRole::Admin,
+                _ => UserRole::Borrower,
+            };
+
+            Ok(crate::auth::models::UserLink {
+                firebase_uid: row.get(0)?,
+                local_user_id: row.get(1)?,
+                email: row.get(2)?,
+                role,
+                created_at: DateTime::parse_from_rfc3339(&row.get::<_, String>(4)?)
+                    .map_err(|e| rusqlite::Error::FromSqlConversionFailure(
+                        4, rusqlite::types::Type::Text, Box::new(e)
+                    ))?.with_timezone(&Utc),
+                updated_at: DateTime::parse_from_rfc3339(&row.get::<_, String>(5)?)
+                    .map_err(|e| rusqlite::Error::FromSqlConversionFailure(
+                        5, rusqlite::types::Type::Text, Box::new(e)
+                    ))?.with_timezone(&Utc),
+            })
+        });
+
+        match result {
+            Ok(link) => Ok(Some(link)),
+            Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+            Err(e) => Err(e),
+        }
+    }
+
+    pub fn get_user_link_by_local_id(&self, local_user_id: &str) -> Result<Option<crate::auth::models::UserLink>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT firebase_uid, local_user_id, email, role, created_at, updated_at 
+             FROM firebase_user_links WHERE local_user_id = ?1"
+        )?;
+
+        let result = stmt.query_row(params![local_user_id], |row| {
+            use chrono::DateTime;
+            let role_str: String = row.get(3)?;
+            let role = match role_str.as_str() {
+                "Borrower" => UserRole::Borrower,
+                "Lender" => UserRole::Lender,
+                "Admin" => UserRole::Admin,
+                _ => UserRole::Borrower,
+            };
+
+            Ok(crate::auth::models::UserLink {
+                firebase_uid: row.get(0)?,
+                local_user_id: row.get(1)?,
+                email: row.get(2)?,
+                role,
+                created_at: DateTime::parse_from_rfc3339(&row.get::<_, String>(4)?)
+                    .map_err(|e| rusqlite::Error::FromSqlConversionFailure(
+                        4, rusqlite::types::Type::Text, Box::new(e)
+                    ))?.with_timezone(&Utc),
+                updated_at: DateTime::parse_from_rfc3339(&row.get::<_, String>(5)?)
+                    .map_err(|e| rusqlite::Error::FromSqlConversionFailure(
+                        5, rusqlite::types::Type::Text, Box::new(e)
+                    ))?.with_timezone(&Utc),
+            })
+        });
+
+        match result {
+            Ok(link) => Ok(Some(link)),
+            Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+            Err(e) => Err(e),
+        }
     }
 }
 
