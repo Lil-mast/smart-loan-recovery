@@ -11,7 +11,6 @@ use crate::models::UserRole;
 use chrono::Utc;
 use reqwest::Client;
 use serde_json::{json, Value};
-use std::sync::Arc;
 use std::time::Duration;
 
 pub struct FirebaseAuthService {
@@ -19,7 +18,6 @@ pub struct FirebaseAuthService {
     project_id: String,
     api_key: String,
     service_account_key: Option<Value>,
-    db: Arc<Db>,
 }
 
 impl FirebaseAuthService {
@@ -55,16 +53,11 @@ impl FirebaseAuthService {
             .timeout(Duration::from_secs(30))
             .build()?;
 
-        // Initialize database connection
-        let db_path = std::env::var("DATABASE_URL").unwrap_or_else(|_| "loans.db".to_string());
-        let db = Arc::new(Db::new_with_path(&db_path)?);
-
         Ok(Self {
             client,
             project_id,
             api_key,
             service_account_key,
-            db,
         })
     }
 
@@ -205,18 +198,19 @@ impl FirebaseAuthService {
     /// Link Firebase user to local database
     pub async fn link_user(
         &self,
+        db: &Db,
         firebase_uid: &str,
         email: &str,
         name: &str,
         role: UserRole,
     ) -> Result<String, Box<dyn std::error::Error>> {
         // First, check if user already exists
-        if let Some(existing) = self.get_user_link(firebase_uid).await? {
+        if let Some(existing) = Self::get_user_link(db, firebase_uid)? {
             return Ok(existing.local_user_id);
         }
 
         // Create local user
-        let local_user_id = self.db.create_linked_user(
+        let local_user_id = db.create_linked_user(
             name.to_string(),
             Some(email.to_string()),
             role.clone(),
@@ -235,25 +229,25 @@ impl FirebaseAuthService {
             updated_at: Utc::now(),
         };
 
-        self.db.save_user_link(&link)?;
+        db.save_user_link(&link)?;
 
         Ok(local_user_id)
     }
 
     /// Get user link by Firebase UID
-    pub async fn get_user_link(
-        &self,
+    pub fn get_user_link(
+        db: &Db,
         firebase_uid: &str,
     ) -> Result<Option<UserLink>, Box<dyn std::error::Error>> {
-        self.db.get_user_link(firebase_uid)
+        Ok(db.get_user_link(firebase_uid)?)
     }
 
     /// Get user link by local user ID
-    pub async fn get_link_by_local_id(
-        &self,
+    pub fn get_link_by_local_id(
+        db: &Db,
         local_user_id: &str,
     ) -> Result<Option<UserLink>, Box<dyn std::error::Error>> {
-        self.db.get_user_link_by_local_id(local_user_id)
+        Ok(db.get_user_link_by_local_id(local_user_id)?)
     }
 
     /// Revoke refresh tokens (logout)

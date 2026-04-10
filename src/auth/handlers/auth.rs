@@ -3,14 +3,15 @@ use serde_json::json;
 use std::sync::Arc;
 
 use crate::auth::{
-    middleware::auth::{get_auth_context, require_auth},
+    middleware::auth::require_auth,
     models::{
         AuthResponse, LoginRequest, LogoutRequest, RefreshTokenRequest, RegisterRequest,
         TokenVerificationResponse, UpdateProfileRequest, UserInfo,
     },
-    services::TokenBlacklist,
+    services::{FirebaseAuthService, TokenBlacklist},
     AuthState,
 };
+use crate::db::Db;
 use crate::models::UserRole;
 
 /// Register a new user with email/password
@@ -52,6 +53,7 @@ pub async fn register(
     let local_user_id = match auth_state
         .firebase
         .link_user(
+            db.as_ref(),
             &firebase_user.uid,
             &req.email,
             &req.name,
@@ -111,6 +113,7 @@ pub async fn register(
 /// Login with email/password
 pub async fn login(
     auth_state: web::Data<AuthState>,
+    db: web::Data<Db>,
     req: web::Json<LoginRequest>,
 ) -> impl Responder {
     log::info!("Processing login request for email: {}", req.email);
@@ -131,11 +134,7 @@ pub async fn login(
     };
 
     // Get or create user link
-    let user_link = match auth_state
-        .firebase
-        .get_user_link(&firebase_user.uid)
-        .await
-    {
+    let user_link = match FirebaseAuthService::get_user_link(db.as_ref(), &firebase_user.uid) {
         Ok(Some(link)) => link,
         Ok(None) => {
             // User exists in Firebase but not in our DB, create link
@@ -144,7 +143,7 @@ pub async fn login(
 
             match auth_state
                 .firebase
-                .link_user(&firebase_user.uid, &req.email, &name, role.clone())
+                .link_user(db.as_ref(), &firebase_user.uid, &req.email, &name, role.clone())
                 .await
             {
                 Ok(id) => {
@@ -200,7 +199,7 @@ pub async fn login(
         token_type: "Bearer".to_string(),
         expires_in: auth_state.jwt.get_token_expiry(),
         user: UserInfo {
-            uid: firebase_user.uid,
+            uid: firebase_user.uid.clone(),
             email: req.email.clone(),
             email_verified: firebase_user.email_verified,
             name: user_link.email.split('@').next().unwrap_or("User").to_string(),

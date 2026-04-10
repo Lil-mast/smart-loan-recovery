@@ -8,9 +8,6 @@
 pub mod auth;
 pub mod rbac;
 
-use actix_web::HttpMessage;
-use std::sync::Arc;
-
 use crate::auth::models::FirebaseClaims;
 use crate::models::UserRole;
 
