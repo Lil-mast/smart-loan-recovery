@@ -400,7 +400,7 @@ impl Db {
         role: UserRole,
         lender_id: Option<String>,
         organization: Option<String>,
-        firebase_uid: String,
+        _firebase_uid: String,
     ) -> Result<String> {
         let id = Uuid::new_v4().to_string();
         self.conn.execute(

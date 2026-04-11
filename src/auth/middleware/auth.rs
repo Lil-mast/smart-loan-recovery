@@ -9,11 +9,7 @@ use actix_web::{
 };
 use futures_util::future::LocalBoxFuture;
 use std::future::{ready, Ready};
-use std::pin::Pin;
 use std::sync::Arc;
-use std::task::{Context, Poll};
-
-use crate::auth::models::FirebaseClaims;
 use crate::auth::services::jwt::JwtService;
 use crate::auth::services::TokenBlacklist;
 use crate::auth::middleware::AuthContext;
@@ -152,12 +148,12 @@ where
 }
 
 /// Helper function to extract auth context from request
-pub fn get_auth_context(req: &actix_web::HttpRequest) -> Option<&AuthContext> {
-    req.extensions().get::<AuthContext>()
+pub fn get_auth_context(req: &actix_web::HttpRequest) -> Option<AuthContext> {
+    req.extensions().get::<AuthContext>().cloned()
 }
 
 /// Require authentication and return auth context or error
-pub fn require_auth(req: &actix_web::HttpRequest) -> Result<&AuthContext, actix_web::Error> {
+pub fn require_auth(req: &actix_web::HttpRequest) -> Result<AuthContext, actix_web::Error> {
     get_auth_context(req).ok_or_else(|| {
         actix_web::error::ErrorUnauthorized("Authentication required")
     })

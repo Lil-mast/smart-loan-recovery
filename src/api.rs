@@ -362,7 +362,7 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
 
     // Initialize Firebase authentication services
     log::info!("🔐 Initializing Firebase authentication...");
-    let auth_state = match init_auth_services().await {
+    let auth_state: web::Data<AuthState> = match init_auth_services().await {
         Ok(state) => {
             log::info!("✅ Firebase authentication initialized successfully");
             web::Data::new(state)
@@ -390,10 +390,6 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
 
     let _config_clone = config.clone();
     let frontend_dir = _config_clone.frontend_dir.clone();
-    
-    // Clone auth state for use in closure
-    let auth_state_clone = auth_state.clone();
-    let token_blacklist_clone = token_blacklist.clone();
     
     HttpServer::new(move || {
         let db = match Db::new_with_path(&_config_clone.database_url) {

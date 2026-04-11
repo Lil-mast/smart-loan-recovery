@@ -17,6 +17,7 @@ use crate::models::UserRole;
 /// Register a new user with email/password
 pub async fn register(
     auth_state: web::Data<AuthState>,
+    db: web::Data<Db>,
     req: web::Json<RegisterRequest>,
 ) -> impl Responder {
     log::info!("Processing registration request for email: {}", req.email);
@@ -119,7 +120,7 @@ pub async fn login(
     log::info!("Processing login request for email: {}", req.email);
 
     // Authenticate with Firebase
-    let (id_token, firebase_user) = match auth_state
+    let (_id_token, firebase_user) = match auth_state
         .firebase
         .sign_in_with_email_password(&req.email, &req.password)
         .await
@@ -255,6 +256,7 @@ pub async fn logout(
 /// Refresh access token using refresh token
 pub async fn refresh_token(
     auth_state: web::Data<AuthState>,
+    db: web::Data<Db>,
     token_blacklist: web::Data<Arc<TokenBlacklist>>,
     req: web::Json<RefreshTokenRequest>,
 ) -> impl Responder {
@@ -268,7 +270,7 @@ pub async fn refresh_token(
     }
 
     // Verify refresh token
-    let (uid, local_user_id, jti) = match auth_state
+    let (uid, local_user_id, _jti) = match auth_state
         .jwt
         .verify_refresh_token(&req.refresh_token)
     {
@@ -282,7 +284,7 @@ pub async fn refresh_token(
     };
 
     // Get user information from database
-    let user_link = match auth_state.firebase.get_user_link(&uid).await {
+    let user_link = match FirebaseAuthService::get_user_link(db.as_ref(), &uid) {
         Ok(Some(link)) => link,
         Ok(None) => {
             log::error!("User link not found during token refresh: {}", uid);
@@ -343,6 +345,7 @@ pub async fn refresh_token(
 /// Verify JWT token validity
 pub async fn verify_token(
     auth_state: web::Data<AuthState>,
+    db: web::Data<Db>,
     token_blacklist: web::Data<Arc<TokenBlacklist>>,
     http_req: HttpRequest,
 ) -> impl Responder {
@@ -393,7 +396,7 @@ pub async fn verify_token(
     match auth_state.jwt.verify_access_token(token) {
         Ok(claims) => {
             // Get user info from database
-            let user_link = match auth_state.firebase.get_user_link(&claims.sub).await {
+            let user_link = match FirebaseAuthService::get_user_link(db.as_ref(), &claims.sub) {
                 Ok(Some(link)) => link,
                 _ => {
                     return HttpResponse::Ok().json(TokenVerificationResponse {
@@ -432,7 +435,8 @@ pub async fn verify_token(
 
 /// Get current authenticated user information
 pub async fn get_current_user(
-    auth_state: web::Data<AuthState>,
+    _auth_state: web::Data<AuthState>,
+    db: web::Data<Db>,
     http_req: HttpRequest,
 ) -> impl Responder {
     let auth_ctx = match require_auth(&http_req) {
@@ -443,7 +447,7 @@ pub async fn get_current_user(
     let uid = auth_ctx.user_id();
 
     // Get user link from database
-    let user_link = match auth_state.firebase.get_user_link(uid).await {
+    let user_link = match FirebaseAuthService::get_user_link(db.as_ref(), uid) {
         Ok(Some(link)) => link,
         Ok(None) => {
             return HttpResponse::NotFound().json(json!({
@@ -473,7 +477,7 @@ pub async fn get_current_user(
 
 /// Update user profile
 pub async fn update_profile(
-    auth_state: web::Data<AuthState>,
+    _auth_state: web::Data<AuthState>,
     http_req: HttpRequest,
     req: web::Json<UpdateProfileRequest>,
 ) -> impl Responder {

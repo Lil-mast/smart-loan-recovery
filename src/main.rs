@@ -6,6 +6,7 @@ mod recovery;
 mod api;
 mod config;
 mod error;
+mod auth;
 
 use crate::config::Config;
 use crate::models::{UserRole, RiskScorable};
