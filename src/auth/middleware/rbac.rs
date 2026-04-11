@@ -11,8 +11,6 @@ use actix_web::{
 };
 use futures_util::future::LocalBoxFuture;
 use std::future::{ready, Ready};
-use std::pin::Pin;
-use std::task::{Context, Poll};
 
 use crate::auth::middleware::AuthContext;
 use crate::models::UserRole;

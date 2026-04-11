@@ -10,13 +10,16 @@ use serde_json::json;
 
 use crate::auth::{
     models::{AuthResponse, GoogleSignInRequest, UserInfo},
+    services::FirebaseAuthService,
     AuthState,
 };
+use crate::db::Db;
 use crate::models::UserRole;
 
 /// Handle Google Sign-In
 pub async fn google_sign_in(
     auth_state: web::Data<AuthState>,
+    db: web::Data<Db>,
     req: web::Json<GoogleSignInRequest>,
 ) -> impl Responder {
     log::info!("Processing Google Sign-In request");
@@ -48,11 +51,7 @@ pub async fn google_sign_in(
     );
 
     // Check if user already exists
-    let (local_user_id, role) = match auth_state
-        .firebase
-        .get_user_link(&firebase_user.uid)
-        .await
-    {
+    let (local_user_id, role) = match FirebaseAuthService::get_user_link(db.as_ref(), &firebase_user.uid) {
         Ok(Some(link)) => {
             log::info!("Existing user linked: {}", link.local_user_id);
             (link.local_user_id, link.role)
@@ -64,7 +63,7 @@ pub async fn google_sign_in(
             
             match auth_state
                 .firebase
-                .link_user(&firebase_user.uid, &email, &name, default_role.clone())
+                .link_user(db.as_ref(), &firebase_user.uid, &email, &name, default_role.clone())
                 .await
             {
                 Ok(id) => {
