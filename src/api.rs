@@ -344,7 +344,7 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
             }
         };
 
-        let key = Key::from(&_config_clone.session_secret.as_bytes());
+        let key = Key::derive_from(&_config_clone.session_secret.as_bytes());
         let session_middleware = SessionMiddleware::builder(
             CookieSessionStore::default(),
             key,
