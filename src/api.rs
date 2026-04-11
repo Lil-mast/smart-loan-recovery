@@ -1,6 +1,6 @@
 use actix_cors::Cors;
 use actix_files::Files;
-use actix_web::{web, App, HttpResponse, HttpServer, HttpRequest, HttpMessage, Result as ActixResult, middleware::Logger};
+use actix_web::{web, App, HttpResponse, HttpServer, Result as ActixResult, middleware::Logger};
 use actix_identity::{Identity, IdentityMiddleware};
 use actix_web::cookie::Key;
 use actix_session::{SessionMiddleware, storage::CookieSessionStore};
@@ -150,62 +150,6 @@ pub async fn register_user(
         .ok_or_else(|| AppError::NotFound("User not found after insert".to_string()))?;
 
     Ok(Ok(HttpResponse::Ok().json(user)))
-}
-
-#[derive(Deserialize)]
-pub struct LoginReq {
-    /// User ID to login with (4-char alphanumeric)
-    user_id: String,
-}
-
-pub async fn login(
-    req: HttpRequest,
-    data: web::Json<LoginReq>,
-    _identity: Identity,
-    db: web::Data<Db>,
-) -> AppResult<ActixResult<HttpResponse>> {
-    let mgr = UserManager::new(&db);
-
-    let user_id = data.user_id.trim();
-    if !is_valid_4char_id(user_id) {
-        return Err(AppError::InvalidInput("User ID must be exactly 4 alphanumeric characters".to_string()));
-    }
-
-    let user = mgr
-        .get_user(user_id)
-        .map_err(AppError::Database)?
-        .ok_or_else(|| AppError::NotFound("User not found".to_string()))?;
-
-    let _identity = Identity::login(&req.extensions(), user.id.clone())?;
-
-    Ok(Ok(HttpResponse::Ok().json(serde_json::json!({
-        "message": "Login successful",
-        "user_id": user.id,
-        "role": user.role,
-        "name": user.name
-    }))))
-}
-
-pub async fn logout(identity: Identity) -> ActixResult<HttpResponse> {
-    identity.logout();
-    Ok(HttpResponse::Ok().json(serde_json::json!({
-        "message": "Logout successful"
-    })))
-}
-
-async fn get_current_user(
-    identity: Identity,
-    db: web::Data<Db>,
-) -> AppResult<ActixResult<HttpResponse>> {
-    if let Some(user_id_str) = identity.id().ok() {
-        let mgr = UserManager::new(&db);
-        if let Some(user) = mgr.get_user(&user_id_str)
-            .map_err(|e| AppError::Database(e))? {
-            return Ok(Ok(HttpResponse::Ok().json(&user)));
-        }
-    }
-
-    Err(AppError::AuthRequired)
 }
 
 pub async fn get_users(
@@ -472,13 +416,6 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
                     .route("/overdues", web::post().to(flag_overdues))
                     .route("/recommend/{loan_id}", web::post().to(recommend_action))
             )
-            // Legacy routes (kept for backward compatibility during transition)
-            .route("/users", web::get().to(get_users))
-            .route("/users", web::post().to(register_user))
-            .route("/loans", web::get().to(get_loans))
-            .route("/loans", web::post().to(create_loan))
-            .route("/overdues", web::post().to(flag_overdues))
-            .route("/recommend/{loan_id}", web::post().to(recommend_action))
     })
     .bind(config.server_addr())?
     .run()
