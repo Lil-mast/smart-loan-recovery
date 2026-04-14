@@ -5,6 +5,8 @@
 //! - Role-based claims
 //! - Token expiration and refresh logic
 
+#![allow(dead_code)]
+
 use crate::auth::models::FirebaseClaims;
 use crate::models::UserRole;
 use chrono::{Duration, Utc};
@@ -16,7 +18,7 @@ use serde::{Deserialize, Serialize};
 pub struct JwtService {
     encoding_key: EncodingKey,
     decoding_key: DecodingKey,
-    jwt_secret: String,
+    _jwt_secret: String,
     access_token_expiry_hours: i64,
     refresh_token_expiry_days: i64,
 }
@@ -34,7 +36,7 @@ impl JwtService {
     /// Initialize JWT service from environment variables
     pub fn new() -> Result<Self, Box<dyn std::error::Error>> {
         let jwt_secret = std::env::var("JWT_SECRET")
-            .map_err(|_| "JWT_SECRET not set in .env.firebase")?;
+            .map_err(|_| "JWT_SECRET not set in .env.local")?;
 
         let access_token_expiry_hours = std::env::var("JWT_EXPIRATION_HOURS")
             .unwrap_or_else(|_| "24".to_string())
@@ -50,7 +52,7 @@ impl JwtService {
         Ok(Self {
             encoding_key,
             decoding_key,
-            jwt_secret,
+            _jwt_secret: jwt_secret,
             access_token_expiry_hours,
             refresh_token_expiry_days,
         })
@@ -168,6 +170,11 @@ impl JwtService {
     /// Get token expiration time
     pub fn get_token_expiry(&self) -> i64 {
         self.access_token_expiry_hours * 3600 // Convert to seconds
+    }
+
+    /// Get refresh token expiration time
+    pub fn get_refresh_token_expiry(&self) -> i64 {
+        self.refresh_token_expiry_days * 86400 // Convert to seconds
     }
 }
 

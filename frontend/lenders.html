@@ -137,6 +137,11 @@
       .light .hero-gradient { background: linear-gradient(135deg, #0891b2 0%, #dc2626 100%); }
       .light body { background-color: #fafbfc; color: #1a202c; }
     </style>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<!-- Firebase Authentication Module -->
+<script src="js/firebase-auth.js"></script>
 </head>
 <body class="bg-background text-on-surface text-base font-body antialiased selection:bg-primary selection:text-on-primary">
 <nav class="fixed top-0 w-full z-50 bg-[#0e141a]/80 backdrop-blur-xl relative">
@@ -649,7 +654,8 @@
           }
           closeNewLoanModal();
           form.reset();
-          document.getElementById('newLoanMonths').value = '12';
+          const monthsInput = document.getElementById('newLoanMonths');
+          if (monthsInput) monthsInput.value = '12';
           alert('Loan created.');
           loadLenderDashboard();
         } catch (err) {

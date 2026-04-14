@@ -315,7 +315,7 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
             log::error!("❌ Failed to initialize Firebase authentication: {}", e);
             log::warn!("⚠️  Starting server WITHOUT Firebase authentication - only demo mode will work");
             // Create a minimal auth state for demo mode
-            panic!("Firebase auth initialization failed. Please check .env.firebase configuration.");
+            panic!("Firebase auth initialization failed. Please check .env.local configuration.");
         }
     };
 
@@ -365,9 +365,17 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
             .wrap(Logger::default())
             .wrap(
                 Cors::default()
-                    .allow_any_origin()
+                    .allowed_origin_fn(|origin, _req_head| {
+                        // Allow any localhost origin for development
+                        // In production, replace with specific domains
+                        origin.as_bytes().starts_with(b"http://localhost:") ||
+                        origin.as_bytes().starts_with(b"https://localhost:") ||
+                        origin.as_bytes().starts_with(b"http://127.0.0.1:") ||
+                        origin.as_bytes().starts_with(b"https://127.0.0.1:")
+                    })
                     .allow_any_method()
                     .allow_any_header()
+                    .supports_credentials()  // Required for httpOnly cookies
                     .max_age(3600),
             )
             .route("/", web::get().to(|| async {

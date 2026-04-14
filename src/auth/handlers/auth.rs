@@ -3,6 +3,7 @@ use serde_json::json;
 use std::sync::Arc;
 
 use crate::auth::{
+    handlers::cookie::{build_auth_cookies, build_logout_cookies},
     middleware::auth::require_auth,
     models::{
         AuthResponse, LoginRequest, LogoutRequest, RefreshTokenRequest, RegisterRequest,
@@ -92,8 +93,8 @@ pub async fn register(
     };
 
     let response = AuthResponse {
-        access_token,
-        refresh_token,
+        access_token: access_token.clone(),
+        refresh_token: refresh_token.clone(),
         token_type: "Bearer".to_string(),
         expires_in: auth_state.jwt.get_token_expiry(),
         user: UserInfo {
@@ -107,8 +108,20 @@ pub async fn register(
         },
     };
 
+    // Build httpOnly cookies
+    let (access_cookie, refresh_cookie) = build_auth_cookies(
+        access_token.clone(),
+        refresh_token.clone(),
+        auth_state.jwt.get_token_expiry() as i64,
+        auth_state.jwt.get_refresh_token_expiry() as i64,
+    );
+
     log::info!("User registered successfully: {}", firebase_user.uid);
-    HttpResponse::Created().json(response)
+    
+    HttpResponse::Created()
+        .cookie(access_cookie)
+        .cookie(refresh_cookie)
+        .json(response)
 }
 
 /// Login with email/password
@@ -195,8 +208,8 @@ pub async fn login(
     };
 
     let response = AuthResponse {
-        access_token,
-        refresh_token,
+        access_token: access_token.clone(),
+        refresh_token: refresh_token.clone(),
         token_type: "Bearer".to_string(),
         expires_in: auth_state.jwt.get_token_expiry(),
         user: UserInfo {
@@ -204,14 +217,26 @@ pub async fn login(
             email: req.email.clone(),
             email_verified: firebase_user.email_verified,
             name: user_link.email.split('@').next().unwrap_or("User").to_string(),
-            role: user_link.role,
-            photo_url: firebase_user.picture,
-            local_user_id: user_link.local_user_id,
+            role: user_link.role.clone(),
+            photo_url: firebase_user.picture.clone(),
+            local_user_id: user_link.local_user_id.clone(),
         },
     };
 
+    // Build httpOnly cookies
+    let (access_cookie, refresh_cookie) = build_auth_cookies(
+        access_token.clone(),
+        refresh_token.clone(),
+        auth_state.jwt.get_token_expiry() as i64,
+        auth_state.jwt.get_refresh_token_expiry() as i64,
+    );
+
     log::info!("User logged in successfully: {}", firebase_user.uid);
-    HttpResponse::Ok().json(response)
+    
+    HttpResponse::Ok()
+        .cookie(access_cookie)
+        .cookie(refresh_cookie)
+        .json(response)
 }
 
 /// Logout and revoke tokens
@@ -247,10 +272,16 @@ pub async fn logout(
         }
     }
 
+    // Clear auth cookies
+    let (access_cookie, refresh_cookie) = build_logout_cookies();
+
     log::info!("Logout successful");
-    HttpResponse::Ok().json(json!({
-        "message": "Logged out successfully"
-    }))
+    HttpResponse::Ok()
+        .cookie(access_cookie)
+        .cookie(refresh_cookie)
+        .json(json!({
+            "message": "Logged out successfully"
+        }))
 }
 
 /// Refresh access token using refresh token
@@ -324,22 +355,33 @@ pub async fn refresh_token(
     log::info!("Old refresh token revoked, new tokens issued for user: {}", uid);
 
     let response = AuthResponse {
-        access_token,
-        refresh_token: new_refresh_token,
+        access_token: access_token.clone(),
+        refresh_token: new_refresh_token.clone(),
         token_type: "Bearer".to_string(),
         expires_in: auth_state.jwt.get_token_expiry(),
         user: UserInfo {
-            uid,
+            uid: uid.clone(),
             email: user_link.email.clone(),
             email_verified: true,
             name: user_link.email.split('@').next().unwrap_or("User").to_string(),
             role: user_link.role.clone(),
             photo_url: None,
-            local_user_id,
+            local_user_id: local_user_id.clone(),
         },
     };
 
-    HttpResponse::Ok().json(response)
+    // Build new httpOnly cookies
+    let (access_cookie, refresh_cookie) = build_auth_cookies(
+        access_token.clone(),
+        new_refresh_token.clone(),
+        auth_state.jwt.get_token_expiry() as i64,
+        auth_state.jwt.get_refresh_token_expiry() as i64,
+    );
+
+    HttpResponse::Ok()
+        .cookie(access_cookie)
+        .cookie(refresh_cookie)
+        .json(response)
 }
 
 /// Verify JWT token validity

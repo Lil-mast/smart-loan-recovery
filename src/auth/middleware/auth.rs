@@ -3,6 +3,8 @@
 //! Verifies JWT tokens from Authorization header
 //! Attaches user claims to request extensions
 
+#![allow(dead_code)]
+
 use actix_web::{
     dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
     Error, HttpMessage,

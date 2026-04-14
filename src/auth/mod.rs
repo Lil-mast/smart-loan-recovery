@@ -27,6 +27,8 @@ pub struct AuthState {
 pub fn config_auth_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/auth")
+            // Public: Firebase configuration for frontend
+            .route("/config", web::get().to(firebase_config_handler))
             // Authentication endpoints
             .route("/login", web::post().to(handlers::auth::login))
             .route("/register", web::post().to(handlers::auth::register))
@@ -41,10 +43,36 @@ pub fn config_auth_routes(cfg: &mut web::ServiceConfig) {
     );
 }
 
+/// Handler to serve Firebase configuration to frontend
+async fn firebase_config_handler() -> impl actix_web::Responder {
+    use actix_web::HttpResponse;
+    use serde_json::json;
+    
+    // Load config from environment
+    let api_key = std::env::var("FIREBASE_API_KEY").unwrap_or_default();
+    let project_id = std::env::var("FIREBASE_PROJECT_ID").unwrap_or_default();
+    let auth_domain = std::env::var("FIREBASE_AUTH_DOMAIN").unwrap_or_default();
+    
+    if api_key.is_empty() || project_id.is_empty() {
+        return HttpResponse::ServiceUnavailable().json(json!({
+            "error": "Firebase configuration not available"
+        }));
+    }
+    
+    HttpResponse::Ok().json(json!({
+        "apiKey": api_key,
+        "authDomain": auth_domain,
+        "projectId": project_id,
+        "storageBucket": std::env::var("FIREBASE_STORAGE_BUCKET").unwrap_or_default(),
+        "messagingSenderId": std::env::var("FIREBASE_MESSAGING_SENDER_ID").unwrap_or_default(),
+        "appId": std::env::var("FIREBASE_APP_ID").unwrap_or_default(),
+    }))
+}
+
 /// Initialize authentication services
 pub async fn init_auth_services() -> Result<AuthState, Box<dyn std::error::Error>> {
-    // Load Firebase configuration from .env.firebase
-    dotenv::from_filename(".env.firebase").ok();
+    // Load Firebase configuration from .env.local
+    dotenv::from_filename(".env.local").ok();
     
     let firebase = Arc::new(FirebaseAuthService::new().await?);
     let jwt = Arc::new(JwtService::new()?);
