@@ -2,8 +2,6 @@
 //!
 //! Data structures for Firebase authentication
 
-#![allow(dead_code)]
-
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use crate::models::UserRole;
@@ -104,7 +102,7 @@ pub struct DecodedFirebaseToken {
     pub email_verified: bool,
     pub name: Option<String>,
     pub picture: Option<String>,
-    pub _claims: serde_json::Value,
+    pub claims: serde_json::Value,
 }
 
 /// Link between Firebase user and local database user

@@ -27,8 +27,11 @@ pub struct AuthState {
 pub fn config_auth_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/auth")
+<<<<<<< HEAD
             // Public: Firebase configuration for frontend
             .route("/config", web::get().to(firebase_config_handler))
+=======
+>>>>>>> dbcc6a3a9a3671224616cef01e6714bf9cf24771
             // Authentication endpoints
             .route("/login", web::post().to(handlers::auth::login))
             .route("/register", web::post().to(handlers::auth::register))
@@ -43,6 +46,7 @@ pub fn config_auth_routes(cfg: &mut web::ServiceConfig) {
     );
 }
 
+<<<<<<< HEAD
 /// Handler to serve Firebase configuration to frontend
 async fn firebase_config_handler() -> impl actix_web::Responder {
     use actix_web::HttpResponse;
@@ -73,6 +77,12 @@ async fn firebase_config_handler() -> impl actix_web::Responder {
 pub async fn init_auth_services() -> Result<AuthState, Box<dyn std::error::Error>> {
     // Load Firebase configuration from .env.local
     dotenv::from_filename(".env.local").ok();
+=======
+/// Initialize authentication services
+pub async fn init_auth_services() -> Result<AuthState, Box<dyn std::error::Error>> {
+    // Load Firebase configuration from .env.firebase
+    dotenv::from_filename(".env.firebase").ok();
+>>>>>>> dbcc6a3a9a3671224616cef01e6714bf9cf24771
     
     let firebase = Arc::new(FirebaseAuthService::new().await?);
     let jwt = Arc::new(JwtService::new()?);

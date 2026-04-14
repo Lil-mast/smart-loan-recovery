@@ -5,8 +5,6 @@
 //! - Role-based access control (RBAC)
 //! - Token validation
 
-#![allow(dead_code)]
-
 pub mod auth;
 pub mod rbac;
 
@@ -17,13 +15,13 @@ use crate::models::UserRole;
 #[derive(Clone)]
 pub struct AuthContext {
     pub claims: FirebaseClaims,
-    pub _role: UserRole,
+    pub role: UserRole,
 }
 
 impl AuthContext {
     pub fn new(claims: FirebaseClaims) -> Self {
-        let _role = claims.role.clone().unwrap_or(UserRole::Borrower);
-        Self { claims, _role }
+        let role = claims.role.clone().unwrap_or(UserRole::Borrower);
+        Self { claims, role }
     }
 
     pub fn user_id(&self) -> &str {
@@ -39,18 +37,18 @@ impl AuthContext {
     }
 
     pub fn role(&self) -> &UserRole {
-        &self._role
+        &self.role
     }
 
     pub fn is_admin(&self) -> bool {
-        matches!(self._role, UserRole::Admin)
+        matches!(self.role, UserRole::Admin)
     }
 
     pub fn is_lender(&self) -> bool {
-        matches!(self._role, UserRole::Lender | UserRole::Admin)
+        matches!(self.role, UserRole::Lender | UserRole::Admin)
     }
 
     pub fn is_borrower(&self) -> bool {
-        matches!(self._role, UserRole::Borrower | UserRole::Lender | UserRole::Admin)
+        matches!(self.role, UserRole::Borrower | UserRole::Lender | UserRole::Admin)
     }
 }

@@ -218,7 +218,7 @@ curl -X POST https://smart-loan-recovery.fly.dev/login \
 }
 ```
 
-#### Step 3: Register as a Lender (if needed)..
+#### Step 3: Register as a Lender (if needed)
 
 **API Call:**
 ```bash

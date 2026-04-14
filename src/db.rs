@@ -465,7 +465,6 @@ impl Db {
         }
     }
 
-    #[allow(dead_code)]
     pub fn get_user_link_by_local_id(&self, local_user_id: &str) -> Result<Option<crate::auth::models::UserLink>> {
         let mut stmt = self.conn.prepare(
             "SELECT firebase_uid, local_user_id, email, role, created_at, updated_at 

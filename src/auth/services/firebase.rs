@@ -5,8 +5,6 @@
 //! - Create custom tokens
 //! - Link Firebase users to local database
 
-#![allow(dead_code)]
-
 use crate::auth::models::{DecodedFirebaseToken, UserLink};
 use crate::db::Db;
 use crate::models::UserRole;
@@ -17,9 +15,9 @@ use std::time::Duration;
 
 pub struct FirebaseAuthService {
     client: Client,
-    _project_id: String,
+    project_id: String,
     api_key: String,
-    _service_account_key: Option<Value>,
+    service_account_key: Option<Value>,
 }
 
 impl FirebaseAuthService {
@@ -27,9 +25,9 @@ impl FirebaseAuthService {
     pub async fn new() -> Result<Self, Box<dyn std::error::Error>> {
         // Load configuration from environment
         let project_id = std::env::var("FIREBASE_PROJECT_ID")
-            .map_err(|_| "FIREBASE_PROJECT_ID not set in .env.local")?;
+            .map_err(|_| "FIREBASE_PROJECT_ID not set in .env.firebase")?;
         let api_key = std::env::var("FIREBASE_API_KEY")
-            .map_err(|_| "FIREBASE_API_KEY not set in .env.local")?;
+            .map_err(|_| "FIREBASE_API_KEY not set in .env.firebase")?;
 
         // Load service account key if available
         let service_account_key = if let Ok(key_path) = std::env::var("FIREBASE_SERVICE_ACCOUNT_KEY_PATH") {
@@ -41,8 +39,7 @@ impl FirebaseAuthService {
             }
         } else if let Ok(key_base64) = std::env::var("FIREBASE_SERVICE_ACCOUNT_JSON_BASE64") {
             if !key_base64.is_empty() {
-                use base64::{engine::general_purpose::STANDARD, Engine};
-                let decoded = STANDARD.decode(key_base64)?;
+                let decoded = base64::decode(key_base64)?;
                 let content = String::from_utf8(decoded)?;
                 Some(serde_json::from_str(&content)?)
             } else {
@@ -58,9 +55,9 @@ impl FirebaseAuthService {
 
         Ok(Self {
             client,
-            _project_id: project_id,
+            project_id,
             api_key,
-            _service_account_key: service_account_key,
+            service_account_key,
         })
     }
 
@@ -97,7 +94,7 @@ impl FirebaseAuthService {
                     email_verified: user.get("emailVerified").and_then(|v| v.as_bool()).unwrap_or(false),
                     name: user.get("displayName").and_then(|v| v.as_str()).map(|s| s.to_string()),
                     picture: user.get("photoUrl").and_then(|v| v.as_str()).map(|s| s.to_string()),
-                    _claims: json!({}),
+                    claims: json!({}),
                 };
                 return Ok(decoded);
             }
@@ -144,7 +141,7 @@ impl FirebaseAuthService {
             email_verified: false,
             name: Some(name.to_string()),
             picture: None,
-            _claims: json!({}),
+            claims: json!({}),
         })
     }
 
@@ -192,7 +189,7 @@ impl FirebaseAuthService {
             email_verified,
             name: data.get("displayName").and_then(|v| v.as_str()).map(|s| s.to_string()),
             picture: data.get("profilePicture").and_then(|v| v.as_str()).map(|s| s.to_string()),
-            _claims: json!({}),
+            claims: json!({}),
         };
 
         Ok((id_token.to_string(), decoded))

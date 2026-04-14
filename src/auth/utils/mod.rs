@@ -2,8 +2,6 @@
 //!
 //! Helper functions for authentication operations
 
-#![allow(dead_code)]
-
 use actix_web::HttpRequest;
 
 /// Extract client IP address from request

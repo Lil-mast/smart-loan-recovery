@@ -5,8 +5,6 @@
 //! - Lender: Can view all loans, create loans
 //! - Borrower: Can only view own loans
 
-#![allow(dead_code)]
-
 use actix_web::{
     dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
     Error, HttpMessage,
