@@ -109,7 +109,8 @@ impl JwtService {
 
     /// Verify and decode access token
     pub fn verify_access_token(&self, token: &str) -> Result<FirebaseClaims, Box<dyn std::error::Error>> {
-        let validation = Validation::new(Algorithm::HS256);
+        let mut validation = Validation::new(Algorithm::HS256);
+        validation.set_audience(&["lendwise-api"]);
 
         let decoded = decode::<FirebaseClaims>(token, &self.decoding_key, &validation)?;
 
