@@ -20,6 +20,39 @@ The budget estimate outlines all anticipated costs for the LendWise Recovery Pro
 - Comprehensive documentation (proposal, methodology, objectives)
 - Live demo with real API endpoints
 
+## Project Timeline (Gantt Chart)
+
+```mermaid
+gantt
+    title LendWise Recovery Project Timeline
+    dateFormat YYYY-MM-DD
+    section Phase 1: Foundation
+    Laptop & Internet Setup     :done, p1, 2026-01-01, 7d
+    Development Environment     :done, p2, after p1, 14d
+    Core API Development        :done, p3, after p2, 21d
+    Database Implementation     :done, p4, after p3, 14d
+    
+    section Phase 2: Deployment
+    Docker Containerization     :done, p5, after p4, 7d
+    Fly.io Deployment           :done, p6, after p5, 7d
+    Documentation               :done, p7, after p6, 14d
+    
+    section Phase 3: Scale (If Funded)
+    PostgreSQL Migration        :active, p8, after p7, 14d
+    Redis Caching               :p9, after p8, 7d
+    ML Model Integration        :p10, after p9, 21d
+    
+    section Phase 4: Mobile & Features
+    React Native Mobile App     :p11, after p10, 30d
+    SMS Notifications           :p12, after p11, 14d
+    Payment Integration         :p13, after p12, 14d
+    
+    section Phase 5: Launch
+    Marketing & Onboarding      :p14, after p13, 21d
+    Client Training             :p15, after p14, 14d
+    Team Expansion              :p16, after p15, 30d
+```
+
 ## Next Steps (If Funded)
 1. **Scale Infrastructure**: Upgrade to PostgreSQL, add Redis caching (5,000 KES)
 2. **ML Integration**: Add machine learning models for better predictions (10,000 KES)
