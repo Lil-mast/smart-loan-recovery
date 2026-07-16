@@ -56,6 +56,17 @@ impl JwtService {
         })
     }
 
+    /// Create JWT service with explicit secret and expiry values (no env vars required)
+    pub fn from_secret(secret: &str, access_expiry_hours: i64, refresh_expiry_days: i64) -> Self {
+        Self {
+            encoding_key: EncodingKey::from_secret(secret.as_bytes()),
+            decoding_key: DecodingKey::from_secret(secret.as_bytes()),
+            jwt_secret: secret.to_string(),
+            access_token_expiry_hours: access_expiry_hours,
+            refresh_token_expiry_days: refresh_expiry_days,
+        }
+    }
+
     /// Generate access token for authenticated user
     pub fn generate_access_token(
         &self,

@@ -1,9 +1,10 @@
 use actix_cors::Cors;
 use actix_files::Files;
-use actix_web::{web, App, HttpResponse, HttpServer, Result as ActixResult, middleware::Logger};
+use actix_web::{web, App, HttpResponse, HttpServer, HttpRequest, Result as ActixResult, middleware::Logger};
 use actix_identity::{Identity, IdentityMiddleware};
 use actix_web::cookie::Key;
 use actix_session::{SessionMiddleware, storage::CookieSessionStore};
+use actix_web::HttpMessage;
 use crate::db::Db;
 use crate::user::UserManager;
 use crate::loan::LoanTracker;
@@ -53,8 +54,8 @@ pub struct LoansQuery {
 #[derive(Serialize)]
 struct LoanApiJson {
     id: uuid::Uuid,
-    borrower_id: uuid::Uuid,
-    lender_id: uuid::Uuid,
+    borrower_id: String,
+    lender_id: String,
     principal: f64,
     amount: f64,
     interest_rate: f64,
@@ -85,8 +86,8 @@ fn loan_api_json(loan: &Loan) -> LoanApiJson {
     .to_string();
     LoanApiJson {
         id: loan.id,
-        borrower_id: loan.borrower_id,
-        lender_id: loan.lender_id,
+        borrower_id: loan.borrower_id.clone(),
+        lender_id: loan.lender_id.clone(),
         principal: loan.principal,
         amount,
         interest_rate: loan.interest_rate,
@@ -231,15 +232,15 @@ async fn get_loans(
 
     if let Some(ref bid) = query.borrower_id {
         let b = bid.trim();
-        if !b.is_empty() && b != "all" && is_valid_4char_id(b) {
-            loans.retain(|_| false); // No filter impl for now
+        if !b.is_empty() && b != "all" {
+            loans.retain(|loan| loan.borrower_id == b);
         }
     }
 
     if let Some(ref lid) = query.lender_id {
         let l = lid.trim();
-        if !l.is_empty() && is_valid_4char_id(l) {
-            loans.retain(|_loan| false); // No filter
+        if !l.is_empty() {
+            loans.retain(|loan| loan.lender_id == l);
         }
     }
 
@@ -270,6 +271,41 @@ async fn flag_overdues(
     Ok(Ok(HttpResponse::Ok().json(serde_json::json!({
         "flagged_count": flagged_count
     }))))
+}
+
+#[derive(Deserialize)]
+struct DemoLoginReq {
+    user_id: String,
+}
+
+#[derive(Serialize)]
+struct DemoLoginRes {
+    user_id: String,
+    role: String,
+    name: String,
+}
+
+async fn demo_login(
+    data: web::Json<DemoLoginReq>,
+    req: HttpRequest,
+    db: web::Data<Db>,
+) -> AppResult<ActixResult<HttpResponse>> {
+    let user_id = data.user_id.trim().to_string();
+    let mgr = UserManager::new(&db);
+    let user = mgr.get_user(&user_id)
+        .map_err(AppError::Database)?
+        .ok_or_else(|| AppError::NotFound("User not found".to_string()))?;
+
+    Identity::login(&req.extensions(), user.id.clone())
+        .map_err(|_| AppError::AuthRequired)?;
+
+    let role = format!("{:?}", user.role).to_lowercase();
+
+    Ok(Ok(HttpResponse::Ok().json(DemoLoginRes {
+        user_id: user.id,
+        role,
+        name: user.name,
+    })))
 }
 
 async fn recommend_action(
@@ -314,8 +350,19 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
         Err(e) => {
             log::error!("❌ Failed to initialize Firebase authentication: {}", e);
             log::warn!("⚠️  Starting server WITHOUT Firebase authentication - only demo mode will work");
-            // Create a minimal auth state for demo mode
-            panic!("Firebase auth initialization failed. Please check .env.firebase configuration.");
+            // Fallback: create minimal AuthState for demo mode without Firebase
+            let fallback_jwt = Arc::new(
+                crate::auth::services::jwt::JwtService::from_secret(
+                    &std::env::var("JWT_SECRET").unwrap_or_else(|_| "insecure-demo-secret".to_string()),
+                    24,
+                    7,
+                )
+            );
+            let fallback_firebase = Arc::new(crate::auth::services::firebase::FirebaseAuthService::default());
+            web::Data::new(AuthState {
+                firebase: fallback_firebase,
+                jwt: fallback_jwt,
+            })
         }
     };
 
@@ -334,6 +381,7 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
 
     let _config_clone = config.clone();
     let frontend_dir = _config_clone.frontend_dir.clone();
+    let is_production = std::env::var("RUST_ENV").map(|v| v == "production").unwrap_or(false);
     
     HttpServer::new(move || {
         let db = match Db::new_with_path(&_config_clone.database_url) {
@@ -349,7 +397,7 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
             CookieSessionStore::default(),
             key,
         )
-        .cookie_secure(false)
+        .cookie_secure(is_production)
         .build();
 
         // Initialize JWT auth middleware
@@ -365,9 +413,16 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
             .wrap(Logger::default())
             .wrap(
                 Cors::default()
-                    .allow_any_origin()
+                    .allowed_origin_fn(|origin, _| {
+                        let origin = origin.to_str().unwrap_or("");
+                        origin.is_empty()
+                            || origin == "http://127.0.0.1:3000"
+                            || origin == "http://localhost:3000"
+                            || origin == "null"
+                    })
                     .allow_any_method()
                     .allow_any_header()
+                    .supports_credentials()
                     .max_age(3600),
             )
             .route("/", web::get().to(|| async {
@@ -405,6 +460,8 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
             )
             // Firebase authentication routes (no JWT required)
             .configure(config_auth_routes)
+            // Demo login endpoint (accepts user_id for legacy/demo flow)
+            .route("/auth/demo-login", web::post().to(demo_login))
             // Protected routes with JWT authentication
             .service(
                 web::scope("/api")

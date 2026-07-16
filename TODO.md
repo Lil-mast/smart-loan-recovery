@@ -1,27 +1,24 @@
-# Smart Loan Recovery - Debug Errors TODO
+# Smart Loan Recovery - Fix Status
 
-Status: Approved plan - Frontend first, then backend compiles, test stack.
+## COMPLETED (this session)
 
-## Step 1: [✅ COMPLETED] Fix Frontend HTML Syntax
-- Edit `frontend/index.html`: Added missing `>` to hero img tag.
-- Verified: Diff applied cleanly, hero img now valid.
+### HIGH Priority
+- [x] **Loan model type fix**: `borrower_id`/`lender_id` changed from `uuid::Uuid` to `String` to match 4-char user ID system
+- [x] **db.rs**: Extracted shared `row_to_loan()` function (removed 50-line duplication), updated save/load for String IDs
+- [x] **loan.rs**: Removed UUID parsing in `create_loan()`, fixed `unwrap()` on empty repayment schedule
+- [x] **api.rs**: Fixed loan filters (were `retain(|_| false)` no-ops), fixed `LoanApiJson` types, added CORS origin restriction (was `allow_any_origin()`), added `demo_login` endpoint, fixed `panic!` at Firebase init failure
+- [x] **main.rs**: Removed UUID parsing in CLI `CreateLoan` command
+- [x] **auth**: Password validation now uses `validate_password_strength()` (was `len < 6`), `Mutex::unwrap()` fixed to handle poison, `AuthState` fallback on Firebase init failure, `JwtService::from_secret()` added for non-env-var usage
+- [x] **FirebaseAuthService**: Added `Default` impl for fallback mode
+- [x] **Frontend**: Fixed demo IDs (`DEMO`/`BANK` not `ABCD`/`WXYZ`), login endpoint changed to `/auth/demo-login`, session identity set on demo login
 
-## Step 2: [PENDING] Fix Backend Compile TODOs (main.rs)
-- Edit `src/main.rs`:
-  - CLI CreateLoan (~line 97): Add `.to_string()` to borrower/lender UUIDs.
-  - Demo (~line 209): `loan_tracker.create_loan(borrower_id.clone(), ...`
-- Run `cargo check`.
+### MEDIUM Priority
+- [x] **Session cookie**: `cookie_secure` now based on `RUST_ENV=production`
+- [x] **Dockerignore**: Added `*.db`, `.env*`, `*.json` backup files
+- [x] **Tests**: Fixed shared DB file collision using temp files with unique names
 
-## Step 3: [PENDING] Remove Debug Prints (if looping)
-- Search/edit config.rs/api.rs: Remove H1/H3 hypothesis logs.
-- Test `cargo run`.
-
-## Step 4: [PENDING] Full Stack Test
-- `cargo run`
-- Open http://127.0.0.1:3000/app/
-- Test login (DEMO borrower, BANK lender), /users, /loans.
-
-## Step 5: [PENDING] Complete & Cleanup
-- Update TODO.md ✅ marks.
-- `attempt_completion`
-
+## PENDING
+- [ ] Frontend rebuild (see architecture suggestion)
+- [ ] Rate limiting on auth endpoints
+- [ ] Token blacklist persistence (currently in-memory only)
+- [ ] https-only enforcement in production

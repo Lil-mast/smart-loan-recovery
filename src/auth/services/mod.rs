@@ -24,13 +24,15 @@ impl TokenBlacklist {
 
     /// Add a token to the blacklist
     pub fn revoke_token(&self, token: &str) {
-        let mut tokens = self.revoked_tokens.lock().unwrap();
-        tokens.insert(token.to_string());
+        if let Ok(mut tokens) = self.revoked_tokens.lock() {
+            tokens.insert(token.to_string());
+        }
     }
 
     /// Check if a token is revoked
     pub fn is_revoked(&self, token: &str) -> bool {
-        let tokens = self.revoked_tokens.lock().unwrap();
-        tokens.contains(token)
+        self.revoked_tokens.lock()
+            .map(|tokens| tokens.contains(token))
+            .unwrap_or(false)
     }
 }

@@ -4,21 +4,30 @@ use lendwise_recovery::config::Config;
 use serde_json::json;
 use lendwise_recovery::api::*;
 use lendwise_recovery::db::Db;
+use std::sync::atomic::{AtomicUsize, Ordering};
+
+static TEST_COUNTER: AtomicUsize = AtomicUsize::new(0);
+
+fn fresh_test_db() -> Db {
+    let counter = TEST_COUNTER.fetch_add(1, Ordering::SeqCst);
+    let mut path = std::env::temp_dir();
+    path.push(format!("lendwise_test_{}.db", counter));
+    let path_str = path.to_str().unwrap().to_string();
+    let _ = std::fs::remove_file(&path_str);
+    Db::new_with_path(&path_str).expect("Failed to create test database")
+}
 
 #[actix_web::test]
 async fn test_user_registration() {
     let unique_mail = format!("test.user.{}@example.com", uuid::Uuid::new_v4());
-    // Initialize database for testing
-    let db = Db::new_with_path("test_loans.db").expect("Failed to create test database");
+    let db = fresh_test_db();
 
-    // Create test app
     let app = test::init_service(
         App::new()
             .app_data(web::Data::new(db))
             .route("/users", web::post().to(register_user))
     ).await;
 
-    // Test user registration
     let req = test::TestRequest::post()
         .uri("/users")
         .set_json(&json!({
@@ -39,17 +48,14 @@ async fn test_user_registration() {
 
 #[actix_web::test]
 async fn test_get_users() {
-    // Initialize database for testing
-    let db = Db::new_with_path("test_loans.db").expect("Failed to create test database");
+    let db = fresh_test_db();
 
-    // Create test app
     let app = test::init_service(
         App::new()
             .app_data(web::Data::new(db))
             .route("/users", web::get().to(get_users))
     ).await;
 
-    // Test get users
     let req = test::TestRequest::get()
         .uri("/users")
         .to_request();
@@ -62,17 +68,14 @@ async fn test_get_users() {
 
 #[actix_web::test]
 async fn test_invalid_user_registration() {
-    // Initialize database for testing
-    let db = Db::new_with_path("test_loans.db").expect("Failed to create test database");
+    let db = fresh_test_db();
 
-    // Create test app
     let app = test::init_service(
         App::new()
             .app_data(web::Data::new(db))
             .route("/users", web::post().to(register_user))
     ).await;
 
-    // Test invalid role
     let req = test::TestRequest::post()
         .uri("/users")
         .set_json(&json!({
@@ -87,7 +90,6 @@ async fn test_invalid_user_registration() {
 
 #[actix_web::test]
 async fn test_server_startup() {
-    // Test that the server can be configured
     let config = Config::from_env().expect("Failed to load config");
     assert_eq!(config.server_host, "127.0.0.1");
     assert_eq!(config.server_port, 3000);

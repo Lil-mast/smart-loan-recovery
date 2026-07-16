@@ -332,7 +332,7 @@
   async function ensureAuthSession(lender) {
     const payload = { user_id: lender.id };
     try {
-      const res = await fetch(`${API_BASE}/auth/login`, {
+      const res = await fetch(`${API_BASE}/auth/demo-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -561,7 +561,6 @@
     localStorage.removeItem('user');
     localStorage.removeItem('lenderSession');
     localStorage.removeItem('selectedCurrency');
-    fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' }).catch(function () {});
     window.location.href = 'index.html';
   }
 

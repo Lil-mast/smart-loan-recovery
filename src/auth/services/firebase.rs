@@ -20,6 +20,21 @@ pub struct FirebaseAuthService {
     service_account_key: Option<Value>,
 }
 
+impl Default for FirebaseAuthService {
+    fn default() -> Self {
+        let client = Client::builder()
+            .timeout(Duration::from_secs(5))
+            .build()
+            .unwrap_or_else(|_| Client::new());
+        Self {
+            client,
+            project_id: String::new(),
+            api_key: String::new(),
+            service_account_key: None,
+        }
+    }
+}
+
 impl FirebaseAuthService {
     /// Initialize Firebase Auth Service
     pub async fn new() -> Result<Self, Box<dyn std::error::Error>> {

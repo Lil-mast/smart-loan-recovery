@@ -1,2 +1,10 @@
 target/
 .git/
+.env*
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+users_backup.json
+loans_backup.json
+target/debug/

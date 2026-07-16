@@ -64,7 +64,7 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd lendwise-recovery
+   cd smart-loan-recovery
    ```
 
 2. **Run the backend** (from the repository root so `frontend/` is found for `/app/`)

@@ -1,4 +1,4 @@
-use rusqlite::{Connection, Result, params};
+use rusqlite::{Connection, Result, params, Row};
 use crate::models::{User, UserRole, Loan, LoanStatus};
 use chrono::{DateTime, Duration, Utc};
 use uuid::Uuid;
@@ -224,7 +224,60 @@ impl Db {
         }))
     }
 
-    // Loan operations (keep Uuid for loans)
+    fn row_to_loan(row: &Row<'_>) -> Result<Loan> {
+        let id_str: String = row.get(0)?;
+        let borrower_id: String = row.get(1)?;
+        let lender_id: String = row.get(2)?;
+        let principal: f64 = row.get(3)?;
+        let interest_rate: f64 = row.get(4)?;
+        let disbursement_date_str: String = row.get(5)?;
+        let start_date_str: String = row.get(6)?;
+        let last_repayment_date_str: Option<String> = row.get(7)?;
+        let status_str: String = row.get(8)?;
+        let repayment_schedule_json: String = row.get(9)?;
+
+        let id = Uuid::parse_str(&id_str)
+            .map_err(|_| rusqlite::Error::InvalidColumnType(0, "UUID".to_string(), rusqlite::types::Type::Text))?;
+
+        let disbursement_date = DateTime::parse_from_rfc3339(&disbursement_date_str)
+            .map_err(|_| rusqlite::Error::InvalidColumnType(5, "DateTime".to_string(), rusqlite::types::Type::Text))?
+            .with_timezone(&Utc);
+        let start_date = DateTime::parse_from_rfc3339(&start_date_str)
+            .map_err(|_| rusqlite::Error::InvalidColumnType(6, "DateTime".to_string(), rusqlite::types::Type::Text))?
+            .with_timezone(&Utc);
+        let last_repayment_date = match last_repayment_date_str {
+            Some(date_str) => Some(DateTime::parse_from_rfc3339(&date_str)
+                .map_err(|_| rusqlite::Error::InvalidColumnType(7, "DateTime".to_string(), rusqlite::types::Type::Text))?
+                .with_timezone(&Utc)),
+            None => None,
+        };
+
+        let status = match status_str.as_str() {
+            "Active" => LoanStatus::Active,
+            "Overdue" => LoanStatus::Overdue,
+            "Defaulted" => LoanStatus::Defaulted,
+            "Repaid" => LoanStatus::Repaid,
+            _ => return Err(rusqlite::Error::InvalidColumnType(8, "LoanStatus".to_string(), rusqlite::types::Type::Text)),
+        };
+
+        let repayment_schedule: Vec<DateTime<Utc>> = serde_json::from_str(&repayment_schedule_json)
+            .map_err(|_| rusqlite::Error::InvalidColumnType(9, "JSON".to_string(), rusqlite::types::Type::Text))?;
+
+        Ok(Loan {
+            id,
+            borrower_id,
+            lender_id,
+            principal,
+            interest_rate,
+            disbursement_date,
+            start_date,
+            last_repayment_date,
+            status,
+            repayment_schedule,
+        })
+    }
+
+    // Loan operations
     pub fn save_loan(&self, loan: &Loan) -> Result<()> {
         let repayment_schedule_json = serde_json::to_string(&loan.repayment_schedule)
             .map_err(|_| rusqlite::Error::InvalidColumnType(0, "JSON".to_string(), rusqlite::types::Type::Text))?;
@@ -234,8 +287,8 @@ impl Db {
              VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
             params![
                 loan.id.to_string(),
-                loan.borrower_id.to_string(),
-                loan.lender_id.to_string(),
+                loan.borrower_id,
+                loan.lender_id,
                 loan.principal,
                 loan.interest_rate,
                 loan.disbursement_date.to_rfc3339(),
@@ -253,59 +306,7 @@ impl Db {
             "SELECT id, borrower_id, lender_id, principal, interest_rate, disbursement_date, start_date, last_repayment_date, status, repayment_schedule
              FROM loans WHERE id = ?1"
         )?;
-        let mut rows = stmt.query_map(params![id.to_string()], |row| {
-            let id_str: String = row.get(0)?;
-            let borrower_id_str: String = row.get(1)?;
-            let lender_id_str: String = row.get(2)?;
-            let principal: f64 = row.get(3)?;
-            let interest_rate: f64 = row.get(4)?;
-            let disbursement_date_str: String = row.get(5)?;
-            let start_date_str: String = row.get(6)?;
-            let last_repayment_date_str: Option<String> = row.get(7)?;
-            let status_str: String = row.get(8)?;
-            let repayment_schedule_json: String = row.get(9)?;
-
-            let id = Uuid::parse_str(&id_str).map_err(|_| rusqlite::Error::InvalidColumnType(0, "UUID".to_string(), rusqlite::types::Type::Text))?;
-            let borrower_id = Uuid::parse_str(&borrower_id_str).map_err(|_| rusqlite::Error::InvalidColumnType(1, "UUID".to_string(), rusqlite::types::Type::Text))?;
-            let lender_id = Uuid::parse_str(&lender_id_str).map_err(|_| rusqlite::Error::InvalidColumnType(2, "UUID".to_string(), rusqlite::types::Type::Text))?;
-
-            let disbursement_date = DateTime::parse_from_rfc3339(&disbursement_date_str)
-                .map_err(|_| rusqlite::Error::InvalidColumnType(5, "DateTime".to_string(), rusqlite::types::Type::Text))?
-                .with_timezone(&Utc);
-            let start_date = DateTime::parse_from_rfc3339(&start_date_str)
-                .map_err(|_| rusqlite::Error::InvalidColumnType(6, "DateTime".to_string(), rusqlite::types::Type::Text))?
-                .with_timezone(&Utc);
-            let last_repayment_date = match last_repayment_date_str {
-                Some(date_str) => Some(DateTime::parse_from_rfc3339(&date_str)
-                    .map_err(|_| rusqlite::Error::InvalidColumnType(7, "DateTime".to_string(), rusqlite::types::Type::Text))?
-                    .with_timezone(&Utc)),
-                None => None,
-            };
-
-            let status = match status_str.as_str() {
-                "Active" => LoanStatus::Active,
-                "Overdue" => LoanStatus::Overdue,
-                "Defaulted" => LoanStatus::Defaulted,
-                "Repaid" => LoanStatus::Repaid,
-                _ => return Err(rusqlite::Error::InvalidColumnType(8, "LoanStatus".to_string(), rusqlite::types::Type::Text)),
-            };
-
-            let repayment_schedule: Vec<DateTime<Utc>> = serde_json::from_str(&repayment_schedule_json)
-                .map_err(|_| rusqlite::Error::InvalidColumnType(9, "JSON".to_string(), rusqlite::types::Type::Text))?;
-
-            Ok(Loan {
-                id,
-                borrower_id,
-                lender_id,
-                principal,
-                interest_rate,
-                disbursement_date,
-                start_date,
-                last_repayment_date,
-                status,
-                repayment_schedule,
-            })
-        })?;
+        let mut rows = stmt.query_map(params![id.to_string()], Self::row_to_loan)?;
 
         match rows.next() {
             Some(loan) => Ok(Some(loan?)),
@@ -318,60 +319,7 @@ impl Db {
             "SELECT id, borrower_id, lender_id, principal, interest_rate, disbursement_date, start_date, last_repayment_date, status, repayment_schedule
              FROM loans"
         )?;
-        let loans = stmt.query_map([], |row| {
-            let id_str: String = row.get(0)?;
-            let borrower_id_str: String = row.get(1)?;
-            let lender_id_str: String = row.get(2)?;
-            let principal: f64 = row.get(3)?;
-            let interest_rate: f64 = row.get(4)?;
-            let disbursement_date_str: String = row.get(5)?;
-            let start_date_str: String = row.get(6)?;
-            let last_repayment_date_str: Option<String> = row.get(7)?;
-            let status_str: String = row.get(8)?;
-            let repayment_schedule_json: String = row.get(9)?;
-
-            let id = Uuid::parse_str(&id_str).map_err(|_| rusqlite::Error::InvalidColumnType(0, "UUID".to_string(), rusqlite::types::Type::Text))?;
-            let borrower_id = Uuid::parse_str(&borrower_id_str).map_err(|_| rusqlite::Error::InvalidColumnType(1, "UUID".to_string(), rusqlite::types::Type::Text))?;
-            let lender_id = Uuid::parse_str(&lender_id_str).map_err(|_| rusqlite::Error::InvalidColumnType(2, "UUID".to_string(), rusqlite::types::Type::Text))?;
-
-            let disbursement_date = DateTime::parse_from_rfc3339(&disbursement_date_str)
-                .map_err(|_| rusqlite::Error::InvalidColumnType(5, "DateTime".to_string(), rusqlite::types::Type::Text))?
-                .with_timezone(&Utc);
-            let start_date = DateTime::parse_from_rfc3339(&start_date_str)
-                .map_err(|_| rusqlite::Error::InvalidColumnType(6, "DateTime".to_string(), rusqlite::types::Type::Text))?
-                .with_timezone(&Utc);
-            let last_repayment_date = match last_repayment_date_str {
-                Some(date_str) => Some(DateTime::parse_from_rfc3339(&date_str)
-                    .map_err(|_| rusqlite::Error::InvalidColumnType(7, "DateTime".to_string(), rusqlite::types::Type::Text))?
-                    .with_timezone(&Utc)),
-                None => None,
-            };
-
-            let status = match status_str.as_str() {
-                "Active" => LoanStatus::Active,
-                "Overdue" => LoanStatus::Overdue,
-                "Defaulted" => LoanStatus::Defaulted,
-                "Repaid" => LoanStatus::Repaid,
-                _ => return Err(rusqlite::Error::InvalidColumnType(8, "LoanStatus".to_string(), rusqlite::types::Type::Text)),
-            };
-
-            let repayment_schedule: Vec<DateTime<Utc>> = serde_json::from_str(&repayment_schedule_json)
-                .map_err(|_| rusqlite::Error::InvalidColumnType(9, "JSON".to_string(), rusqlite::types::Type::Text))?;
-
-            Ok(Loan {
-                id,
-                borrower_id,
-                lender_id,
-                principal,
-                interest_rate,
-                disbursement_date,
-                start_date,
-                last_repayment_date,
-                status,
-                repayment_schedule,
-            })
-        })?;
-
+        let loans = stmt.query_map([], Self::row_to_loan)?;
         loans.collect()
     }
 

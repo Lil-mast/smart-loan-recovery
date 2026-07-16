@@ -90,12 +90,7 @@ fn run_cli(cli: Cli, db: Db) -> Result<(), Box<dyn std::error::Error>> {
         }
 
         Commands::CreateLoan { borrower_id, lender_id, principal, interest_rate, months } => {
-            let borrower_uuid = Uuid::parse_str(&borrower_id)
-                .map_err(|_| "Invalid borrower UUID format")?;
-            let lender_uuid = Uuid::parse_str(&lender_id)
-                .map_err(|_| "Invalid lender UUID format")?;
-
-            match loan_tracker.create_loan(borrower_uuid.to_string(), lender_uuid.to_string(), principal, interest_rate, months) {
+            match loan_tracker.create_loan(borrower_id, lender_id, principal, interest_rate, months) {
                 Ok(loan_id) => println!("✅ Created loan with ID: {}", loan_id),
                 Err(e) => eprintln!("❌ Failed to create loan: {}", e),
             }

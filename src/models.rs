@@ -32,8 +32,8 @@ pub enum LoanStatus {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Loan {
     pub id: uuid::Uuid,
-    pub borrower_id: uuid::Uuid,
-    pub lender_id: uuid::Uuid,
+    pub borrower_id: String,
+    pub lender_id: String,
     pub principal: f64,
     pub interest_rate: f64, // Annual interest rate in percentage
     pub disbursement_date: DateTime<Utc>,

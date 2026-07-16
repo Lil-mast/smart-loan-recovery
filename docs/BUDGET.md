@@ -29,7 +29,7 @@ gantt
     title LendWise Recovery Project Timeline
     dateFormat YYYY-MM-DD
     section Phase 1: Foundation
-    Laptop & Internet Setup     :done, p1, 2024-01-01, 7d
+    Laptop & Internet Setup     :done, p1, 2026-02-01, 7d
     Development Environment     :done, p2, after p1, 14d
     Core API Development        :done, p3, after p2, 21d
     Database Implementation     :done, p4, after p3, 14d

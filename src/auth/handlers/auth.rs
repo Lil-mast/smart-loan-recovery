@@ -9,6 +9,7 @@ use crate::auth::{
         TokenVerificationResponse, UpdateProfileRequest, UserInfo,
     },
     services::{FirebaseAuthService, TokenBlacklist},
+    utils::validate_password_strength,
     AuthState,
 };
 use crate::db::Db;
@@ -23,9 +24,9 @@ pub async fn register(
     log::info!("Processing registration request for email: {}", req.email);
 
     // Validate input
-    if req.password.len() < 6 {
+    if let Err(msg) = validate_password_strength(&req.password) {
         return HttpResponse::BadRequest().json(json!({
-            "error": "Password must be at least 6 characters long"
+            "error": msg
         }));
     }
 

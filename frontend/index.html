@@ -334,7 +334,7 @@
       <div class="mb-4">
         <label class="block text-on-surface-variant mb-2">User ID</label>
         <input type="text" id="loginUserId" pattern="[A-Za-z0-9]{4}" title="4 alphanumeric chars" maxlength="4" class="w-full px-4 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" placeholder="e.g. ABCD" required>
-<p class="text-xs text-on-surface-variant mt-2">Demo IDs (4 alphanumeric chars): borrower <span class="font-mono text-primary">ABCD</span> · lender <span class="font-mono text-primary">WXYZ</span></p>
+<p class="text-xs text-on-surface-variant mt-2">Demo IDs (4 alphanumeric chars): borrower <span class="font-mono text-primary">DEMO</span> · lender <span class="font-mono text-primary">BANK</span></p>
       </div>
       <p class="text-xs text-on-surface-variant mb-4">Match account type to your registration (borrower vs lender).</p>
       <div class="flex gap-4">
@@ -494,7 +494,7 @@
     const loginAs = document.getElementById('loginRole').value;
 
     try {
-      const response = await fetch(`${API_BASE}/auth/login`, {
+      const response = await fetch(`${API_BASE}/auth/demo-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id })

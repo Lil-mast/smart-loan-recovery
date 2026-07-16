@@ -15,20 +15,17 @@ impl<'a> LoanTracker<'a> {
 
     pub fn create_loan(
         &self,
-        borrower_id_str: String,
-        lender_id_str: String,
+        borrower_id: String,
+        lender_id: String,
         principal: f64,
         interest_rate: f64,
         duration_months: i64,
     ) -> Result<Uuid> {
-        let borrower_id = Uuid::parse_str(&borrower_id_str).map_err(|_| rusqlite::Error::InvalidColumnType(0, "UUID".to_string(), rusqlite::types::Type::Text))?;
-        let lender_id = Uuid::parse_str(&lender_id_str).map_err(|_| rusqlite::Error::InvalidColumnType(1, "UUID".to_string(), rusqlite::types::Type::Text))?;
-        
         let id = Uuid::new_v4();
         let now = Utc::now();
         let mut schedule = Vec::new();
         for m in 1..=duration_months {
-            schedule.push(now + Duration::days(30 * m)); // Approximate monthly
+            schedule.push(now + Duration::days(30 * m));
         }
         let loan = Loan {
             id,
@@ -51,7 +48,13 @@ impl<'a> LoanTracker<'a> {
             .ok_or_else(|| rusqlite::Error::QueryReturnedNoRows)?;
 
         loan.last_repayment_date = Some(Utc::now());
-        loan.status = if Utc::now() > *loan.repayment_schedule.last().unwrap() {
+
+        let overdue_installments = loan.repayment_schedule
+            .iter()
+            .filter(|&&due| Utc::now() > due)
+            .count();
+
+        loan.status = if overdue_installments >= loan.repayment_schedule.len() {
             LoanStatus::Repaid
         } else {
             LoanStatus::Active
