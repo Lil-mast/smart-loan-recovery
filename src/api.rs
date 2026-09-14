@@ -462,6 +462,10 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
             .configure(config_auth_routes)
             // Demo login endpoint (accepts user_id for legacy/demo flow)
             .route("/auth/demo-login", web::post().to(demo_login))
+            // Public demo UI routes (no JWT). The HTML app posts here.
+            .route("/users", web::get().to(get_users))
+            .route("/users", web::post().to(register_user))
+            .route("/loans", web::get().to(get_loans))
             // Protected routes with JWT authentication
             .service(
                 web::scope("/api")

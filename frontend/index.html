@@ -140,48 +140,58 @@
 </head>
 <body class="bg-background text-on-surface text-base font-body antialiased selection:bg-primary/30 selection:text-primary-fixed">
 <nav class="fixed top-0 w-full z-50 bg-[#0e141a]/80 backdrop-blur-xl relative">
-  <div class="flex justify-between items-center px-8 py-4 w-full max-w-none">
-    <span class="text-2xl font-black tracking-tighter text-[#00dddd]">LendWise</span>
+  <div class="flex justify-between items-center px-6 sm:px-10 py-4 max-w-7xl mx-auto">
+    <a href="index.html" class="text-2xl font-black tracking-tighter text-[#00dddd] no-underline">LendWise</a>
     <div class="flex items-center gap-3 sm:gap-4">
       <button id="themeToggle" type="button" class="p-2 hover:bg-[#252b31]/50 rounded-lg transition-all scale-95 active:scale-90 duration-200">
         <span class="material-symbols-outlined text-[#cbc3d9]">dark_mode</span>
       </button>
       <span id="navGuestButtons" class="flex items-center gap-3 sm:gap-4">
-        <button type="button" onclick="openModal('registerModal')" class="px-5 sm:px-6 py-2 rounded-full border border-primary/20 text-primary font-bold text-sm hover:bg-primary/5 transition-all">Register</button>
-        <button type="button" onclick="openModal('loginModal')" class="px-5 sm:px-6 py-2 rounded-full border border-primary/20 text-primary font-bold text-sm hover:bg-primary/5 transition-all">Login</button>
+        <a href="register.html" class="px-5 sm:px-6 py-2 rounded-full border border-primary/20 text-primary font-bold text-sm hover:bg-primary/5 transition-all no-underline">Register</a>
+        <button type="button" onclick="openModal('loginModal')" class="px-5 sm:px-6 py-2 rounded-full bg-primary text-on-primary font-bold text-sm hover:opacity-90 transition-all">Login</button>
       </span>
       <button type="button" id="navLogoutBtn" class="hidden px-5 sm:px-6 py-2 rounded-full border border-outline-variant/40 text-[#cbc3d9] font-bold text-sm hover:bg-[#252b31]/50 hover:text-white transition-all">Logout</button>
     </div>
   </div>
   <div class="bg-gradient-to-r from-transparent via-[#252b31] to-transparent h-[1px] w-full absolute bottom-0 left-0 right-0"></div>
 </nav>
-<main class="pt-24">
-<section class="relative px-8 pt-20 pb-32 overflow-hidden">
-  <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-    <div class="lg:col-span-7 z-10">
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary-container/20 text-secondary mb-8">
-        <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
-        <span class="text-xs font-bold uppercase tracking-widest">Predictive Debt Recovery</span>
-      </div>
-      <h1 class="font-headline text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] mb-8">
-        AI-Driven Loan Recovery for the<span class="text-primary italic">Modern Lender</span>
+<main class="pt-20">
+<section class="relative px-6 sm:px-10 pt-16 pb-20 overflow-hidden">
+  <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+    <div class="lg:col-span-6 z-10">
+      <p class="text-xs font-bold uppercase tracking-widest text-primary mb-6">Predictive debt recovery</p>
+      <h1 class="font-headline text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6">
+        AI-Driven Loan Recovery for the <span class="text-primary">Modern Lender</span>
       </h1>
-      <p class="text-on-surface-variant text-xl md:text-2xl max-w-2xl mb-12 leading-relaxed">Turn unpaid loans into real cash with LendWise
-        Our smart system makes complex data simple, helping you recover more money quickly and accurately 
-
-      </p>
+      <p class="text-on-surface-variant text-lg max-w-xl mb-8 leading-relaxed">Turn unpaid loans into recovered cash. Track risk, flag overdues, and get a next action for each loan.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="register.html" class="px-6 py-3 rounded-full bg-primary text-on-primary font-bold text-sm no-underline">Get started</a>
+        <button type="button" onclick="openModal('loginModal')" class="px-6 py-3 rounded-full border border-outline-variant/40 text-on-surface font-bold text-sm">Login</button>
+      </div>
     </div>
-    <div class="lg:col-span-5 relative">
-      <div class="relative w-full aspect-square rounded-3xl overflow-hidden glass-card glow-shadow border border-outline-variant/15 p-1">
-        <img class="w-full h-full object-cover" src="assets/Loan recovery strategy meeting in progress.png">
-        <div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
-        <div class="absolute bottom-8 left-8 right-8 glass-card border border-outline-variant/15 p-6 rounded-2xl glow-shadow">
-          <div class="flex items-center justify-between mb-4">
+    <div class="lg:col-span-6 relative">
+      <div class="relative w-full rounded-3xl overflow-hidden glass-card border border-outline-variant/15 p-6 bg-gradient-to-br from-primary/15 via-surface-container-high to-background min-h-[320px] flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-primary text-xs font-bold tracking-widest">RECOVERY</span>
+          <span class="text-xs text-on-surface-variant">Live</span>
+        </div>
+        <svg viewBox="0 0 320 140" class="w-full h-44" aria-hidden="true">
+          <path d="M0 110 C40 100, 70 90, 100 70 S160 20, 200 40 S260 90, 320 30" fill="none" stroke="#00dddd" stroke-width="3"/>
+          <path d="M0 110 C40 100, 70 90, 100 70 S160 20, 200 40 S260 90, 320 30 L320 140 L0 140 Z" fill="url(#recGrad)" opacity="0.35"/>
+          <defs>
+            <linearGradient id="recGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#00dddd"/>
+              <stop offset="100%" stop-color="#00dddd" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="glass-card border border-outline-variant/15 p-5 rounded-2xl">
+          <div class="flex items-center justify-between mb-2">
             <span class="text-primary text-xs font-bold tracking-tighter">AI LIVE ANALYSIS</span>
             <span class="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
           </div>
-          <div class="text-4xl font-headline font-black text-white mb-1">94.2%</div>
-          <div class="text-on-surface-variant text-sm font-medium">Recovery Accuracy Projection</div>
+          <div class="text-3xl font-headline font-black text-white mb-1">94.2%</div>
+          <div class="text-on-surface-variant text-sm font-medium">Recovery accuracy projection</div>
         </div>
       </div>
       <div class="absolute -top-12 -right-12 w-48 h-48 bg-primary/10 rounded-full blur-[80px]"></div>
@@ -212,9 +222,7 @@
             <span class="px-4 py-2 rounded-full bg-primary-container/30 text-primary text-sm font-semibold">Risk Mitigation</span>
           </div>
         </div>
-        <div class="absolute top-0 right-0 h-full w-1/3 hidden lg:block opacity-20 group-hover:opacity-40 transition-opacity">
-          <img alt="AI neural network" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80"/>
-        </div>
+        <div class="absolute top-0 right-0 h-full w-1/3 hidden lg:block opacity-20 group-hover:opacity-40 transition-opacity bg-gradient-to-b from-primary/30 to-transparent"></div>
       </div>
       <div class="md:col-span-4 bg-surface-container-high rounded-3xl p-10 border border-outline-variant/15 flex flex-col">
         <div class="w-14 h-14 rounded-2xl bg-secondary-container/10 flex items-center justify-center mb-8 text-secondary">
@@ -246,7 +254,7 @@
             <h3 class="text-3xl font-headline font-bold text-white mb-2">Ready for Intelligence?</h3>
             <p class="text-on-surface-variant">Join 500+ institutional lenders optimizing their recovery.</p>
           </div>
-          <button type="button" onclick="openModal('loginModal')" class="bg-primary text-on-primary font-bold px-8 py-4 rounded-full whitespace-nowrap hover:shadow-[0_0_20px_rgba(0,221,221,0.4)] transition-all">Deploy System</button>
+          <a href="register.html" class="bg-primary text-on-primary font-bold px-8 py-4 rounded-full whitespace-nowrap no-underline hover:shadow-[0_0_20px_rgba(0,221,221,0.4)] transition-all">Get started</a>
         </div>
       </div>
     </div>
@@ -271,52 +279,6 @@
   </div>
 </section>
 </main>
-<!-- Modals -->
-<div id="registerModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-  <div class="bg-surface p-8 rounded-2xl w-full max-w-md mx-4">
-    <h2 class="text-2xl font-bold text-on-surface mb-6">Register</h2>
-    <form id="registerForm">
-      <div class="mb-4">
-        <label class="block text-on-surface-variant mb-2">Account type</label>
-        <div class="relative">
-          <select id="registerRole" class="w-full px-4 py-2.5 pr-11 bg-surface-container rounded-lg border border-outline-variant text-on-surface appearance-none cursor-pointer" required>
-            <option value="borrower">Borrower</option>
-            <option value="lender">Lender</option>
-          </select>
-          <span class="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl" aria-hidden="true">expand_more</span>
-        </div>
-      </div>
-      <div class="mb-4">
-        <label class="block text-on-surface-variant mb-2">Full Name</label>
-        <input type="text" id="userName" class="w-full px-4 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" placeholder="Your full name" required>
-      </div>
-      <div class="mb-4">
-        <label class="block text-on-surface-variant mb-2">Email (optional)</label>
-        <input type="email" id="userEmail" class="w-full px-4 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" placeholder="your@email.com">
-      </div>
-      <div class="mb-4" id="borrowerFields" style="display: none;">
-        <label class="block text-on-surface-variant mb-2">Choose Lender/Bank</label>
-        <select id="userLender" class="w-full px-4 py-2.5 pr-11 bg-surface-container rounded-lg border border-outline-variant text-on-surface appearance-none cursor-pointer" required>
-          <option value="">Select a lender</option>
-          <option value="mshwari">M-shwari</option>
-          <option value="branch">Branch</option>
-          <option value="tala">Tala</option>
-          <option value="eazzy">Eazzy Loan</option>
-          <option value="kcb">KCB-Mpesa</option>
-        </select>
-      </div>
-      <div class="mb-4" id="lenderFields" style="display: none;">
-        <label class="block text-on-surface-variant mb-2">Organization</label>
-        <input type="text" id="userOrganization" class="w-full px-4 py-2 bg-surface-container rounded-lg border border-outline-variant text-on-surface" placeholder="Bank or Organization name" required>
-      </div>
-      <p class="text-xs text-on-surface-variant mb-4">You’ll be sent to the borrower or lender dashboard based on account type.</p>
-      <div class="flex gap-4">
-        <button type="button" onclick="closeModal('registerModal')" class="flex-1 px-4 py-2 border border-outline-variant rounded-lg text-on-surface">Cancel</button>
-        <button type="submit" class="flex-1 px-4 py-2 bg-primary text-on-primary rounded-lg font-bold">Register</button>
-      </div>
-    </form>
-  </div>
-</div>
 <div id="loginModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
   <div class="bg-surface p-8 rounded-2xl w-full max-w-md mx-4">
     <h2 class="text-2xl font-bold text-on-surface mb-6">Login</h2>
@@ -432,62 +394,6 @@
     }
   });
 
-  // Show/hide fields based on role
-  document.getElementById('registerRole').addEventListener('change', function() {
-    const role = this.value;
-    const borrowerFields = document.getElementById('borrowerFields');
-    const lenderFields = document.getElementById('lenderFields');
-    if (role === 'borrower') {
-      borrowerFields.style.display = 'block';
-      lenderFields.style.display = 'none';
-      document.getElementById('userLender').required = true;
-      document.getElementById('userOrganization').required = false;
-    } else if (role === 'lender') {
-      borrowerFields.style.display = 'none';
-      lenderFields.style.display = 'block';
-      document.getElementById('userLender').required = false;
-      document.getElementById('userOrganization').required = true;
-    } else {
-      borrowerFields.style.display = 'none';
-      lenderFields.style.display = 'none';
-      document.getElementById('userLender').required = false;
-      document.getElementById('userOrganization').required = false;
-    }
-  });
-
-  document.getElementById('registerForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const name = document.getElementById('userName').value;
-    const email = document.getElementById('userEmail').value;
-    const role = document.getElementById('registerRole').value;
-    const lender_name = role === 'borrower' ? document.getElementById('userLender').value : null;
-    const organization = role === 'lender' ? document.getElementById('userOrganization').value : null;
-
-    try {
-      const response = await fetch(`${API_BASE}/users`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, role, lender_name, organization })
-      });
-
-      if (response.ok) {
-        const user = await response.json();
-        alert('Registration successful! Your User ID is: ' + user.id + '. Use this ID to login.');
-        closeModal('registerModal');
-        // Do not auto-login, let them login with ID
-      } else {
-        let msg = 'Registration failed.';
-        try {
-          const err = await response.json();
-          if (err && err.message) msg = err.message;
-        } catch (e) {}
-        alert(msg);
-      }
-    } catch (error) {
-      alert('Network error: ' + error.message);
-    }
-  });
-
   document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const user_id = document.getElementById('loginUserId').value;
@@ -536,6 +442,7 @@
     document.documentElement.classList.add(savedTheme);
     updateThemeIcon();
     updateNavAuthState();
+
 
     const themeBtn = document.getElementById('themeToggle');
     if (themeBtn) {

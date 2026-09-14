@@ -314,8 +314,8 @@
     'AUD': 1.52
   };
 
-  function isValidUuid(id) {
-    return typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+  function isValidUserId(id) {
+    return typeof id === 'string' && (/^[A-Za-z0-9]{4}$/.test(id) || /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id));
   }
 
   let dashboardLender = null;
@@ -403,7 +403,7 @@
       }
       const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
 
-      if (!lender || !isValidUuid(lender.id)) {
+      if (!lender || !isValidUserId(lender.id)) {
         localStorage.removeItem('lenderSession');
         window.location.href = 'index.html';
         return;
