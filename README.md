@@ -55,6 +55,8 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
 
 ## 🚀 Quick Start
 
+**Full install, environment, Docker, and Fly.io steps:** [SETUP.md](SETUP.md).
+
 ### Prerequisites
 - Rust 1.92 or later
 - Docker (optional, for containerized deployment)
