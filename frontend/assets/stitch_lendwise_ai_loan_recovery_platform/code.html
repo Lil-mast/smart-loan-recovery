@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface-container-low":"#171b26","surface-dim":"#0f131d","text-secondary":"#94A3B8","tertiary-fixed-dim":"#d0bcff","background":"#0f131d","inverse-surface":"#dfe2f1","badge-cyan-glow":"rgba(6, 182, 212, 0.15)","surface-container":"#1c1f2a","stroke-glass":"rgba(255, 255, 255, 0.08)","on-background":"#dfe2f1","tertiary-container":"#a078ff","text-tertiary":"#64748B","on-surface":"#dfe2f1","outline-variant":"#424754","on-primary-container":"#00285d","surface-bright":"#353944","on-tertiary-container":"#340080","text-primary":"#F9FAFB","tertiary":"#d0bcff","surface-container-highest":"#313540","primary-fixed":"#d8e2ff","on-tertiary":"#3c0091","error":"#ffb4ab","error-container":"#93000a","surface-tint":"#adc6ff","surface-navy":"#0F172A","on-secondary-container":"#00424e","secondary-container":"#03b5d3","on-primary":"#002e6a","surface-variant":"#313540","stroke-glow":"rgba(59, 130, 246, 0.2)","on-error-container":"#ffdad6","canvas-void":"#06090F","secondary-fixed-dim":"#4cd7f6","on-primary-fixed-variant":"#004395","surface-container-high":"#262a35","on-secondary-fixed":"#001f26","on-secondary":"#003640","primary":"#adc6ff","secondary-fixed":"#acedff","outline":"#8c909f","surface":"#0f131d","secondary":"#4cd7f6","primary-container":"#4d8eff","inverse-on-surface":"#2c303b","on-tertiary-fixed-variant":"#5516be","tertiary-fixed":"#e9ddff","badge-violet-glow":"rgba(139, 92, 246, 0.15)","inverse-primary":"#005ac2","on-secondary-fixed-variant":"#004e5c","on-error":"#690005","on-primary-fixed":"#001a42","on-tertiary-fixed":"#23005c","surface-container-lowest":"#0a0e18","surface-indigo":"#111827","primary-fixed-dim":"#adc6ff"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-sm":"0.5rem","space-xl":"2.5rem","space-xs":"0.25rem",margin:"2rem","space-md":"1rem",gutter:"1.5rem","space-lg":"1.5rem"},fontFamily:{"headline-xl":["Manrope"],"headline-md":["Manrope"],"display-hero-mobile":["Manrope"],"body-sm":["Manrope"],"body-lead":["Manrope"],"display-hero":["Manrope"],"label-mono-sm":["JetBrains Mono"],"headline-xl-mobile":["Manrope"],"label-mono-bold":["JetBrains Mono"],"headline-lg":["Manrope"],"headline-sm":["Manrope"],"body-default":["Manrope"],"stat-numeric":["JetBrains Mono"]},fontSize:{"headline-xl":["48px",{lineHeight:"56px",letterSpacing:"-0.025em",fontWeight:"700"}],"headline-md":["24px",{lineHeight:"32px",letterSpacing:"-0.015em",fontWeight:"600"}],"display-hero-mobile":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"800"}],"body-sm":["13px",{lineHeight:"20px",letterSpacing:"0.005em",fontWeight:"400"}],"body-lead":["18px",{lineHeight:"28px",letterSpacing:"-0.005em",fontWeight:"400"}],"display-hero":["64px",{lineHeight:"72px",letterSpacing:"-0.03em",fontWeight:"800"}],"label-mono-sm":["11px",{lineHeight:"14px",letterSpacing:"0.06em",fontWeight:"500"}],"headline-xl-mobile":["32px",{lineHeight:"40px",letterSpacing:"-0.02em",fontWeight:"700"}],"label-mono-bold":["12px",{lineHeight:"16px",letterSpacing:"0.08em",fontWeight:"700"}],"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.02em",fontWeight:"600"}],"headline-sm":["20px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-default":["15px",{lineHeight:"24px",letterSpacing:"0em",fontWeight:"400"}],"stat-numeric":["28px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"600"}]}}}}</script></head><body class="bg-background font-body-default text-body-default text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container"><header class="fixed top-0 inset-x-0 z-50 bg-surface-navy/70 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-7xl mx-auto px-margin flex items-center justify-between gap-gutter"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-sm" data-path="landing-page" href="#"><img alt="LendWise Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VZNotkAfdSfsszeTOqXYQhzbU__vtuMnLRg_qAsLJmqUWHguaBUENNHcMvWiQp-VmVgPU8s-2tO8hHZQaSUblYplItwc0WCJjh-YzBU8G-oUZ2UgbD2rDEtDdsaK7t-95oZHGV35jcANzB4n2jFuQwUy4VSzF2xLjcBNd0A435Bi4Mw6nLi_Fe0AxFjnm1UnsC-NhP6BYKJOcNF9SwhXJKfg-b5RyiW1MNYa_c4GbaAMpvmOdHANmKKyc"/><span class="font-headline-sm text-headline-sm text-text-primary tracking-tight">LendWise</span></a><nav class="hidden xl:flex items-center gap-space-lg" data-active-classes="text-primary font-headline-sm"><a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-default text-body-default" data-path="product" href="#">Product</a><a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-default text-body-default" data-path="borrower-solutions" href="#">Borrower Solutions</a><a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-default text-body-default" data-path="lender-solutions" href="#">Lender Solutions</a><a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-default text-body-default" data-path="performance" href="#">Performance</a><a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-default text-body-default" data-path="institutional-tiers" href="#">Institutional Tiers</a></nav></div><div class="flex items-center gap-space-md"><a class="hidden sm:inline-flex px-space-md py-space-sm text-on-surface-variant hover:text-on-surface font-body-default text-body-default transition-colors" data-path="login" href="#">Login</a><a class="inline-flex items-center justify-center px-space-lg py-space-sm rounded-lg bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary transition-all font-headline-sm text-body-sm shadow-[0_0_16px_rgba(59,130,246,0.25)]" data-path="register" href="#">Launch Platform</a><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFGdsBljW2p2Se8WJdaGxNM7MBddEYD_8QJBpjXS0aBdBUeLC0ZmA0hmEvJubIwrvzsj-qbQTrHoH-vi8i9p2YAaPOeB9NUvFV1OGEfGiQLfXv-B6tppww4SwijpzGazCfrsZowr4YcHGyT5R8bQDhl9HKNPUrHsFyhLVcvPx4L3sNAZJ5QivFx0MWiSTBZ6WSFijceOlxEMTMwbyy94BHA-U4QS_wtHUtTx0wwqoasiTeLcR2Z9CV"/></div></div></header><main class="w-full pt-20 bg-background min-h-screen"><div class="flex flex-col w-full relative overflow-hidden">
+<!-- Dynamic Ambient Glow Layer -->
+<div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-gradient-to-tr from-primary-container/20 via-secondary/15 to-transparent blur-[140px] pointer-events-none -z-10"></div>
+<div class="absolute top-[1100px] right-0 w-[500px] h-[500px] bg-badge-violet-glow blur-[160px] pointer-events-none -z-10"></div>
+<div class="absolute top-[2200px] left-[-100px] w-[600px] h-[600px] bg-badge-cyan-glow blur-[180px] pointer-events-none -z-10"></div>
+<!-- HERO SECTION -->
+<section class="relative w-full max-w-7xl mx-auto px-margin pt-space-xl pb-24 flex flex-col items-center text-center">
+<!-- Live Predictive Pill Badge -->
+<div class="inline-flex items-center gap-space-sm px-space-md py-1.5 rounded-full bg-surface-container-high/80 shadow-md backdrop-blur-md mb-space-lg">
+<span class="material-symbols-outlined text-secondary text-body-sm" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-mono-bold text-label-mono-sm text-text-primary tracking-wider uppercase">Predictive Debt Recovery</span>
+<span class="h-3 w-[1px] bg-outline-variant"></span>
+<span class="flex items-center gap-1.5 font-label-mono-sm text-label-mono-sm text-secondary">
+<span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+        AI LIVE ANALYSIS: <span class="text-text-primary font-bold">94.2%</span> RECOVERY PROJECTION
+      </span>
+</div>
+<!-- Main Display Headline -->
+<h1 class="font-display-hero text-display-hero text-text-primary max-w-5xl tracking-tight leading-[1.08] mb-space-md">
+      AI-Driven Loan Recovery for the <span class="bg-gradient-to-r from-secondary-fixed via-primary to-tertiary bg-clip-text text-transparent">Modern Lender</span>
+</h1>
+<!-- Subtitle -->
+<p class="font-body-lead text-body-lead text-text-secondary max-w-2xl mb-space-xl leading-relaxed">
+      Turn unpaid loans into real cash with LendWise. Our smart system makes complex data simple, helping you recover more money quickly and accurately.
+    </p>
+<!-- CTAs -->
+<div class="flex flex-col sm:flex-row items-center gap-space-md mb-20 w-full sm:w-auto">
+<a class="w-full sm:w-auto px-8 py-3.5 rounded-lg bg-primary-container text-on-primary-container font-headline-sm text-body-sm tracking-wide shadow-xl hover:bg-primary hover:text-on-primary transition-all flex items-center justify-center gap-space-xs" href="#register-portal">
+<span>Deploy System</span>
+<span class="material-symbols-outlined text-body-default">arrow_forward</span>
+</a>
+<a class="w-full sm:w-auto px-8 py-3.5 rounded-lg bg-surface-container-high/80 text-text-primary hover:bg-surface-bright transition-all font-headline-sm text-body-sm shadow-sm backdrop-blur-md flex items-center justify-center gap-space-xs" href="#how-it-works">
+<span class="material-symbols-outlined text-body-default">person_search</span>
+<span>Explore Borrower Portal</span>
+</a>
+</div>
+<!-- Visual Hero Element: Glassmorphic Interactive Telemetry Cockpit -->
+<div class="w-full relative rounded-2xl bg-surface-container-low/70 shadow-2xl backdrop-blur-xl p-space-md md:p-space-lg text-left">
+<!-- Glow strip highlight -->
+<div class="absolute inset-x-8 -top-px h-px bg-gradient-to-r from-transparent via-secondary to-transparent opacity-70"></div>
+<!-- Panel Header Bar -->
+<div class="flex flex-wrap items-center justify-between pb-space-md gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-error"></span>
+<span class="w-3 h-3 rounded-full bg-surface-bright"></span>
+<span class="w-3 h-3 rounded-full bg-secondary"></span>
+</div>
+<span class="text-text-tertiary font-label-mono-sm text-label-mono-sm ml-2">CORE://PRISM-DYNAMIC-ORCHESTRATOR</span>
+</div>
+<div class="flex items-center gap-space-md">
+<span class="inline-flex items-center gap-1.5 text-secondary font-label-mono-sm text-label-mono-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> LATENCY: 120ms
+          </span>
+<span class="px-2 py-0.5 rounded bg-surface-container-highest font-label-mono-sm text-label-mono-sm text-text-secondary">STREAM: CONTINUOUS</span>
+</div>
+</div>
+<!-- Telemetry Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md mt-space-sm">
+<!-- Main Curve Chart (8 cols) -->
+<div class="lg:col-span-8 rounded-xl bg-surface-dim/80 p-space-lg flex flex-col justify-between">
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-md">
+<div>
+<p class="text-text-tertiary font-label-mono-sm text-label-mono-sm uppercase">Predictive Resolution Yield Curve</p>
+<h3 class="text-text-primary font-headline-md text-headline-md mt-1">$4,821,490 <span class="text-secondary font-label-mono-sm text-label-mono-sm font-normal">+18.4% vs Manual Run</span></h3>
+</div>
+<div class="flex items-center gap-1.5 p-1 bg-surface-container rounded-lg">
+<button class="px-2.5 py-1 rounded text-text-primary bg-surface-bright font-label-mono-sm text-label-mono-sm">Prism AI</button>
+<button class="px-2.5 py-1 rounded text-text-tertiary font-label-mono-sm text-label-mono-sm hover:text-text-primary">Legacy Baseline</button>
+</div>
+</div>
+<!-- SVG Visual Liquidation Curve -->
+<div class="w-full h-52 relative my-2">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 700 180">
+<defs>
+<lineargradient id="curveGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#4cd7f6" stop-opacity="0.35"></stop>
+<stop offset="100%" stop-color="#03b5d3" stop-opacity="0.0"></stop>
+</lineargradient>
+<lineargradient id="baselineGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#424754" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#424754" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Grid horizontal ticks -->
+<line stroke="rgba(255,255,255,0.04)" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="700" y1="40" y2="40"></line>
+<line stroke="rgba(255,255,255,0.04)" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="700" y1="90" y2="90"></line>
+<line stroke="rgba(255,255,255,0.04)" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="700" y1="140" y2="140"></line>
+<!-- Baseline curve -->
+<path d="M 0,150 Q 150,140 300,120 T 500,95 T 700,85 L 700,180 L 0,180 Z" fill="url(#baselineGradient)"></path>
+<path d="M 0,150 Q 150,140 300,120 T 500,95 T 700,85" fill="none" stroke="#64748B" stroke-dasharray="3 3" stroke-width="2"></path>
+<!-- Prism Active Curve -->
+<path d="M 0,160 C 120,150 200,80 340,60 C 460,40 580,25 700,15 L 700,180 L 0,180 Z" fill="url(#curveGradient)"></path>
+<path d="M 0,160 C 120,150 200,80 340,60 C 460,40 580,25 700,15" fill="none" stroke="#4cd7f6" stroke-width="3"></path>
+<!-- Pulse coordinate -->
+<circle class="animate-pulse" cx="560" cy="28" fill="#4cd7f6" r="5"></circle>
+<circle class="animate-ping" cx="560" cy="28" fill="none" opacity="0.4" r="12" stroke="#4cd7f6" stroke-width="1.5"></circle>
+</svg>
+</div>
+<div class="flex items-center justify-between pt-space-xs text-text-tertiary font-label-mono-sm text-label-mono-sm">
+<span>D+1 INITIATION</span>
+<span>D+14 RE-NEGOTIATION</span>
+<span>D+30 DYNAMIC RESTRUCTURE</span>
+<span>D+45 SETTLED</span>
+</div>
+</div>
+<!-- Right Side: Live Micro-telemetry (4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-space-md justify-between">
+<!-- Live Resolution Ring -->
+<div class="p-space-md rounded-xl bg-surface-dim/80 flex items-center gap-space-md">
+<div class="relative w-16 h-16 shrink-0 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path class="text-secondary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="94.2, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-label-mono-bold text-label-mono-sm text-text-primary">94.2%</span>
+</div>
+<div>
+<p class="font-label-mono-sm text-label-mono-sm text-text-tertiary uppercase">Resolution Efficiency</p>
+<p class="font-headline-sm text-body-default text-text-primary">Prism Micro-Batches</p>
+<span class="text-secondary font-label-mono-sm text-label-mono-sm">Optimal Trajectory</span>
+</div>
+</div>
+<!-- Automated Settlement Pathway -->
+<div class="p-space-md rounded-xl bg-surface-dim/80">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-mono-sm text-label-mono-sm text-text-tertiary uppercase">Automated Pipeline</span>
+<span class="font-label-mono-bold text-label-mono-sm text-primary">STAGE 4 READY</span>
+</div>
+<div class="space-y-2 font-label-mono-sm text-label-mono-sm">
+<div class="flex items-center justify-between text-text-secondary bg-surface-container/50 px-2 py-1.5 rounded">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm">verified</span> Collateral Assessment</span>
+<span class="text-text-primary">100%</span>
+</div>
+<div class="flex items-center justify-between text-text-secondary bg-surface-container/50 px-2 py-1.5 rounded">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm">swap_horiz</span> Micro-installment Payout</span>
+<span class="text-text-primary">92%</span>
+</div>
+<div class="flex items-center justify-between text-text-secondary bg-surface-container/50 px-2 py-1.5 rounded">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm">sync_alt</span> Disbursed Clearing</span>
+<span class="text-secondary font-bold">120ms</span>
+</div>
+</div>
+</div>
+<!-- Bottom Micro Feed -->
+<div class="p-space-md rounded-xl bg-surface-container-high/60 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-label-mono-sm text-label-mono-sm text-text-secondary">Simulated recovery nodes active: <span class="text-text-primary font-bold">14,280</span></span>
+</div>
+<span class="material-symbols-outlined text-text-tertiary text-sm">monitoring</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- TRUST MARQUEE & INSTITUTIONAL PARTNERS -->
+<section class="w-full bg-surface-container-lowest/80 py-12">
+<div class="max-w-7xl mx-auto px-margin">
+<p class="text-center font-label-mono-bold text-label-mono-sm text-text-tertiary tracking-widest uppercase mb-8">
+        TRUSTED BY 500+ INSTITUTIONAL LENDERS &amp; FINANCIAL INSTITUTIONS
+      </p>
+<!-- Logo Badges Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-space-md items-center justify-center">
+<!-- M-Shwari -->
+<div class="flex items-center justify-center gap-2 p-4 rounded-xl bg-surface-container-low/60 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-secondary">account_balance</span>
+<span class="font-headline-sm text-body-default text-text-primary font-semibold">M-Shwari</span>
+</div>
+<!-- Branch -->
+<div class="flex items-center justify-center gap-2 p-4 rounded-xl bg-surface-container-low/60 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-primary">hub</span>
+<span class="font-headline-sm text-body-default text-text-primary font-semibold">Branch</span>
+</div>
+<!-- Tala -->
+<div class="flex items-center justify-center gap-2 p-4 rounded-xl bg-surface-container-low/60 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-secondary-fixed">token</span>
+<span class="font-headline-sm text-body-default text-text-primary font-semibold">Tala</span>
+</div>
+<!-- Eazzy Loan -->
+<div class="flex items-center justify-center gap-2 p-4 rounded-xl bg-surface-container-low/60 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-tertiary">bolt</span>
+<span class="font-headline-sm text-body-default text-text-primary font-semibold">Eazzy Loan</span>
+</div>
+<!-- KCB-M-Pesa -->
+<div class="flex items-center justify-center gap-2 p-4 rounded-xl bg-surface-container-low/60 hover:bg-surface-container-high transition-colors col-span-2 sm:col-span-1">
+<span class="material-symbols-outlined text-secondary">assured_workload</span>
+<span class="font-headline-sm text-body-default text-text-primary font-semibold">KCB-M-Pesa</span>
+</div>
+</div>
+</div>
+</section>
+<!-- PERFORMANCE METRICS BAND -->
+<section class="w-full py-20 bg-surface-dim relative">
+<div class="max-w-7xl mx-auto px-margin">
+<div class="text-center mb-14">
+<p class="font-label-mono-bold text-label-mono-sm text-secondary uppercase tracking-widest mb-2">Performance Metrics</p>
+<h2 class="font-headline-lg text-headline-lg text-text-primary font-bold">Quantifiable recovery impact across all portfolios.</h2>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-lg">
+<!-- Metric 1 -->
+<div class="relative p-space-lg rounded-2xl bg-surface-container-low/70 shadow-lg backdrop-blur-md overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-primary/10 blur-xl"></div>
+<p class="font-label-mono-sm text-label-mono-sm text-text-tertiary uppercase tracking-wider mb-2">Total Volume Managed</p>
+<div class="font-stat-numeric text-4xl text-text-primary font-bold tracking-tight mb-2">$4.2B+</div>
+<p class="font-body-sm text-body-sm text-text-secondary">Audited institutional recovery capital across automated liquidation pools.</p>
+</div>
+<!-- Metric 2 -->
+<div class="relative p-space-lg rounded-2xl bg-surface-container-low/70 shadow-lg backdrop-blur-md overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-secondary/15 blur-xl"></div>
+<p class="font-label-mono-sm text-label-mono-sm text-secondary uppercase tracking-wider mb-2">AI LIVE ANALYSIS</p>
+<div class="font-stat-numeric text-4xl text-secondary font-bold tracking-tight mb-2">94.2%</div>
+<p class="font-body-sm text-body-sm text-text-secondary">Continuous recovery accuracy projection calculated across default curves.</p>
+</div>
+<!-- Metric 3 -->
+<div class="relative p-space-lg rounded-2xl bg-surface-container-low/70 shadow-lg backdrop-blur-md overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-tertiary/15 blur-xl"></div>
+<p class="font-label-mono-sm text-label-mono-sm text-text-tertiary uppercase tracking-wider mb-2">Yield Alpha</p>
+<div class="font-stat-numeric text-4xl text-text-primary font-bold tracking-tight mb-2">28%</div>
+<p class="font-body-sm text-body-sm text-text-secondary">Average verified lift in recovery success compared to manual agencies.</p>
+</div>
+<!-- Metric 4 -->
+<div class="relative p-space-lg rounded-2xl bg-surface-container-low/70 shadow-lg backdrop-blur-md overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-badge-cyan-glow blur-xl"></div>
+<p class="font-label-mono-sm text-label-mono-sm text-text-tertiary uppercase tracking-wider mb-2">Update Frequency</p>
+<div class="font-stat-numeric text-4xl text-secondary-fixed font-bold tracking-tight mb-2">120ms</div>
+<p class="font-body-sm text-body-sm text-text-secondary">Sub-second telemetry sync over global multi-channel debtor pipelines.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- INTELLIGENT CORE SYSTEMS (3-Column Bespoke Cards) -->
+<section class="w-full py-24 relative max-w-7xl mx-auto px-margin">
+<div class="mb-16">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high mb-3">
+<span class="material-symbols-outlined text-sm text-secondary">memory</span>
+<span class="font-label-mono-bold text-label-mono-sm text-secondary uppercase tracking-widest">The Framework</span>
+</div>
+<h2 class="font-display-hero text-headline-xl text-text-primary max-w-2xl font-bold">
+        Intelligent Core Systems
+      </h2>
+<p class="font-body-lead text-body-lead text-text-secondary max-w-xl mt-3">
+        Automated algorithmic execution replacing disjointed, manual debt follow-ups with instant probabilistic models.
+      </p>
+</div>
+<!-- 3 Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+<!-- Card 1: AI-Driven Recommendations -->
+<div class="rounded-2xl bg-surface-container-low/80 p-space-lg backdrop-blur-md shadow-xl flex flex-col justify-between group hover:bg-surface-container transition-all">
+<div>
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">psychology_alt</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-text-primary font-semibold mb-3">
+            AI-Driven Recommendations
+          </h3>
+<p class="font-body-default text-body-default text-text-secondary leading-relaxed mb-6">
+            Our proprietary Prism algorithms analyze borrower behavior patterns to recommend the most effective recovery path in real-time.
+          </p>
+</div>
+<div class="flex flex-wrap gap-2 pt-4">
+<span class="px-3 py-1 rounded-full bg-badge-cyan-glow text-secondary font-label-mono-sm text-label-mono-sm font-semibold">Priority Strategy</span>
+<span class="px-3 py-1 rounded-full bg-surface-container-highest text-text-secondary font-label-mono-sm text-label-mono-sm">Risk Mitigation</span>
+</div>
+</div>
+<!-- Card 2: Real-time Loan Tracking -->
+<div class="rounded-2xl bg-surface-container-low/80 p-space-lg backdrop-blur-md shadow-xl flex flex-col justify-between group hover:bg-surface-container transition-all">
+<div>
+<div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">monitoring</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-text-primary font-semibold mb-3">
+            Real-time Loan Tracking
+          </h3>
+<p class="font-body-default text-body-default text-text-secondary leading-relaxed mb-6">
+            Monitor every portfolio heartbeat. Instant updates across global channels without latency.
+          </p>
+</div>
+<div class="flex items-center justify-between pt-4 bg-surface-dim/60 p-3 rounded-xl">
+<span class="font-label-mono-sm text-label-mono-sm text-text-tertiary">Update Frequency</span>
+<span class="font-label-mono-bold text-label-mono-bold text-secondary">120ms</span>
+</div>
+</div>
+<!-- Card 3: Secure Authentication -->
+<div class="rounded-2xl bg-surface-container-low/80 p-space-lg backdrop-blur-md shadow-xl flex flex-col justify-between group hover:bg-surface-container transition-all">
+<div>
+<div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center text-tertiary mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">security</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-text-primary font-semibold mb-3">
+            Secure Authentication
+          </h3>
+<p class="font-body-default text-body-default text-text-secondary leading-relaxed mb-6">
+            Enterprise-grade biometric and multi-factor protocols protecting sensitive recovery data at every touchpoint.
+          </p>
+</div>
+<div class="flex items-center gap-2 pt-4">
+<span class="px-3 py-1 rounded-full bg-badge-violet-glow text-tertiary-fixed font-label-mono-sm text-label-mono-sm">SOC 2 Type II</span>
+<span class="px-3 py-1 rounded-full bg-surface-container-highest text-text-secondary font-label-mono-sm text-label-mono-sm">ISO 27001</span>
+</div>
+</div>
+</div>
+</section>
+<!-- HOW IT WORKS: 4-STEP PROCESS (Rescale Style) -->
+<section class="w-full py-24 bg-surface-container-lowest relative" id="how-it-works">
+<div class="max-w-7xl mx-auto px-margin">
+<div class="text-center max-w-3xl mx-auto mb-16">
+<p class="font-label-mono-bold text-label-mono-sm text-secondary tracking-widest uppercase mb-2">HOW IT WORKS</p>
+<h2 class="font-display-hero text-headline-xl text-text-primary font-bold mb-4">
+          Explore Our Simple, Easy Process
+        </h2>
+<p class="font-body-lead text-body-lead text-text-secondary">
+          Start with ease and watch your portfolio yield thrive from the get-go with automated guidance every step of the way.
+        </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-lg relative">
+<!-- Step 1 -->
+<div class="p-space-lg rounded-2xl bg-surface-container-low/70 flex flex-col justify-between shadow-md">
+<div>
+<div class="flex items-center justify-between mb-8">
+<span class="font-label-mono-bold text-label-mono-sm text-secondary bg-surface-container-high px-3 py-1 rounded-full">Step 1</span>
+<span class="material-symbols-outlined text-text-tertiary">folder_zip</span>
+</div>
+<div class="w-14 h-14 rounded-xl bg-surface-container-high flex items-center justify-center text-secondary mb-6">
+<span class="material-symbols-outlined text-3xl">upload_file</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-text-primary mb-2">Register &amp; Connect</h4>
+<p class="font-body-sm text-body-sm text-text-secondary leading-relaxed">
+              Connect your portfolio via secure API or encrypted file ingest. Set up automated tracking instantly.
+            </p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="p-space-lg rounded-2xl bg-surface-container-low/70 flex flex-col justify-between shadow-md">
+<div>
+<div class="flex items-center justify-between mb-8">
+<span class="font-label-mono-bold text-label-mono-sm text-secondary bg-surface-container-high px-3 py-1 rounded-full">Step 2</span>
+<span class="material-symbols-outlined text-text-tertiary">manage_accounts</span>
+</div>
+<div class="w-14 h-14 rounded-xl bg-surface-container-high flex items-center justify-center text-primary mb-6">
+<span class="material-symbols-outlined text-3xl">switch_account</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-text-primary mb-2">Choose Role</h4>
+<p class="font-body-sm text-body-sm text-text-secondary leading-relaxed">
+              Segment workflows between Lender recovery cockpits and empathetic, structured Borrower resolution portals.
+            </p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="p-space-lg rounded-2xl bg-surface-container-low/70 flex flex-col justify-between shadow-md">
+<div>
+<div class="flex items-center justify-between mb-8">
+<span class="font-label-mono-bold text-label-mono-sm text-secondary bg-surface-container-high px-3 py-1 rounded-full">Step 3</span>
+<span class="material-symbols-outlined text-text-tertiary">analytics</span>
+</div>
+<div class="w-14 h-14 rounded-xl bg-surface-container-high flex items-center justify-center text-tertiary mb-6">
+<span class="material-symbols-outlined text-3xl">psychology</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-text-primary mb-2">Prism AI Matching</h4>
+<p class="font-body-sm text-body-sm text-text-secondary leading-relaxed">
+              Algorithms synthesize past repayment behavior to auto-propose tailored micro-restructuring schedules.
+            </p>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="p-space-lg rounded-2xl bg-surface-container-low/70 flex flex-col justify-between shadow-md">
+<div>
+<div class="flex items-center justify-between mb-8">
+<span class="font-label-mono-bold text-label-mono-sm text-secondary bg-surface-container-high px-3 py-1 rounded-full">Step 4</span>
+<span class="material-symbols-outlined text-text-tertiary">payments</span>
+</div>
+<div class="w-14 h-14 rounded-xl bg-surface-container-high flex items-center justify-center text-secondary-fixed mb-6">
+<span class="material-symbols-outlined text-3xl">paid</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-text-primary mb-2">Track &amp; Payout</h4>
+<p class="font-body-sm text-body-sm text-text-secondary leading-relaxed">
+              Liquidated funds settle into institutional accounts automatically with real-time audit logs and zero leakage.
+            </p>
+</div>
+</div>
+</div>
+<div class="mt-12 text-center">
+<span class="text-text-secondary font-body-sm text-body-sm mr-3">Seamless integration with expert guidance.</span>
+<a class="inline-flex items-center gap-1 text-secondary hover:text-text-primary font-headline-sm text-body-sm underline underline-offset-4" href="#register-portal">
+          Connect Now <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</section>
+<!-- INTERACTIVE ONBOARDING & PORTAL SWITCHER (Role-Based Register & Login) -->
+<section class="w-full py-24 max-w-7xl mx-auto px-margin" id="register-portal">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+<!-- Left Explanation -->
+<div class="lg:col-span-5">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container mb-4">
+<span class="material-symbols-outlined text-secondary text-sm">vpn_key</span>
+<span class="font-label-mono-bold text-label-mono-sm text-secondary uppercase">Unified Gate</span>
+</div>
+<h2 class="font-headline-xl text-headline-xl text-text-primary font-bold mb-4">
+          Tailored Gateways for Lenders &amp; Borrowers
+        </h2>
+<p class="font-body-lead text-body-lead text-text-secondary mb-6">
+          Access automated portfolio liquidation controls or resolve personal commitments with dignified, AI-curated installment schedules.
+        </p>
+<!-- Dynamic Test Credential Hint Callout -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm">
+<div class="flex items-center gap-2 text-secondary font-label-mono-bold text-label-mono-sm uppercase mb-2">
+<span class="material-symbols-outlined text-body-default">info</span> Quick Demo Access
+          </div>
+<p class="font-body-sm text-body-sm text-text-secondary mb-2">
+            Test pre-configured sandboxes directly with 4-character identifiers:
+          </p>
+<div class="flex items-center gap-space-sm font-label-mono-bold text-label-mono-sm">
+<span class="px-2.5 py-1 rounded bg-surface-container-highest text-text-primary">Borrower: DEMO</span>
+<span class="px-2.5 py-1 rounded bg-surface-container-highest text-secondary">Lender: BANK</span>
+</div>
+</div>
+</div>
+<!-- Right Interactive Dynamic Card -->
+<div class="lg:col-span-7 rounded-2xl bg-surface-container-low/90 p-space-xl shadow-2xl backdrop-blur-xl">
+<!-- Tab Switcher: Register vs Login -->
+<div class="flex items-center justify-between pb-space-md mb-space-lg">
+<div class="flex gap-2">
+<button class="px-5 py-2 rounded-lg bg-primary-container text-on-primary-container font-headline-sm text-body-sm transition-all shadow-md" id="tabRegisterBtn" onclick="switchPortalTab('register')">
+              Register
+            </button>
+<button class="px-5 py-2 rounded-lg bg-surface-container-high text-text-secondary hover:text-text-primary font-headline-sm text-body-sm transition-all" id="tabLoginBtn" onclick="switchPortalTab('login')">
+              Login
+            </button>
+</div>
+<div class="flex items-center gap-1 text-text-tertiary font-label-mono-sm text-label-mono-sm">
+<span class="material-symbols-outlined text-sm text-secondary">lock</span> 256-Bit Encrypted
+          </div>
+</div>
+<!-- FORM 1: REGISTER -->
+<form class="space-y-space-md" id="formRegister">
+<!-- Account Type Selector -->
+<div>
+<label class="block font-label-mono-bold text-label-mono-sm text-text-secondary uppercase mb-2">Account Type</label>
+<div class="grid grid-cols-2 gap-space-sm">
+<label class="flex items-center gap-2 p-3 rounded-lg bg-surface-dim cursor-pointer hover:bg-surface-container-high transition-colors">
+<input checked="" class="accent-primary" name="regType" type="radio" value="borrower"/>
+<span class="font-headline-sm text-body-default text-text-primary">Borrower</span>
+</label>
+<label class="flex items-center gap-2 p-3 rounded-lg bg-surface-dim cursor-pointer hover:bg-surface-container-high transition-colors">
+<input class="accent-primary" name="regType" type="radio" value="lender"/>
+<span class="font-headline-sm text-body-default text-text-primary">Lender</span>
+</label>
+</div>
+</div>
+<!-- Full Name -->
+<div>
+<label class="block font-label-mono-bold text-label-mono-sm text-text-secondary uppercase mb-2">Full Name</label>
+<input class="w-full h-11 px-4 rounded-lg bg-surface-dim text-text-primary font-body-default placeholder:text-text-tertiary focus:outline-none shadow-inner" placeholder="Sarah Jenkins" type="text"/>
+</div>
+<!-- Email (optional) -->
+<div>
+<label class="block font-label-mono-bold text-label-mono-sm text-text-secondary uppercase mb-2">Email (Optional)</label>
+<input class="w-full h-11 px-4 rounded-lg bg-surface-dim text-text-primary font-body-default placeholder:text-text-tertiary focus:outline-none shadow-inner" placeholder="sarah.j@institutional.org" type="email"/>
+</div>
+<!-- Choose Lender/Bank -->
+<div>
+<label class="block font-label-mono-bold text-label-mono-sm text-text-secondary uppercase mb-2">Choose Lender / Bank</label>
+<div class="relative">
+<select class="w-full h-11 px-4 rounded-lg bg-surface-dim text-text-primary font-body-default appearance-none focus:outline-none cursor-pointer">
+<option value="">Select a lender</option>
+<option value="M-shwari">M-Shwari</option>
+<option value="Branch">Branch</option>
+<option value="Tala">Tala</option>
+<option value="Eazzy Loan">Eazzy Loan</option>
+<option value="KCB-Mpesa">KCB-M-Pesa</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 pointer-events-none text-text-tertiary">expand_more</span>
+</div>
+</div>
+<!-- Organization -->
+<div>
+<label class="block font-label-mono-bold text-label-mono-sm text-text-secondary uppercase mb-2">Organization</label>
+<input class="w-full h-11 px-4 rounded-lg bg-surface-dim text-text-primary font-body-default placeholder:text-text-tertiary focus:outline-none shadow-inner" placeholder="Global Credit Facility LLC" type="text"/>
+</div>
+<p class="font-body-sm text-body-sm text-text-tertiary italic">
+            You’ll be sent to the borrower or lender dashboard based on account type.
+          </p>
+<div class="flex items-center justify-end gap-space-md pt-space-sm">
+<button class="px-5 py-2.5 rounded-lg text-text-secondary hover:text-text-primary font-body-default text-body-default" type="reset">Cancel</button>
+<button class="px-7 py-2.5 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary font-headline-sm text-body-sm shadow-lg transition-all" type="button">Register</button>
+</div>
+</form>
+<!-- FORM 2: LOGIN (Initially Hidden) -->
+<form class="space-y-space-md hidden" id="formLogin">
+<!-- Account Type Selector -->
+<div>
+<label class="block font-label-mono-bold text-label-mono-sm text-text-secondary uppercase mb-2">Account Type</label>
+<div class="grid grid-cols-2 gap-space-sm">
+<label class="flex items-center gap-2 p-3 rounded-lg bg-surface-dim cursor-pointer hover:bg-surface-container-high transition-colors">
+<input checked="" class="accent-primary" name="loginType" type="radio" value="borrower"/>
+<span class="font-headline-sm text-body-default text-text-primary">Borrower</span>
+</label>
+<label class="flex items-center gap-2 p-3 rounded-lg bg-surface-dim cursor-pointer hover:bg-surface-container-high transition-colors">
+<input class="accent-primary" name="loginType" type="radio" value="lender"/>
+<span class="font-headline-sm text-body-default text-text-primary">Lender</span>
+</label>
+</div>
+</div>
+<!-- User ID -->
+<div>
+<label class="block font-label-mono-bold text-label-mono-sm text-text-secondary uppercase mb-2">User ID</label>
+<input class="w-full h-11 px-4 rounded-lg bg-surface-dim text-text-primary font-label-mono-bold text-body-default placeholder:text-text-tertiary focus:outline-none shadow-inner" placeholder="Enter 4-character ID (e.g. DEMO or BANK)" type="text"/>
+<p class="font-label-mono-sm text-label-mono-sm text-secondary mt-1.5">Demo IDs (4 alphanumeric chars): borrower DEMO · lender BANK</p>
+</div>
+<p class="font-body-sm text-body-sm text-text-tertiary italic">
+            Match account type to your registration (borrower vs lender).
+          </p>
+<div class="flex items-center justify-end gap-space-md pt-space-sm">
+<button class="px-5 py-2.5 rounded-lg text-text-secondary hover:text-text-primary font-body-default text-body-default" type="reset">Cancel</button>
+<button class="px-7 py-2.5 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary font-headline-sm text-body-sm shadow-lg transition-all" type="button">Login</button>
+</div>
+</form>
+</div>
+</div>
+</section>
+<!-- INSTITUTIONAL TIERS / PLANS (Rescale Style) -->
+<section class="w-full py-24 bg-surface-dim relative">
+<div class="max-w-7xl mx-auto px-margin">
+<div class="text-center max-w-3xl mx-auto mb-16">
+<p class="font-label-mono-bold text-label-mono-sm text-secondary tracking-widest uppercase mb-2">PRICING &amp; PROVISIONS</p>
+<h2 class="font-display-hero text-headline-xl text-text-primary font-bold mb-4">
+          Explore Our Plans
+        </h2>
+<p class="font-body-lead text-body-lead text-text-secondary">
+          Super flexible recovery tiers for regional funds and global banking syndicates.
+        </p>
+<!-- Toggle (Monthly / Annual) -->
+<div class="inline-flex items-center gap-3 p-1 rounded-full bg-surface-container-high mt-6">
+<span class="font-label-mono-sm text-label-mono-sm text-text-primary px-3 py-1 rounded-full bg-surface-bright">Monthly</span>
+<span class="font-label-mono-sm text-label-mono-sm text-text-tertiary px-3 py-1 cursor-pointer hover:text-text-primary">Annual (-20%)</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg items-stretch">
+<!-- Tier 1: Essential -->
+<div class="p-space-xl rounded-2xl bg-surface-container-low/70 flex flex-col justify-between shadow-md">
+<div>
+<span class="font-label-mono-bold text-label-mono-sm text-text-secondary uppercase">Essential</span>
+<h3 class="font-headline-md text-headline-md text-text-primary mt-1 mb-3">Regional Lenders</h3>
+<p class="font-body-sm text-body-sm text-text-secondary mb-6">Up to $10M managed AUM. Automated debtor SMS/Email flows.</p>
+<div class="flex items-baseline gap-1 mb-8">
+<span class="font-display-hero text-4xl text-text-primary font-bold">$29</span>
+<span class="font-body-sm text-body-sm text-text-tertiary">/month</span>
+</div>
+<ul class="space-y-3 font-body-sm text-body-sm text-text-secondary mb-8">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-secondary">check</span> Core Analytics &amp; Audit Log</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-secondary">check</span> Unified Campaigns</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-secondary">check</span> Standard Support SLA</li>
+</ul>
+</div>
+<button class="w-full py-3 rounded-lg bg-surface-container-high text-text-primary hover:bg-surface-bright transition-colors font-headline-sm text-body-sm">
+            Deploy Essential
+          </button>
+</div>
+<!-- Tier 2: Advanced (Featured Glow) -->
+<div class="p-space-xl rounded-2xl bg-surface-container relative flex flex-col justify-between shadow-2xl ring-1 ring-primary-container/40">
+<div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-on-primary font-label-mono-bold text-label-mono-sm tracking-widest uppercase shadow-md">
+            Most Popular
+          </div>
+<div>
+<span class="font-label-mono-bold text-label-mono-sm text-secondary uppercase">Advanced</span>
+<h3 class="font-headline-md text-headline-md text-text-primary mt-1 mb-3">Fintechs &amp; Tier-2</h3>
+<p class="font-body-sm text-body-sm text-text-secondary mb-6">Between $10M - $100M AUM. Algorithmic dynamic workout plans.</p>
+<div class="flex items-baseline gap-1 mb-8">
+<span class="font-display-hero text-4xl text-secondary font-bold">$79</span>
+<span class="font-body-sm text-body-sm text-text-tertiary">/month</span>
+</div>
+<ul class="space-y-3 font-body-sm text-body-sm text-text-secondary mb-8">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-secondary">check</span> Prism AI Behavioral Routing</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-secondary">check</span> Priority Liquidation Queues</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-secondary">check</span> Automated Multi-factor Escalations</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-secondary">check</span> Team Collaboration Hubs</li>
+</ul>
+</div>
+<button class="w-full py-3 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary transition-all font-headline-sm text-body-sm shadow-xl">
+            Deploy Advanced
+          </button>
+</div>
+<!-- Tier 3: Enterprise Custom -->
+<div class="p-space-xl rounded-2xl bg-surface-container-low/70 flex flex-col justify-between shadow-md">
+<div>
+<span class="font-label-mono-bold text-label-mono-sm text-tertiary-fixed uppercase">Enterprise</span>
+<h3 class="font-headline-md text-headline-md text-text-primary mt-1 mb-3">Tier-1 Multinationals</h3>
+<p class="font-body-sm text-body-sm text-text-secondary mb-6">Microfinance consortia &amp; banks requiring dedicated cloud hardware.</p>
+<div class="flex items-baseline gap-1 mb-8">
+<span class="font-display-hero text-4xl text-text-primary font-bold">$199</span>
+<span class="font-body-sm text-body-sm text-text-tertiary">/month</span>
+</div>
+<ul class="space-y-3 font-body-sm text-body-sm text-text-secondary mb-8">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-secondary">check</span> Unlimited Portfolios &amp; AUM</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-secondary">check</span> Dedicated SOC2 Type II Tenants</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-secondary">check</span> 24/7 Priority Financial Engineers</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-secondary">check</span> Custom Predictive Core Weights</li>
+</ul>
+</div>
+<button class="w-full py-3 rounded-lg bg-surface-container-high text-text-primary hover:bg-surface-bright transition-colors font-headline-sm text-body-sm">
+            Contact Sales
+          </button>
+</div>
+</div>
+</div>
+</section>
+<!-- TESTIMONIAL & PROVEN TRUST (Rescale Video/Story style) -->
+<section class="w-full py-24 max-w-7xl mx-auto px-margin">
+<div class="rounded-3xl bg-surface-container-low/70 p-space-xl shadow-2xl backdrop-blur-xl relative overflow-hidden">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
+<!-- Visual Portrait Side (5 cols) -->
+<div class="lg:col-span-5 relative">
+<div class="w-full h-80 rounded-2xl overflow-hidden relative shadow-lg">
+<img class="w-full h-full object-cover" data-alt="Close up professional portrait of senior financial risk and loan recovery executive in navy tailored suit inside a sleek high-tech corporate fintech command center with subtle ambient blue lighting and reflection glass." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCH2eJlKgA3oDATFvt8FpLniE6_eXmSVu4TJopV4XuwXwfQaFW0prWYBNOO_UlWMZnFk0S-ZApO9Cs8LNJZPeICC_mC4RtJWEhELzLYOqLlUUWeN9GJh7X8JbEqjp82_0qR3HN1Q9YsMKeqDVr869AyPJHpKTkU26gvYYI0vBlpS6sIHnj9hSMmwFVDJufzT-yijpUSjTKckZ93rQLDmBgHF2izdFWEFLerucii3H4kxQwgHNK_7INW"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dim via-transparent to-transparent"></div>
+<div class="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+<div>
+<p class="font-headline-sm text-body-default text-text-primary font-bold">David Pierce</p>
+<p class="font-label-mono-sm text-label-mono-sm text-text-secondary">Head of Collections &amp; Recovery</p>
+</div>
+<span class="material-symbols-outlined text-secondary text-2xl">verified</span>
+</div>
+</div>
+</div>
+<!-- Quote Details Side (7 cols) -->
+<div class="lg:col-span-7 flex flex-col justify-center">
+<span class="font-label-mono-bold text-label-mono-sm text-secondary uppercase tracking-widest mb-4">CLIENT INSIGHTS</span>
+<p class="font-headline-lg text-2xl md:text-3xl text-text-primary font-semibold leading-snug mb-6">
+            “Since implementing LendWise Prism AI, we’ve seen a dramatic 28% improvement in portfolio yield efficiency. The system automates tedious follow-ups and uncovers viable repayment options we would have otherwise written off.”
+          </p>
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">trending_up</span>
+<span class="font-label-mono-bold text-body-default text-text-primary">+28% Net Recovery</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">speed</span>
+<span class="font-label-mono-bold text-body-default text-text-primary">120ms Latency</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- FINAL HIGH-IMPACT CTA SECTION -->
+<section class="w-full py-28 bg-surface-dim relative overflow-hidden">
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-[700px] h-[350px] bg-gradient-to-r from-primary-container/20 to-secondary/20 blur-[130px]"></div>
+</div>
+<div class="max-w-4xl mx-auto px-margin text-center relative z-10">
+<h2 class="font-display-hero text-headline-xl text-text-primary font-bold mb-4 tracking-tight">
+        Ready for Intelligence?
+      </h2>
+<p class="font-body-lead text-body-lead text-text-secondary mb-10 max-w-2xl mx-auto">
+        Join 500+ institutional lenders optimizing their recovery. Deploy machine-learning algorithms across your loan books today.
+      </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-space-md">
+<a class="w-full sm:w-auto px-10 py-4 rounded-xl bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary font-headline-sm text-body-default shadow-2xl transition-all" href="#register-portal">
+          Deploy System
+        </a>
+<a class="w-full sm:w-auto px-10 py-4 rounded-xl bg-surface-container text-text-primary hover:bg-surface-bright font-headline-sm text-body-default transition-all" href="#how-it-works">
+          Talk to an Analyst
+        </a>
+</div>
+</div>
+</section>
+</div>
+<!-- Inline Tab Interaction Handler -->
+<script>
+  function switchPortalTab(tab) {
+    const regBtn = document.getElementById('tabRegisterBtn');
+    const logBtn = document.getElementById('tabLoginBtn');
+    const formReg = document.getElementById('formRegister');
+    const formLog = document.getElementById('formLogin');
+
+    if (tab === 'register') {
+      regBtn.className = 'px-5 py-2 rounded-lg bg-primary-container text-on-primary-container font-headline-sm text-body-sm transition-all shadow-md';
+      logBtn.className = 'px-5 py-2 rounded-lg bg-surface-container-high text-text-secondary hover:text-text-primary font-headline-sm text-body-sm transition-all';
+      formReg.classList.remove('hidden');
+      formLog.classList.add('hidden');
+    } else {
+      logBtn.className = 'px-5 py-2 rounded-lg bg-primary-container text-on-primary-container font-headline-sm text-body-sm transition-all shadow-md';
+      regBtn.className = 'px-5 py-2 rounded-lg bg-surface-container-high text-text-secondary hover:text-text-primary font-headline-sm text-body-sm transition-all';
+      formLog.classList.remove('hidden');
+      formReg.classList.add('hidden');
+    }
+  }
+</script></main><footer class="w-full bg-surface-container-lowest"><div class="max-w-7xl mx-auto px-margin py-space-xl"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-space-xl mb-space-xl"><div><div class="flex items-center gap-space-sm mb-space-md"><img alt="LendWise Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VZNotkAfdSfsszeTOqXYQhzbU__vtuMnLRg_qAsLJmqUWHguaBUENNHcMvWiQp-VmVgPU8s-2tO8hHZQaSUblYplItwc0WCJjh-YzBU8G-oUZ2UgbD2rDEtDdsaK7t-95oZHGV35jcANzB4n2jFuQwUy4VSzF2xLjcBNd0A435Bi4Mw6nLi_Fe0AxFjnm1UnsC-NhP6BYKJOcNF9SwhXJKfg-b5RyiW1MNYa_c4GbaAMpvmOdHANmKKyc"/><span class="font-headline-sm text-headline-sm text-text-primary tracking-tight">LendWise</span></div><p class="text-text-secondary font-body-sm text-body-sm mb-space-md">Enterprise AI debt resolution, algorithmic liquidation, and portfolio recovery orchestration infrastructure.</p><div class="inline-flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-badge-cyan-glow"><span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span class="font-label-mono-sm text-label-mono-sm text-secondary uppercase tracking-widest">System Status: Operational 99.99%</span></div></div><div><h4 class="font-headline-sm text-body-default text-text-primary mb-space-md">Architecture</h4><ul class="space-y-space-sm font-body-sm text-body-sm"><li class="text-text-secondary hover:text-on-surface transition-colors"><a href="#">Predictive Liquidity Core</a></li><li class="text-text-secondary hover:text-on-surface transition-colors"><a href="#">Dynamic Resolution Engine</a></li><li class="text-text-secondary hover:text-on-surface transition-colors"><a href="#">Collateral Auto-Audit</a></li><li class="text-text-secondary hover:text-on-surface transition-colors"><a href="#">High-Throughput Settlement</a></li></ul></div><div><h4 class="font-headline-sm text-body-default text-text-primary mb-space-md">Institutions</h4><ul class="space-y-space-sm font-body-sm text-body-sm"><li class="text-text-secondary hover:text-on-surface transition-colors"><a href="#">Tier 1 Commercial Banks</a></li><li class="text-text-secondary hover:text-on-surface transition-colors"><a href="#">Fintech Credit Facilities</a></li><li class="text-text-secondary hover:text-on-surface transition-colors"><a href="#">Debt Fund Syndicates</a></li><li class="text-text-secondary hover:text-on-surface transition-colors"><a href="#">Regulatory Audit Logs</a></li></ul></div><div><h4 class="font-headline-sm text-body-default text-text-primary mb-space-md">Trust &amp; Governance</h4><ul class="space-y-space-sm font-body-sm text-body-sm"><li class="text-text-secondary hover:text-on-surface transition-colors"><a href="#">Security Architecture</a></li><li class="text-text-secondary hover:text-on-surface transition-colors"><a href="#">SOC 2 Type II &amp; ISO 27001</a></li><li class="text-text-secondary hover:text-on-surface transition-colors"><a href="#">Privacy Policy</a></li><li class="text-text-secondary hover:text-on-surface transition-colors"><a href="#">Terms of Service</a></li></ul></div><div><h4 class="font-headline-sm text-body-default text-text-primary mb-space-md">Intelligence Feed</h4><p class="text-text-secondary font-body-sm text-body-sm mb-space-md">Subscribe to weekly institutional macro recovery indexes and yield telemetry.</p><div class="flex items-center gap-space-xs"><input class="w-full px-space-sm py-space-xs rounded-lg bg-surface-container-low text-text-primary font-body-sm text-body-sm placeholder:text-text-tertiary focus:outline-none" placeholder="work@institution.com" type="email"/><button class="px-space-md py-space-xs rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-bright transition-colors font-label-mono-bold text-label-mono-bold uppercase">Join</button></div></div></div><div class="pt-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md font-body-sm text-body-sm text-text-tertiary"><div>© 2025 LendWise Enterprise Systems Inc. All sovereign rights reserved.</div><div class="flex items-center gap-space-lg"><a class="hover:text-text-secondary transition-colors" href="#">Security Architecture</a><a class="hover:text-text-secondary transition-colors" href="#">Privacy Policy</a><a class="hover:text-text-secondary transition-colors" href="#">Terms of Service</a><a class="hover:text-text-secondary transition-colors" href="#">Sub-processors</a></div></div></div></footer></body></html>

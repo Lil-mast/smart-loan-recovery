@@ -4,10 +4,7 @@
  * Uses httpOnly cookies for secure JWT storage
  */
 
-// API base URL
-const API_BASE = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
-    ? 'http://127.0.0.1:3000'
-    : window.location.origin;
+const API_BASE = typeof lendwiseApiBase === 'function' ? lendwiseApiBase() : '';
 
 // Firebase configuration (loaded from backend)
 let firebaseConfig = null;
@@ -30,6 +27,9 @@ async function initFirebaseAuth() {
         }
         
         firebaseConfig = await response.json();
+        if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+            throw new Error('Firebase is not configured on the API');
+        }
         
         // Initialize Firebase
         firebaseApp = firebase.initializeApp(firebaseConfig);
@@ -63,8 +63,12 @@ function handleAuthStateChanged(user) {
  * Sign in with Google
  * Opens Google Sign-In popup
  */
-async function signInWithGoogle() {
+async function signInWithGoogle(role) {
     try {
+        if (!firebaseAuth) {
+            const ok = await initFirebaseAuth();
+            if (!ok) throw new Error('Firebase is not configured on the API host');
+        }
         const provider = new firebase.auth.GoogleAuthProvider();
         provider.addScope('email');
         provider.addScope('profile');
@@ -78,7 +82,7 @@ async function signInWithGoogle() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ id_token: idToken })
+            body: JSON.stringify({ id_token: idToken, role: role || 'borrower' })
         });
         
         if (response.ok) {
@@ -226,15 +230,19 @@ async function refreshToken() {
  * Handle successful login
  */
 function handleLoginSuccess(data) {
-    const user = data.user;
-    
-    // Store user info (not tokens - they're in httpOnly cookies)
-    localStorage.setItem('user', JSON.stringify(user));
-    
-    // Redirect based on role
-    if (user.role === 'borrower') {
-        window.location.href = `borrowers.html?user_id=${user.local_user_id}`;
-    } else if (user.role === 'lender' || user.role === 'admin') {
+    const raw = data.user || {};
+    const role = String(raw.role || 'borrower').toLowerCase();
+    const user = {
+        id: raw.local_user_id || raw.id || raw.uid,
+        role,
+        name: raw.name || 'User',
+        email: raw.email
+    };
+
+    if (role === 'borrower') {
+        localStorage.setItem('user', JSON.stringify(user));
+        window.location.href = `borrowers.html?user_id=${user.id}`;
+    } else {
         localStorage.setItem('lenderSession', JSON.stringify(user));
         window.location.href = 'lenders.html';
     }

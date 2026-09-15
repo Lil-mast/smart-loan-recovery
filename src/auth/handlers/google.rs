@@ -59,7 +59,10 @@ pub async fn google_sign_in(
         Ok(None) => {
             // New user - create link with default role
             log::info!("Creating new user from Google Sign-In");
-            let default_role = UserRole::Borrower;
+            let default_role = match req.role.as_deref().map(|s| s.to_ascii_lowercase()).as_deref() {
+                Some("lender") => UserRole::Lender,
+                _ => UserRole::Borrower,
+            };
             
             match auth_state
                 .firebase

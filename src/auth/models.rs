@@ -50,6 +50,8 @@ pub struct RegisterRequest {
 pub struct GoogleSignInRequest {
     /// Google ID Token from Firebase
     pub id_token: String,
+    #[serde(default)]
+    pub role: Option<String>,
 }
 
 /// Token refresh request

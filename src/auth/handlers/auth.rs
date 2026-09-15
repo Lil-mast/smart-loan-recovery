@@ -512,3 +512,13 @@ pub async fn update_profile(
         }
     }))
 }
+
+/// Public Firebase web config (no secrets). Used by the static UI on Vercel.
+pub async fn firebase_public_config() -> impl Responder {
+    HttpResponse::Ok().json(json!({
+        "apiKey": std::env::var("FIREBASE_API_KEY").unwrap_or_default(),
+        "authDomain": std::env::var("FIREBASE_AUTH_DOMAIN").unwrap_or_default(),
+        "projectId": std::env::var("FIREBASE_PROJECT_ID").unwrap_or_default(),
+        "storageBucket": std::env::var("FIREBASE_STORAGE_BUCKET").unwrap_or_default()
+    }))
+}

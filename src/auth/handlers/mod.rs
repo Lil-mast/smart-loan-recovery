@@ -11,4 +11,5 @@
 //! - POST /auth/google - Google Sign-In
 
 pub mod auth;
+pub mod demo;
 pub mod google;

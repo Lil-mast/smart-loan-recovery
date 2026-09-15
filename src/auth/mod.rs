@@ -34,6 +34,8 @@ pub fn config_auth_routes(cfg: &mut web::ServiceConfig) {
             .route("/refresh", web::post().to(handlers::auth::refresh_token))
             .route("/verify", web::post().to(handlers::auth::verify_token))
             // Google Sign-In
+            .route("/config", web::get().to(handlers::auth::firebase_public_config))
+            .route("/demo-login", web::post().to(handlers::demo::demo_login))
             .route("/google", web::post().to(handlers::google::google_sign_in))
             // User profile
             .route("/me", web::get().to(handlers::auth::get_current_user))

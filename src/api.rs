@@ -1,10 +1,9 @@
 use actix_cors::Cors;
 use actix_files::Files;
-use actix_web::{web, App, HttpResponse, HttpServer, HttpRequest, Result as ActixResult, middleware::Logger};
+use actix_web::{web, App, HttpResponse, HttpServer, Result as ActixResult, middleware::Logger};
 use actix_identity::{Identity, IdentityMiddleware};
-use actix_web::cookie::Key;
+use actix_web::cookie::{Key, SameSite};
 use actix_session::{SessionMiddleware, storage::CookieSessionStore};
-use actix_web::HttpMessage;
 use crate::db::Db;
 use crate::user::UserManager;
 use crate::loan::LoanTracker;
@@ -18,6 +17,32 @@ use std::sync::Arc;
 
 fn is_valid_4char_id(id: &str) -> bool {
     id.len() == 4 && id.chars().all(|c| c.is_alphanumeric())
+}
+
+fn cors_origin_allowed(origin: &str) -> bool {
+    if origin.is_empty()
+        || origin == "null"
+        || origin == "http://127.0.0.1:3000"
+        || origin == "http://localhost:3000"
+        || origin == "http://127.0.0.1:3001"
+        || origin == "http://localhost:3001"
+        || origin == "http://127.0.0.1:5500"
+        || origin.ends_with(".vercel.app")
+        || origin.ends_with(".onrender.com")
+        || origin == "https://lendwise-recovery.fly.dev"
+    {
+        return true;
+    }
+    if let Ok(fe) = std::env::var("FRONTEND_URL") {
+        let fe = fe.trim().trim_end_matches('/');
+        if !fe.is_empty() && origin == fe {
+            return true;
+        }
+    }
+    if let Ok(extra) = std::env::var("CORS_ORIGINS") {
+        return extra.split(',').any(|o| o.trim() == origin);
+    }
+    false
 }
 
 #[derive(Deserialize)]
@@ -273,41 +298,6 @@ async fn flag_overdues(
     }))))
 }
 
-#[derive(Deserialize)]
-struct DemoLoginReq {
-    user_id: String,
-}
-
-#[derive(Serialize)]
-struct DemoLoginRes {
-    user_id: String,
-    role: String,
-    name: String,
-}
-
-async fn demo_login(
-    data: web::Json<DemoLoginReq>,
-    req: HttpRequest,
-    db: web::Data<Db>,
-) -> AppResult<ActixResult<HttpResponse>> {
-    let user_id = data.user_id.trim().to_string();
-    let mgr = UserManager::new(&db);
-    let user = mgr.get_user(&user_id)
-        .map_err(AppError::Database)?
-        .ok_or_else(|| AppError::NotFound("User not found".to_string()))?;
-
-    Identity::login(&req.extensions(), user.id.clone())
-        .map_err(|_| AppError::AuthRequired)?;
-
-    let role = format!("{:?}", user.role).to_lowercase();
-
-    Ok(Ok(HttpResponse::Ok().json(DemoLoginRes {
-        user_id: user.id,
-        role,
-        name: user.name,
-    })))
-}
-
 async fn recommend_action(
     path: web::Path<uuid::Uuid>,
     identity: Identity,
@@ -398,6 +388,7 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
             key,
         )
         .cookie_secure(is_production)
+        .cookie_same_site(if is_production { SameSite::None } else { SameSite::Lax })
         .build();
 
         // Initialize JWT auth middleware
@@ -414,11 +405,7 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
             .wrap(
                 Cors::default()
                     .allowed_origin_fn(|origin, _| {
-                        let origin = origin.to_str().unwrap_or("");
-                        origin.is_empty()
-                            || origin == "http://127.0.0.1:3000"
-                            || origin == "http://localhost:3000"
-                            || origin == "null"
+                        cors_origin_allowed(origin.to_str().unwrap_or(""))
                     })
                     .allow_any_method()
                     .allow_any_header()
@@ -444,7 +431,8 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
                             "/auth/refresh",
                             "/auth/verify",
                             "/auth/me",
-                            "/auth/google"
+                            "/auth/google",
+                            "/auth/demo-login",
                         ],
                         "users": ["/users"],
                         "loans": ["/loans"],
@@ -460,12 +448,13 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
             )
             // Firebase authentication routes (no JWT required)
             .configure(config_auth_routes)
-            // Demo login endpoint (accepts user_id for legacy/demo flow)
-            .route("/auth/demo-login", web::post().to(demo_login))
             // Public demo UI routes (no JWT). The HTML app posts here.
             .route("/users", web::get().to(get_users))
             .route("/users", web::post().to(register_user))
             .route("/loans", web::get().to(get_loans))
+            .route("/loans", web::post().to(create_loan))
+            .route("/overdues", web::post().to(flag_overdues))
+            .route("/recommend/{loan_id}", web::post().to(recommend_action))
             // Protected routes with JWT authentication
             .service(
                 web::scope("/api")

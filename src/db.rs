@@ -47,6 +47,7 @@ impl Db {
             [],
         )?;
 
+        Self::seed_core_demo_users(conn)?;
         Self::seed_demo_if_no_loans(conn)?;
 
         // Create table for Firebase user links
@@ -65,14 +66,8 @@ impl Db {
         Ok(())
     }
 
-    /// One sample borrower + lender + loan so `/app/` login works without a separate lender API flow.
-    fn seed_demo_if_no_loans(conn: &Connection) -> Result<()> {
-        let n: i64 = conn.query_row("SELECT COUNT(*) FROM loans", [], |r| r.get(0))?;
-        if n > 0 {
-            return Ok(());
-        }
-
-        // Seed lenders
+    /// Demo IDs used by the UI (DEMO / BANK / Kenyan lenders). Always present, even on old DBs.
+    fn seed_core_demo_users(conn: &Connection) -> Result<()> {
         let lenders = vec![
             ("MSHW", "M-shwari", "Safaricom"),
             ("BRCH", "Branch", "Branch International"),
@@ -95,7 +90,6 @@ impl Db {
             )?;
         }
 
-        // Demo borrower
         conn.execute(
             "INSERT OR IGNORE INTO users (id, name, role, email, lender_id, organization) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
             params![
@@ -108,7 +102,6 @@ impl Db {
             ],
         )?;
 
-        // Demo lender
         conn.execute(
             "INSERT OR IGNORE INTO users (id, name, role, email, lender_id, organization) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
             params![
@@ -120,6 +113,18 @@ impl Db {
                 "Demo Bank"
             ],
         )?;
+
+        Ok(())
+    }
+
+    /// One sample loan so dashboards are not empty on a fresh DB.
+    fn seed_demo_if_no_loans(conn: &Connection) -> Result<()> {
+        let n: i64 = conn.query_row("SELECT COUNT(*) FROM loans", [], |r| r.get(0))?;
+        if n > 0 {
+            return Ok(());
+        }
+
+        Self::seed_core_demo_users(conn)?;
 
         let now = Utc::now();
         let schedule = serde_json::to_string(&vec![now + Duration::days(30), now + Duration::days(60)])

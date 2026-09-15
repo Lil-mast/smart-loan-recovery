@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface-container-low":"#171b26","surface-dim":"#0f131d","text-secondary":"#94A3B8","tertiary-fixed-dim":"#d0bcff","background":"#0f131d","inverse-surface":"#dfe2f1","badge-cyan-glow":"rgba(6, 182, 212, 0.15)","surface-container":"#1c1f2a","stroke-glass":"rgba(255, 255, 255, 0.08)","on-background":"#dfe2f1","tertiary-container":"#a078ff","text-tertiary":"#64748B","on-surface":"#dfe2f1","outline-variant":"#424754","on-primary-container":"#00285d","surface-bright":"#353944","on-tertiary-container":"#340080","text-primary":"#F9FAFB","tertiary":"#d0bcff","surface-container-highest":"#313540","primary-fixed":"#d8e2ff","on-tertiary":"#3c0091","error":"#ffb4ab","error-container":"#93000a","surface-tint":"#adc6ff","surface-navy":"#0F172A","on-secondary-container":"#00424e","secondary-container":"#03b5d3","on-primary":"#002e6a","surface-variant":"#313540","stroke-glow":"rgba(59, 130, 246, 0.2)","on-error-container":"#ffdad6","canvas-void":"#06090F","secondary-fixed-dim":"#4cd7f6","on-primary-fixed-variant":"#004395","surface-container-high":"#262a35","on-secondary-fixed":"#001f26","on-secondary":"#003640","primary":"#adc6ff","secondary-fixed":"#acedff","outline":"#8c909f","surface":"#0f131d","secondary":"#4cd7f6","primary-container":"#4d8eff","inverse-on-surface":"#2c303b","on-tertiary-fixed-variant":"#5516be","tertiary-fixed":"#e9ddff","badge-violet-glow":"rgba(139, 92, 246, 0.15)","inverse-primary":"#005ac2","on-secondary-fixed-variant":"#004e5c","on-error":"#690005","on-primary-fixed":"#001a42","on-tertiary-fixed":"#23005c","surface-container-lowest":"#0a0e18","surface-indigo":"#111827","primary-fixed-dim":"#adc6ff"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-sm":"0.5rem","space-xl":"2.5rem","space-xs":"0.25rem",margin:"2rem","space-md":"1rem",gutter:"1.5rem","space-lg":"1.5rem"},fontFamily:{"headline-xl":["Manrope"],"headline-md":["Manrope"],"display-hero-mobile":["Manrope"],"body-sm":["Manrope"],"body-lead":["Manrope"],"display-hero":["Manrope"],"label-mono-sm":["JetBrains Mono"],"headline-xl-mobile":["Manrope"],"label-mono-bold":["JetBrains Mono"],"headline-lg":["Manrope"],"headline-sm":["Manrope"],"body-default":["Manrope"],"stat-numeric":["JetBrains Mono"]},fontSize:{"headline-xl":["48px",{lineHeight:"56px",letterSpacing:"-0.025em",fontWeight:"700"}],"headline-md":["24px",{lineHeight:"32px",letterSpacing:"-0.015em",fontWeight:"600"}],"display-hero-mobile":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"800"}],"body-sm":["13px",{lineHeight:"20px",letterSpacing:"0.005em",fontWeight:"400"}],"body-lead":["18px",{lineHeight:"28px",letterSpacing:"-0.005em",fontWeight:"400"}],"display-hero":["64px",{lineHeight:"72px",letterSpacing:"-0.03em",fontWeight:"800"}],"label-mono-sm":["11px",{lineHeight:"14px",letterSpacing:"0.06em",fontWeight:"500"}],"headline-xl-mobile":["32px",{lineHeight:"40px",letterSpacing:"-0.02em",fontWeight:"700"}],"label-mono-bold":["12px",{lineHeight:"16px",letterSpacing:"0.08em",fontWeight:"700"}],"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.02em",fontWeight:"600"}],"headline-sm":["20px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-default":["15px",{lineHeight:"24px",letterSpacing:"0em",fontWeight:"400"}],"stat-numeric":["28px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"600"}]}}}}</script></head><body class="bg-background font-body-default text-body-default text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col justify-between py-space-lg shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-lg"><div class="px-space-lg flex items-center gap-space-sm"><img alt="LendWise Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VZNotkAfdSfsszeTOqXYQhzbU__vtuMnLRg_qAsLJmqUWHguaBUENNHcMvWiQp-VmVgPU8s-2tO8hHZQaSUblYplItwc0WCJjh-YzBU8G-oUZ2UgbD2rDEtDdsaK7t-95oZHGV35jcANzB4n2jFuQwUy4VSzF2xLjcBNd0A435Bi4Mw6nLi_Fe0AxFjnm1UnsC-NhP6BYKJOcNF9SwhXJKfg-b5RyiW1MNYa_c4GbaAMpvmOdHANmKKyc"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-text-primary tracking-tight leading-none">LendWise</span><span class="font-label-mono-sm text-label-mono-sm text-secondary uppercase tracking-widest mt-1">Institutional AI</span></div></div><nav class="flex flex-col gap-space-xs px-space-md" data-active-classes="bg-primary-container text-on-primary-container font-headline-sm"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="borrower-dashboard" href="#"><span class="material-symbols-outlined">person</span><span>Borrower Hub</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg transition-all bg-primary-container text-on-primary-container font-headline-sm" data-path="lender-dashboard" href="#"><span class="material-symbols-outlined">account_balance</span><span>Lender Portfolio</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="recovery-pipeline" href="#"><span class="material-symbols-outlined">rebase_edit</span><span>AI Recovery Engine</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="delinquency-analytics" href="#"><span class="material-symbols-outlined">monitoring</span><span>Delinquency Matrix</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="settlement-vault" href="#"><span class="material-symbols-outlined">lock</span><span>Settlement Vault</span></a></nav></div><div class="px-space-md"><div class="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-space-xs mb-space-md"><div class="flex items-center justify-between"><span class="font-label-mono-sm text-label-mono-sm text-text-secondary uppercase">API Cluster</span><span class="w-2 h-2 rounded-full bg-secondary"></span></div><span class="font-label-mono-bold text-label-mono-bold text-text-primary">Cluster US-East-1</span><span class="font-label-mono-sm text-label-mono-sm text-text-tertiary">Latency: 4.2ms</span></div><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="landing-page" href="#"><span class="material-symbols-outlined">logout</span><span>Exit to Main</span></a></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-navy/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-sm"><div class="inline-flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-badge-cyan-glow"><span class="w-2 h-2 rounded-full bg-secondary"></span><span class="font-label-mono-sm text-label-mono-sm text-secondary uppercase tracking-widest">Core Online</span></div></div><div class="flex items-center gap-space-md"><button class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined">notifications</span></button><button class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined">tune</span></button><div class="flex items-center gap-space-sm pl-space-sm"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFGdsBljW2p2Se8WJdaGxNM7MBddEYD_8QJBpjXS0aBdBUeLC0ZmA0hmEvJubIwrvzsj-qbQTrHoH-vi8i9p2YAaPOeB9NUvFV1OGEfGiQLfXv-B6tppww4SwijpzGazCfrsZowr4YcHGyT5R8bQDhl9HKNPUrHsFyhLVcvPx4L3sNAZJ5QivFx0MWiSTBZ6WSFijceOlxEMTMwbyy94BHA-U4QS_wtHUtTx0wwqoasiTeLcR2Z9CV"/></div></div></header><main class="relative pt-16 w-full px-8 bg-background min-h-screen"><div class="flex flex-col w-full pb-space-xl">
+<!-- Radial Atmospheric Glows -->
+<div class="relative w-full">
+<div class="absolute -top-16 left-1/4 w-[600px] h-[340px] bg-primary/10 rounded-full blur-[140px] pointer-events-none -z-10"></div>
+<div class="absolute top-48 right-12 w-[420px] h-[280px] bg-tertiary-container/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+<!-- Header / Context Bar -->
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-md py-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono-sm text-label-mono-sm text-secondary tracking-widest uppercase">Institutional Portfolio Command</span>
+<span class="text-text-tertiary">/</span>
+<span class="font-label-mono-sm text-label-mono-sm text-text-secondary uppercase">Global Overview</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-text-primary tracking-tight mt-1">Lender Operations &amp; Recovery Nexus</h1>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm">
+<!-- Institution Selector -->
+<div class="relative flex items-center bg-surface-container-low px-space-md py-space-xs rounded-lg">
+<span class="material-symbols-outlined text-secondary mr-2 text-base">corporate_fare</span>
+<select class="bg-transparent text-text-primary font-body-sm text-body-sm focus:outline-none cursor-pointer pr-4 appearance-none">
+<option class="bg-surface-navy text-text-primary" value="branch">Branch International</option>
+<option class="bg-surface-navy text-text-primary" value="kcb">KCB-M-Pesa Multi-Book</option>
+<option class="bg-surface-navy text-text-primary" value="tala">Tala Micro-Liquidity Fund</option>
+<option class="bg-surface-navy text-text-primary" value="eazzy">Eazzy Loan Consolidated</option>
+</select>
+<span class="material-symbols-outlined text-text-tertiary text-sm pointer-events-none -ml-3">expand_more</span>
+</div>
+<!-- Date Filter -->
+<div class="flex items-center bg-surface-container-low px-space-md py-space-xs rounded-lg gap-2 text-text-secondary font-label-mono-sm text-label-mono-sm">
+<span class="material-symbols-outlined text-base text-text-tertiary">calendar_today</span>
+<span>Trailing 30 Days</span>
+<span class="material-symbols-outlined text-sm text-text-tertiary">expand_more</span>
+</div>
+<!-- Export CTA -->
+<button class="flex items-center gap-space-xs bg-primary-container text-on-primary-container px-space-md py-space-sm rounded-lg font-headline-sm text-headline-sm hover:brightness-110 transition-all shadow-md">
+<span class="material-symbols-outlined text-base">ios_share</span>
+<span class="font-headline-sm text-headline-sm text-on-primary-container">Export Audit Report</span>
+</button>
+</div>
+</div>
+<!-- Top Metric Cards (Rescale Style) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md mt-space-md">
+<!-- Metric 1: Total Portfolio Recovered -->
+<div class="bg-surface-container-low/90 backdrop-blur-xl p-space-lg rounded-xl flex flex-col justify-between shadow-xl relative overflow-hidden group">
+<div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-60"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-mono-bold text-label-mono-bold text-text-secondary uppercase tracking-wider">Total Portfolio Recovered</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">monetization_on</span>
+</div>
+</div>
+<div class="mt-space-md">
+<div class="font-stat-numeric text-stat-numeric text-text-primary tracking-tight">$4,280,000</div>
+<div class="flex items-center gap-space-xs mt-1">
+<span class="inline-flex items-center text-secondary font-label-mono-sm text-label-mono-sm">
+<span class="material-symbols-outlined text-sm mr-0.5">trending_up</span>
+              +28.4%
+            </span>
+<span class="font-body-sm text-body-sm text-text-tertiary">vs previous month cycle</span>
+</div>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-space-md overflow-hidden">
+<div class="bg-secondary h-full rounded-full w-3/4"></div>
+</div>
+</div>
+<!-- Metric 2: Active Recovery Cases -->
+<div class="bg-surface-container-low/90 backdrop-blur-xl p-space-lg rounded-xl flex flex-col justify-between shadow-xl relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-bold text-label-mono-bold text-text-secondary uppercase tracking-wider">Active Recovery Cases</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-lg">folder_shared</span>
+</div>
+</div>
+<div class="mt-space-md">
+<div class="font-stat-numeric text-stat-numeric text-text-primary tracking-tight">14,820</div>
+<div class="flex items-center gap-space-xs mt-1">
+<span class="inline-flex items-center text-badge-cyan-glow bg-secondary-container/20 text-secondary px-2 py-0.5 rounded font-label-mono-sm text-label-mono-sm">
+              +412 Net New
+            </span>
+<span class="font-body-sm text-body-sm text-text-tertiary">assigned to Prism V4</span>
+</div>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-space-md overflow-hidden">
+<div class="bg-primary-container h-full rounded-full w-3/5"></div>
+</div>
+</div>
+<!-- Metric 3: AI Accuracy Projection -->
+<div class="bg-surface-container-low/90 backdrop-blur-xl p-space-lg rounded-xl flex flex-col justify-between shadow-xl relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-bold text-label-mono-bold text-text-secondary uppercase tracking-wider">AI Accuracy Projection</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-lg">psychology</span>
+</div>
+</div>
+<div class="mt-space-md">
+<div class="flex items-baseline gap-2">
+<span class="font-stat-numeric text-stat-numeric text-text-primary tracking-tight">94.2%</span>
+<span class="font-label-mono-sm text-label-mono-sm text-tertiary-fixed-dim bg-tertiary-container/30 px-2 py-0.5 rounded">Tier: High Confidence</span>
+</div>
+<div class="flex items-center gap-space-xs mt-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-body-sm text-body-sm text-text-tertiary">Prism model calibrated 120ms ago</span>
+</div>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-space-md overflow-hidden">
+<div class="bg-tertiary-container h-full rounded-full w-[94.2%]"></div>
+</div>
+</div>
+<!-- Metric 4: Resolution Velocity -->
+<div class="bg-surface-container-low/90 backdrop-blur-xl p-space-lg rounded-xl flex flex-col justify-between shadow-xl relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-bold text-label-mono-bold text-text-secondary uppercase tracking-wider">Avg. Resolution Speed</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary-fixed">
+<span class="material-symbols-outlined text-lg">timelapse</span>
+</div>
+</div>
+<div class="mt-space-md">
+<div class="font-stat-numeric text-stat-numeric text-text-primary tracking-tight">14.2 Days</div>
+<div class="flex items-center gap-space-xs mt-1">
+<span class="inline-flex items-center text-secondary font-label-mono-sm text-label-mono-sm">
+<span class="material-symbols-outlined text-sm mr-0.5">arrow_downward</span>
+              -35.0%
+            </span>
+<span class="font-body-sm text-body-sm text-text-tertiary">compression vs legacy ops</span>
+</div>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-space-md overflow-hidden">
+<div class="bg-primary h-full rounded-full w-4/5"></div>
+</div>
+</div>
+</div>
+<!-- Analytics & Telemetry Grid (Dual Column Dashboard - Rescale style) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg mt-space-lg">
+<!-- Recovery Analytics & Inflow Trends (Bar Visualization) -->
+<div class="lg:col-span-8 bg-surface-container-low/90 backdrop-blur-xl p-space-lg rounded-xl flex flex-col justify-between shadow-xl">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-space-md">
+<div>
+<span class="font-label-mono-bold text-label-mono-bold text-text-secondary uppercase tracking-wider">Performance Analytics</span>
+<h3 class="font-headline-sm text-headline-sm text-text-primary mt-0.5">Recovery Inflow vs. Projected Default Baseline</h3>
+</div>
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-sm bg-primary"></span>
+<span class="font-label-mono-sm text-label-mono-sm text-text-secondary">Recovered Capital</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-sm bg-surface-container-highest"></span>
+<span class="font-label-mono-sm text-label-mono-sm text-text-tertiary">Default Reserve</span>
+</div>
+<div class="bg-surface-container px-space-sm py-1 rounded text-text-secondary font-label-mono-sm text-label-mono-sm">
+              Monthly
+            </div>
+</div>
+</div>
+<!-- Custom SVG Bar Telemetry Chart -->
+<div class="w-full h-64 relative flex items-end pt-6 pb-2">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 740 220">
+<!-- Subtle Gridlines -->
+<line stroke="#424754" stroke-dasharray="4 4" stroke-opacity="0.2" x1="0" x2="740" y1="20" y2="20"></line>
+<line stroke="#424754" stroke-dasharray="4 4" stroke-opacity="0.2" x1="0" x2="740" y1="70" y2="70"></line>
+<line stroke="#424754" stroke-dasharray="4 4" stroke-opacity="0.2" x1="0" x2="740" y1="120" y2="120"></line>
+<line stroke="#424754" stroke-dasharray="4 4" stroke-opacity="0.2" x1="0" x2="740" y1="170" y2="170"></line>
+<!-- Bar Groups: Jan through Dec (12 columns) -->
+<!-- Jan -->
+<rect fill="#313540" height="90" rx="3" width="14" x="25" y="100"></rect>
+<rect fill="#adc6ff" height="60" rx="3" width="14" x="42" y="130"></rect>
+<!-- Feb -->
+<rect fill="#313540" height="100" rx="3" width="14" x="85" y="90"></rect>
+<rect fill="#adc6ff" height="75" rx="3" width="14" x="102" y="115"></rect>
+<!-- Mar -->
+<rect fill="#313540" height="110" rx="3" width="14" x="145" y="80"></rect>
+<rect fill="#adc6ff" height="95" rx="3" width="14" x="162" y="95"></rect>
+<!-- Apr -->
+<rect fill="#313540" height="115" rx="3" width="14" x="205" y="75"></rect>
+<rect fill="#adc6ff" height="120" rx="3" width="14" x="222" y="70"></rect>
+<!-- May -->
+<rect fill="#313540" height="125" rx="3" width="14" x="265" y="65"></rect>
+<rect fill="#4d8eff" height="130" rx="3" width="14" x="282" y="60"></rect>
+<!-- Jun -->
+<rect fill="#313540" height="135" rx="3" width="14" x="325" y="55"></rect>
+<rect fill="#4d8eff" height="145" rx="3" width="14" x="342" y="45"></rect>
+<!-- Jul -->
+<rect fill="#313540" height="140" rx="3" width="14" x="385" y="50"></rect>
+<rect fill="#4d8eff" height="155" rx="3" width="14" x="402" y="35"></rect>
+<!-- Aug -->
+<rect fill="#313540" height="130" rx="3" width="14" x="445" y="60"></rect>
+<rect fill="#4d8eff" height="150" rx="3" width="14" x="462" y="40"></rect>
+<!-- Sep -->
+<rect fill="#313540" height="145" rx="3" width="14" x="505" y="45"></rect>
+<rect fill="#4d8eff" height="160" rx="3" width="14" x="522" y="30"></rect>
+<!-- Oct -->
+<rect fill="#313540" height="150" rx="3" width="14" x="565" y="40"></rect>
+<rect fill="#4cd7f6" height="165" rx="3" width="14" x="582" y="25"></rect>
+<!-- Nov -->
+<rect fill="#313540" height="155" rx="3" width="14" x="625" y="35"></rect>
+<rect fill="#4cd7f6" height="175" rx="3" width="14" x="642" y="15"></rect>
+<!-- Dec -->
+<rect fill="#313540" height="160" rx="3" width="14" x="685" y="30"></rect>
+<rect fill="#4cd7f6" height="180" rx="3" width="14" x="702" y="10"></rect>
+</svg>
+</div>
+<div class="grid grid-cols-12 text-center font-label-mono-sm text-label-mono-sm text-text-tertiary pt-2 border-t-0">
+<span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+</div>
+<div class="mt-space-md pt-space-sm flex flex-wrap items-center justify-between bg-surface-container/60 p-space-sm rounded-lg">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary">verified_user</span>
+<span class="font-body-sm text-body-sm text-text-primary">Prism Recovery Engine active for 14 active institution cohorts</span>
+</div>
+<span class="font-label-mono-bold text-label-mono-bold text-primary">Inflow Efficiency: 98.4%</span>
+</div>
+</div>
+<!-- Resource & AI Strategy Distribution (Donut Chart matching Rescale layout) -->
+<div class="lg:col-span-4 bg-surface-container-low/90 backdrop-blur-xl p-space-lg rounded-xl flex flex-col justify-between shadow-xl">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-bold text-label-mono-bold text-text-secondary uppercase tracking-wider">AI Strategy Allocation</span>
+<span class="material-symbols-outlined text-text-tertiary">pie_chart</span>
+</div>
+<!-- Donut Vector Representation -->
+<div class="relative flex items-center justify-center my-space-md">
+<svg class="w-48 h-48 transform -rotate-90" viewbox="0 0 120 120">
+<!-- Background track -->
+<circle cx="60" cy="60" fill="transparent" r="46" stroke="#262a35" stroke-width="12"></circle>
+<!-- Segment 1: Dynamic Restructure (48%) -->
+<circle cx="60" cy="60" fill="transparent" r="46" stroke="#4d8eff" stroke-dasharray="289" stroke-dashoffset="138" stroke-linecap="round" stroke-width="12"></circle>
+<!-- Segment 2: Lump-Sum Settlement (32%) -->
+<circle cx="60" cy="60" fill="transparent" r="46" stroke="#4cd7f6" stroke-dasharray="289" stroke-dashoffset="196" stroke-linecap="round" stroke-width="12"></circle>
+<!-- Segment 3: Micro-Installment Vault (20%) -->
+<circle cx="60" cy="60" fill="transparent" r="46" stroke="#d0bcff" stroke-dasharray="289" stroke-dashoffset="231" stroke-linecap="round" stroke-width="12"></circle>
+</svg>
+<div class="absolute flex flex-col items-center justify-center text-center">
+<span class="font-stat-numeric text-stat-numeric text-text-primary leading-none">14.8K</span>
+<span class="font-label-mono-sm text-label-mono-sm text-text-secondary mt-1 uppercase">Resolved Routes</span>
+</div>
+</div>
+<!-- Strategy Distribution Legend -->
+<div class="flex flex-col gap-space-xs mt-space-sm">
+<div class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container/50 transition-colors">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span class="font-body-sm text-body-sm text-text-primary">Dynamic Restructure</span>
+</div>
+<span class="font-label-mono-bold text-label-mono-bold text-text-secondary">48% ($2.05M)</span>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container/50 transition-colors">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<span class="font-body-sm text-body-sm text-text-primary">Lump-Sum Incentive</span>
+</div>
+<span class="font-label-mono-bold text-label-mono-bold text-text-secondary">32% ($1.36M)</span>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container/50 transition-colors">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+<span class="font-body-sm text-body-sm text-text-primary">Micro-Installment Match</span>
+</div>
+<span class="font-label-mono-bold text-label-mono-bold text-text-secondary">20% ($860K)</span>
+</div>
+</div>
+<button class="w-full mt-space-md py-space-xs bg-surface-container hover:bg-surface-container-high rounded-lg text-secondary font-label-mono-sm text-label-mono-sm uppercase tracking-widest text-center transition-colors">
+          Rebalance Automation Engine
+        </button>
+</div>
+</div>
+<!-- AI Live Insights & Risk Mitigation Alerts Strip -->
+<div class="mt-space-lg bg-surface-container-low/90 backdrop-blur-xl p-space-md rounded-xl shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md relative overflow-hidden">
+<div class="flex items-start md:items-center gap-space-md">
+<div class="w-10 h-10 rounded-xl bg-badge-violet-glow flex items-center justify-center text-tertiary flex-shrink-0">
+<span class="material-symbols-outlined text-xl">auto_awesome</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-mono-bold text-label-mono-bold text-tertiary uppercase">AI Live Analysis &amp; Alert</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-label-mono-sm text-label-mono-sm text-text-tertiary">Updated 120ms ago</span>
+</div>
+<p class="font-body-default text-body-default text-text-primary mt-0.5">
+            Prism identified <span class="text-secondary font-semibold">342 dormant accounts</span> in M-Pesa cohort with an <span class="text-tertiary font-semibold">89% probability</span> of lump-sum clearance if triggered with the 8% principal waiver before Friday 17:00 UTC.
+          </p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm flex-shrink-0 self-end md:self-center">
+<button class="bg-surface-container hover:bg-surface-container-high text-text-secondary px-space-md py-space-xs rounded-lg font-label-mono-sm text-label-mono-sm uppercase transition-all">
+          Ignore
+        </button>
+<button class="bg-primary-container hover:brightness-110 text-on-primary-container px-space-md py-space-xs rounded-lg font-headline-sm text-headline-sm transition-all shadow-md">
+          Execute Batch Wave
+        </button>
+</div>
+</div>
+<!-- Active Recovery Cases Table & Filter Matrix -->
+<div class="mt-space-lg bg-surface-container-low/90 backdrop-blur-xl rounded-xl shadow-xl overflow-hidden">
+<!-- Table Header & Controls -->
+<div class="p-space-lg flex flex-col sm:flex-row sm:items-center justify-between gap-space-md bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-label-mono-bold text-label-mono-bold text-text-secondary uppercase tracking-wider">Cohort Queue Monitor</span>
+<h2 class="font-headline-sm text-headline-sm text-text-primary mt-0.5">Active Delinquency &amp; AI Settlement Pipeline</h2>
+</div>
+<!-- Filter Pills -->
+<div class="flex flex-wrap items-center gap-1.5 bg-surface-dim p-1 rounded-xl">
+<button class="px-space-md py-1 rounded-lg bg-surface-container text-text-primary font-body-sm text-body-sm font-medium shadow-sm transition-all">
+            All Cases (14,820)
+          </button>
+<button class="px-space-md py-1 rounded-lg hover:bg-surface-container/60 text-text-secondary hover:text-text-primary font-body-sm text-body-sm transition-all">
+            High Priority (1,240)
+          </button>
+<button class="px-space-md py-1 rounded-lg hover:bg-surface-container/60 text-text-secondary hover:text-text-primary font-body-sm text-body-sm transition-all">
+            Self-Cured (3,180)
+          </button>
+<button class="px-space-md py-1 rounded-lg hover:bg-surface-container/60 text-text-secondary hover:text-text-primary font-body-sm text-body-sm transition-all">
+            Automated Follow-up (10,400)
+          </button>
+</div>
+</div>
+<!-- Data Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container/40 text-text-tertiary font-label-mono-bold text-label-mono-bold uppercase tracking-wider">
+<th class="py-space-md px-space-lg">Case ID</th>
+<th class="py-space-md px-space-md">Borrower Name</th>
+<th class="py-space-md px-space-md">Lender Origin</th>
+<th class="py-space-md px-space-md text-right">Outstanding Sum</th>
+<th class="py-space-md px-space-md">Delinquency Age</th>
+<th class="py-space-md px-space-md">AI Priority</th>
+<th class="py-space-md px-space-md">Prism Strategy</th>
+<th class="py-space-md px-space-md">Status</th>
+<th class="py-space-md px-space-lg text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y-0 text-text-primary font-body-sm text-body-sm">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="py-space-md px-space-lg font-label-mono-bold text-label-mono-bold text-primary">#LW-9082</td>
+<td class="py-space-md px-space-md font-semibold text-text-primary">Erick Kiplagat</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 text-text-secondary">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                  KCB-M-Pesa
+                </span>
+</td>
+<td class="py-space-md px-space-md text-right font-label-mono-bold text-label-mono-bold text-text-primary">$1,450.00</td>
+<td class="py-space-md px-space-md font-label-mono-sm text-label-mono-sm text-error">42 Days DPD</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-label-mono-bold text-label-mono-bold text-secondary">96 / 100</span>
+<div class="w-12 bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[96%]"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="bg-primary-container/20 text-primary font-label-mono-sm text-label-mono-sm px-2.5 py-1 rounded-full">
+                  Dynamic Restructure
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 text-secondary font-label-mono-sm text-label-mono-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-ping"></span>
+                  Dispatched
+                </span>
+</td>
+<td class="py-space-md px-space-lg text-right">
+<button class="w-8 h-8 rounded bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-text-secondary hover:text-text-primary ml-auto transition-colors">
+<span class="material-symbols-outlined text-base">more_horiz</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="py-space-md px-space-lg font-label-mono-bold text-label-mono-bold text-primary">#LW-9083</td>
+<td class="py-space-md px-space-md font-semibold text-text-primary">Faith Wanjiku</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 text-text-secondary">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+                  Branch Kenya
+                </span>
+</td>
+<td class="py-space-md px-space-md text-right font-label-mono-bold text-label-mono-bold text-text-primary">$890.00</td>
+<td class="py-space-md px-space-md font-label-mono-sm text-label-mono-sm text-secondary">18 Days DPD</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-label-mono-bold text-label-mono-bold text-secondary">88 / 100</span>
+<div class="w-12 bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[88%]"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="bg-badge-violet-glow text-tertiary font-label-mono-sm text-label-mono-sm px-2.5 py-1 rounded-full">
+                  Lump-Sum Incentive (8%)
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 text-tertiary-fixed-dim font-label-mono-sm text-label-mono-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                  Pending Acceptance
+                </span>
+</td>
+<td class="py-space-md px-space-lg text-right">
+<button class="w-8 h-8 rounded bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-text-secondary hover:text-text-primary ml-auto transition-colors">
+<span class="material-symbols-outlined text-base">more_horiz</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="py-space-md px-space-lg font-label-mono-bold text-label-mono-bold text-primary">#LW-9084</td>
+<td class="py-space-md px-space-md font-semibold text-text-primary">Brian Ochieng</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 text-text-secondary">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                  Tala Core
+                </span>
+</td>
+<td class="py-space-md px-space-md text-right font-label-mono-bold text-label-mono-bold text-text-primary">$3,240.00</td>
+<td class="py-space-md px-space-md font-label-mono-sm text-label-mono-sm text-error">65 Days DPD</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-label-mono-bold text-label-mono-bold text-primary">91 / 100</span>
+<div class="w-12 bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[91%]"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="bg-surface-container-high text-on-surface font-label-mono-sm text-label-mono-sm px-2.5 py-1 rounded-full">
+                  Micro-Installment Match
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 text-secondary font-label-mono-sm text-label-mono-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  Active Schedule
+                </span>
+</td>
+<td class="py-space-md px-space-lg text-right">
+<button class="w-8 h-8 rounded bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-text-secondary hover:text-text-primary ml-auto transition-colors">
+<span class="material-symbols-outlined text-base">more_horiz</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="py-space-md px-space-lg font-label-mono-bold text-label-mono-bold text-primary">#LW-9085</td>
+<td class="py-space-md px-space-md font-semibold text-text-primary">Mercy Mwangi</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 text-text-secondary">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                  M-Shwari Institutional
+                </span>
+</td>
+<td class="py-space-md px-space-md text-right font-label-mono-bold text-label-mono-bold text-text-primary">$510.00</td>
+<td class="py-space-md px-space-md font-label-mono-sm text-label-mono-sm text-text-secondary">9 Days DPD</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-label-mono-bold text-label-mono-bold text-secondary">74 / 100</span>
+<div class="w-12 bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[74%]"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="bg-primary-container/20 text-primary font-label-mono-sm text-label-mono-sm px-2.5 py-1 rounded-full">
+                  Automated Self-Cure SMS
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 text-text-secondary font-label-mono-sm text-label-mono-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-text-tertiary"></span>
+                  Delivered (10:14)
+                </span>
+</td>
+<td class="py-space-md px-space-lg text-right">
+<button class="w-8 h-8 rounded bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-text-secondary hover:text-text-primary ml-auto transition-colors">
+<span class="material-symbols-outlined text-base">more_horiz</span>
+</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="py-space-md px-space-lg font-label-mono-bold text-label-mono-bold text-primary">#LW-9086</td>
+<td class="py-space-md px-space-md font-semibold text-text-primary">David Mutua</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 text-text-secondary">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+                  Eazzy Loan
+                </span>
+</td>
+<td class="py-space-md px-space-md text-right font-label-mono-bold text-label-mono-bold text-text-primary">$2,100.00</td>
+<td class="py-space-md px-space-md font-label-mono-sm text-label-mono-sm text-error">31 Days DPD</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-label-mono-bold text-label-mono-bold text-secondary">92 / 100</span>
+<div class="w-12 bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[92%]"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="bg-badge-violet-glow text-tertiary font-label-mono-sm text-label-mono-sm px-2.5 py-1 rounded-full">
+                  Dynamic Restructure
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 text-secondary font-label-mono-sm text-label-mono-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  Agreement Signed
+                </span>
+</td>
+<td class="py-space-md px-space-lg text-right">
+<button class="w-8 h-8 rounded bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-text-secondary hover:text-text-primary ml-auto transition-colors">
+<span class="material-symbols-outlined text-base">more_horiz</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer / Pagination -->
+<div class="p-space-md bg-surface-container-low flex flex-col sm:flex-row items-center justify-between gap-space-sm">
+<span class="font-body-sm text-body-sm text-text-tertiary">
+          Showing <span class="text-text-primary font-medium">1 - 5</span> of <span class="text-text-primary font-medium">14,820</span> cases across all active cohorts
+        </span>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-text-secondary hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined text-base">chevron_left</span>
+</button>
+<span class="px-3 py-1 rounded bg-primary-container text-on-primary-container font-label-mono-bold text-label-mono-bold">1</span>
+<button class="px-3 py-1 rounded bg-surface-container hover:bg-surface-container-high text-text-secondary hover:text-text-primary font-label-mono-bold text-label-mono-bold transition-colors">2</button>
+<button class="px-3 py-1 rounded bg-surface-container hover:bg-surface-container-high text-text-secondary hover:text-text-primary font-label-mono-bold text-label-mono-bold transition-colors">3</button>
+<span class="text-text-tertiary px-1">...</span>
+<button class="px-3 py-1 rounded bg-surface-container hover:bg-surface-container-high text-text-secondary hover:text-text-primary font-label-mono-bold text-label-mono-bold transition-colors">296</button>
+<button class="w-8 h-8 rounded bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-text-secondary hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined text-base">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Quick Actions & System Health Footer Bar -->
+<div class="mt-space-lg grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div class="bg-surface-container-low/70 backdrop-blur-md p-space-md rounded-xl flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">sync</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-mono-bold text-label-mono-bold text-text-primary">Ledger Webhook Sync</span>
+<span class="font-body-sm text-body-sm text-text-tertiary">14 connected financial nodes responding</span>
+</div>
+</div>
+<div class="bg-surface-container-low/70 backdrop-blur-md p-space-md rounded-xl flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">shield_locked</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-mono-bold text-label-mono-bold text-text-primary">Audit Trail Compliance</span>
+<span class="font-body-sm text-body-sm text-text-tertiary">SOC2 Type II Encrypted &amp; Logged</span>
+</div>
+</div>
+<div class="bg-surface-container-low/70 backdrop-blur-md p-space-md rounded-xl flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">terminal</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-mono-bold text-label-mono-bold text-text-primary">Prism Inference Engine</span>
+<span class="font-body-sm text-body-sm text-text-tertiary">Real-time throughput: 4,200 req/sec</span>
+</div>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

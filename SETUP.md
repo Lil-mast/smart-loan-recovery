@@ -2,7 +2,7 @@
 
 This document walks through installing, configuring, and running **LendWise Recovery** on a local machine, in Docker, and on Fly.io.
 
-The web UI and API are served from the same process. Always start the binary from the **repository root** so the `frontend/` directory is found.
+The Rust process still serves the API (and the legacy `frontend/` UI at `/app/`). The current UI is the Next.js app in `web/` on port **3001**, which proxies API calls to `API_URL` (default `http://127.0.0.1:3000`). Always start the Rust binary from the **repository root**.
 
 ## Prerequisites
 
