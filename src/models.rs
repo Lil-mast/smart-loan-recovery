@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum UserRole {
     Borrower,
@@ -30,6 +30,30 @@ pub enum LoanStatus {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LoanPayment {
+    pub amount: f64,
+    pub paid_at: DateTime<Utc>,
+    #[serde(default)]
+    pub note: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LoanSignal {
+    pub id: String,
+    pub loan_id: uuid::Uuid,
+    pub borrower_id: String,
+    pub lender_id: String,
+    /// `can_pay_early` | `concern`
+    pub kind: String,
+    pub message: String,
+    #[serde(default)]
+    pub proposed_date: Option<DateTime<Utc>>,
+    pub created_at: DateTime<Utc>,
+    /// `open` | `seen`
+    pub status: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Loan {
     pub id: uuid::Uuid,
     pub borrower_id: String,
@@ -41,28 +65,110 @@ pub struct Loan {
     pub start_date: DateTime<Utc>,
     pub last_repayment_date: Option<DateTime<Utc>>,
     pub status: LoanStatus,
+    #[serde(default)]
+    pub payments: Vec<LoanPayment>,
 }
 
 pub trait RiskScorable {
     fn calculate_risk_score(&self) -> f64;
 }
 
-impl RiskScorable for Loan {
-    /// Score in [0, 1]: higher means higher predicted default / recovery difficulty.
-    fn calculate_risk_score(&self) -> f64 {
-        let status_base: f64 = match self.status {
-            LoanStatus::Defaulted => 0.92,
-            LoanStatus::Overdue => 0.78,
-            LoanStatus::Repaid => 0.06,
-            LoanStatus::Active => 0.22,
-        };
-        // Slightly lift risk for high coupon active loans (demo heuristic)
-        let rate_bump: f64 = if matches!(self.status, LoanStatus::Active) && self.interest_rate > 15.0 {
-            0.12
+#[derive(Debug, Clone)]
+pub struct LoanSnapshot {
+    pub risk_score: f64,
+    pub health: &'static str,
+    pub missed_installments: usize,
+    pub next_due: Option<DateTime<Utc>>,
+    pub days_until_due: i64,
+    pub live_status: LoanStatus,
+}
+
+impl Loan {
+    fn unpaid_dues(&self) -> Vec<DateTime<Utc>> {
+        self.repayment_schedule
+            .iter()
+            .copied()
+            .filter(|due| match self.last_repayment_date {
+                Some(paid) => *due > paid,
+                None => true,
+            })
+            .collect()
+    }
+
+    /// Deterministic book health in [0, 1]. Higher = worse.
+    /// Combines missed share, lateness, coupon, and optional early-pay signal.
+    pub fn snapshot_at(&self, now: DateTime<Utc>, early_pay: bool) -> LoanSnapshot {
+        let unpaid = self.unpaid_dues();
+        let missed = unpaid.iter().filter(|d| **d < now).count();
+        let next_due = unpaid
+            .iter()
+            .filter(|d| **d >= now)
+            .min()
+            .copied()
+            .or_else(|| unpaid.iter().max().copied());
+        let days_until_due = next_due
+            .map(|d| (d - now).num_days())
+            .unwrap_or(0);
+
+        let n = self.repayment_schedule.len().max(1) as f64;
+        let missed_ratio = missed as f64 / n;
+        let lateness = if missed > 0 {
+            ((-days_until_due) as f64 / 90.0).clamp(0.0, 1.0)
         } else {
             0.0
         };
-        f64::min(status_base + rate_bump, 0.99)
+        let coupon = (self.interest_rate / 40.0).clamp(0.0, 0.25);
+        let early_relief = if early_pay { 0.18 } else { 0.0 };
+
+        let mut risk = (0.10 + 0.50 * missed_ratio + 0.28 * lateness + coupon - early_relief)
+            .clamp(0.02, 0.99);
+
+        let live_status = if matches!(self.status, LoanStatus::Repaid) {
+            risk = 0.04;
+            LoanStatus::Repaid
+        } else if missed >= 3 || (missed >= 1 && -days_until_due >= 90) {
+            risk = risk.max(0.82);
+            LoanStatus::Defaulted
+        } else if missed >= 1 {
+            risk = risk.max(0.45);
+            LoanStatus::Overdue
+        } else {
+            LoanStatus::Active
+        };
+
+        let health = if risk < 0.35 {
+            "healthy"
+        } else if risk < 0.65 {
+            "watch"
+        } else {
+            "critical"
+        };
+
+        LoanSnapshot {
+            risk_score: risk,
+            health,
+            missed_installments: missed,
+            next_due,
+            days_until_due,
+            live_status,
+        }
     }
 }
+
+impl RiskScorable for Loan {
+    fn calculate_risk_score(&self) -> f64 {
+        crate::scoring::evaluate(self, Utc::now()).risk_score
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LoanNote {
+    pub id: String,
+    pub loan_id: String,
+    pub author_id: String,
+    pub kind: String,
+    pub message: String,
+    pub created_at: DateTime<Utc>,
+}
+
 

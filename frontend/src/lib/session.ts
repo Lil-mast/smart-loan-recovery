@@ -43,8 +43,10 @@ export function sessionFromUnknown(data: unknown): SessionUser | null {
   const user = rec.user && typeof rec.user === "object" ? (rec.user as Record<string, unknown>) : rec;
   const id = user.local_user_id ?? user.user_id ?? user.id;
   const role = normalizeRole(String(user.role ?? ""));
-  const name = user.name;
-  if (typeof id !== "string" || !role || typeof name !== "string") return null;
+  const rawName = user.name;
+  const name =
+    typeof rawName === "string" && rawName.trim() ? rawName.trim() : "Account";
+  if (typeof id !== "string" || !role) return null;
   return { id, role, name };
 }
 

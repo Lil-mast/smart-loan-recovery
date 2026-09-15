@@ -43,6 +43,10 @@ pub struct RegisterRequest {
     pub password: String,
     pub name: String,
     pub role: UserRole,
+    #[serde(default)]
+    pub lender_id: Option<String>,
+    #[serde(default)]
+    pub organization: Option<String>,
 }
 
 /// Google Sign-In request
@@ -52,6 +56,12 @@ pub struct GoogleSignInRequest {
     pub id_token: String,
     #[serde(default)]
     pub role: Option<String>,
+    #[serde(default)]
+    pub lender_id: Option<String>,
+    #[serde(default)]
+    pub organization: Option<String>,
+    #[serde(default)]
+    pub link_existing: Option<bool>,
 }
 
 /// Token refresh request
@@ -91,7 +101,7 @@ pub struct TokenVerificationResponse {
 }
 
 /// Logout request
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Default, Deserialize)]
 pub struct LogoutRequest {
     pub refresh_token: Option<String>,
 }

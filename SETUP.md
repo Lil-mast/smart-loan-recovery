@@ -13,7 +13,7 @@ The Rust process is the **API** (JSON). The web UI is the Next.js app in `fronte
 | SQLite | Bundled with the `rusqlite` crate; no system SQLite install required |
 | Docker | Optional, for container builds |
 | [Fly CLI](https://fly.io/docs/flyctl/install/) | Optional, for production deploys |
-| A [Firebase](https://console.firebase.google.com/) project | Optional; demo login works without it |
+| A [Firebase](https://console.firebase.google.com/) project | Required for Google and email sign-in for borrowers |
 
 Install Rust with rustup:
 
@@ -37,7 +37,7 @@ The app loads two files from the **current working directory**:
 1. `.env` — server, database, and session settings (`dotenv::dotenv()`)
 2. `.env.firebase` — Firebase + JWT settings (`dotenv::from_filename(".env.firebase")`)
 
-Neither file is committed (see `.gitignore`). Missing files are allowed: the server still starts, using defaults and a Firebase fallback so demo mode works.
+Neither file is committed (see `.gitignore`). Missing `.env` is allowed. Missing `.env.firebase` still starts the API, but Google and borrower email sign-in will not work until it is filled in.
 
 ### `.env` (optional)
 
@@ -103,7 +103,7 @@ RUST_LOG=info
 
 In Firebase Console, enable **Authentication → Email/Password** and, if you use Google Sign-In, **Google**.
 
-Without `.env.firebase`, the server logs a warning and continues. Session-based demo login and the REST API still work.
+Without `.env.firebase`, the server logs a warning and continues. Lenders can still register with a company name and sign in with their account ID. Borrower Google/email needs Firebase.
 
 ## Local development
 
@@ -130,16 +130,13 @@ First compile can take several minutes. Subsequent builds are incremental.
 
 CORS allows localhost **3001** (and Vercel) so the Next BFF and optional direct browser calls can reach the API. Prefer the Next proxy (`/api/v1`) so cookies stay on the UI origin.
 
-### Demo data
+### Accounts
 
-On first start, if the `loans` table is empty, the database seeds sample lenders (M-shwari, Branch, Tala, and others), a demo borrower, a demo lender, and a sample loan so the UI is usable immediately.
+The database starts **empty**. There are no seeded lenders, borrowers, or sample loans. Known leftover demo IDs (`DEMO`, `BANK`, M-shwari / Branch / Tala / Eazzy / KCB-Mpesa, loan `LOAN1`) are deleted on startup if they still exist.
 
-| Role | User id | Name |
-|------|---------|------|
-| Borrower | `DEMO` | Demo Borrower |
-| Lender | `BANK` | Demo Lender |
+Lenders register with a company name and get a 4-character ID to share with borrowers.
 
-The SQLite file is `loans.db` in the working directory (unless you change `DATABASE_URL`). JSON backups `users_backup.json` and `loans_backup.json` may be written by CLI demo commands.
+The SQLite file is `loans.db` in the working directory (unless you change `DATABASE_URL`). JSON backups `users_backup.json` and `loans_backup.json` may be written by CLI commands.
 
 ### CLI (no HTTP server)
 

@@ -6,4 +6,5 @@ pub mod error;
 pub mod loan;
 pub mod models;
 pub mod recovery;
+pub mod scoring;
 pub mod user;

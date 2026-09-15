@@ -3,7 +3,7 @@ use crate::db::Db;
 use rusqlite::Result;
 use rand::prelude::*;
 
-const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const ID_LEN: usize = 4;
 
 fn generate_id(db: &Db) -> Result<String> {

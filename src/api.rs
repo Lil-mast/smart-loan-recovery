@@ -1,13 +1,14 @@
 use actix_cors::Cors;
-use actix_web::{web, App, HttpResponse, HttpServer, Result as ActixResult, middleware::Logger};
+use actix_web::{web, App, HttpMessage, HttpRequest, HttpResponse, HttpServer, Result as ActixResult, middleware::Logger};
 use actix_identity::{Identity, IdentityMiddleware};
 use actix_web::cookie::{Key, SameSite};
 use actix_session::{SessionMiddleware, storage::CookieSessionStore};
 use crate::db::Db;
 use crate::user::UserManager;
 use crate::loan::LoanTracker;
-use crate::recovery::RecoveryEngine;
-use crate::models::{Loan, LoanStatus, UserRole};
+use crate::models::{Loan, LoanSignal, User, UserRole};
+use crate::scoring;
+use crate::recovery::RecoveryAction;
 use crate::config::Config;
 use crate::error::{AppError, AppResult};
 use crate::auth::{config_auth_routes, init_auth_services, AuthState, middleware::auth::JwtAuth, services::TokenBlacklist};
@@ -16,6 +17,24 @@ use std::sync::Arc;
 
 fn is_valid_4char_id(id: &str) -> bool {
     id.len() == 4 && id.chars().all(|c| c.is_alphanumeric())
+}
+
+fn require_lender_id(mgr: &UserManager<'_>, raw: &str) -> AppResult<String> {
+    if !is_valid_4char_id(raw) {
+        return Err(AppError::InvalidInput(
+            "Enter the lender’s 4-character account ID".to_string(),
+        ));
+    }
+    let user = mgr
+        .get_user(raw)
+        .map_err(AppError::Database)?
+        .ok_or_else(|| AppError::InvalidInput("No lender found with that ID".to_string()))?;
+    if user.role != UserRole::Lender {
+        return Err(AppError::InvalidInput(
+            "That ID is not a lender account".to_string(),
+        ));
+    }
+    Ok(user.id)
 }
 
 fn cors_origin_allowed(origin: &str) -> bool {
@@ -53,6 +72,8 @@ pub struct RegisterUserReq {
     #[serde(default)]
     lender_name: Option<String>, // for borrowers
     #[serde(default)]
+    lender_id: Option<String>, // for borrowers — lender account ID
+    #[serde(default)]
     organization: Option<String>, // for lenders
 }
 
@@ -76,6 +97,14 @@ pub struct LoansQuery {
 }
 
 #[derive(Serialize)]
+struct InstallmentApiJson {
+    due: String,
+    expected: f64,
+    covered: f64,
+    status: String,
+}
+
+#[derive(Serialize)]
 struct LoanApiJson {
     id: uuid::Uuid,
     borrower_id: String,
@@ -86,41 +115,105 @@ struct LoanApiJson {
     status: String,
     recovery_status: f64,
     outstanding_amount: f64,
+    paid_amount: f64,
+    expected_paid: f64,
+    monthly_payment: f64,
     risk_score: f64,
+    health_score: f64,
+    health_band: String,
+    days_past_due: i64,
+    missed_installments: usize,
+    next_due: Option<String>,
+    coverage_ratio: f64,
     ai_recommendation: String,
+    repayment_schedule: Vec<String>,
+    installments: Vec<InstallmentApiJson>,
+    evaluated_at: String,
+    days_until_due: i64,
+    early_pay_offered: bool,
 }
 
-fn loan_api_json(loan: &Loan) -> LoanApiJson {
-    let recovery_status = match loan.status {
-        LoanStatus::Repaid => 100.0,
-        LoanStatus::Active => 42.0,
-        LoanStatus::Overdue => 28.0,
-        LoanStatus::Defaulted => 12.0,
-    };
-    let amount = loan.principal;
-    let outstanding_amount = amount * (1.0 - recovery_status / 100.0);
-    let recovery = RecoveryEngine;
-    let risk_score = recovery.predict_default(loan);
-    let action = recovery.recommend_action(risk_score, 0);
-    let ai_recommendation = match action {
-        crate::recovery::RecoveryAction::SendReminder => "send_reminder",
-        crate::recovery::RecoveryAction::RenegotiateTerms => "renegotiate_terms",
-        crate::recovery::RecoveryAction::EscalateToCollection => "escalate_to_collection",
+fn action_key(action: &RecoveryAction) -> &'static str {
+    match action {
+        RecoveryAction::SendReminder => "send_reminder",
+        RecoveryAction::RenegotiateTerms => "renegotiate_terms",
+        RecoveryAction::EscalateToCollection => "escalate_to_collection",
     }
-    .to_string();
+}
+
+fn loan_api_json(db: &Db, loan: &Loan) -> LoanApiJson {
+    let now = chrono::Utc::now();
+    let mut health = scoring::evaluate(loan, now);
+    let early_pay_offered = db
+        .loan_has_open_kind(&loan.id.to_string(), "can_pay_early")
+        .unwrap_or(false);
+    if early_pay_offered {
+        health = scoring::apply_early_intent(health);
+    }
+    let live = scoring::live_status(&health);
+    let recovery_status = if health.paid_in_full {
+        100.0
+    } else if health.monthly_payment * loan.repayment_schedule.len().max(1) as f64 > 0.01 {
+        let total = health.monthly_payment * loan.repayment_schedule.len() as f64;
+        (health.paid_amount / total * 100.0).clamp(0.0, 100.0)
+    } else {
+        0.0
+    };
+    let days_until_due = health.next_due.map(|d| (d - now).num_days()).unwrap_or(0);
     LoanApiJson {
         id: loan.id,
         borrower_id: loan.borrower_id.clone(),
         lender_id: loan.lender_id.clone(),
         principal: loan.principal,
-        amount,
+        amount: loan.principal,
         interest_rate: loan.interest_rate,
-        status: format!("{:?}", loan.status).to_lowercase(),
+        status: format!("{:?}", live).to_lowercase(),
         recovery_status,
-        outstanding_amount,
-        risk_score,
-        ai_recommendation,
+        outstanding_amount: health.outstanding_amount,
+        paid_amount: health.paid_amount,
+        expected_paid: health.expected_paid,
+        monthly_payment: health.monthly_payment,
+        risk_score: health.risk_score,
+        health_score: health.score,
+        health_band: match health.band {
+            scoring::HealthBand::Healthy => "healthy",
+            scoring::HealthBand::Watch => "watch",
+            scoring::HealthBand::AtRisk => "at_risk",
+            scoring::HealthBand::Critical => "critical",
+        }
+        .to_string(),
+        days_past_due: health.days_past_due,
+        missed_installments: health.missed_installments,
+        next_due: health.next_due.map(|d| d.to_rfc3339()),
+        coverage_ratio: health.coverage_ratio,
+        ai_recommendation: action_key(&health.recommendation).to_string(),
+        repayment_schedule: loan
+            .repayment_schedule
+            .iter()
+            .map(|d| d.to_rfc3339())
+            .collect(),
+        installments: health
+            .installments
+            .iter()
+            .map(|i| InstallmentApiJson {
+                due: i.due.to_rfc3339(),
+                expected: i.expected,
+                covered: i.covered,
+                status: i.status.to_string(),
+            })
+            .collect(),
+        evaluated_at: now.to_rfc3339(),
+        days_until_due,
+        early_pay_offered,
     }
+}
+
+fn current_user(identity: &Identity, db: &Db) -> AppResult<User> {
+    let user_id = identity.id().map_err(|_| AppError::AuthRequired)?;
+    UserManager::new(db)
+        .get_user(&user_id)
+        .map_err(AppError::Database)?
+        .ok_or(AppError::AuthRequired)
 }
 
 #[derive(Deserialize)]
@@ -140,6 +233,7 @@ struct CreateLoanRes {
 pub async fn register_user(
     data: web::Json<RegisterUserReq>,
     db: web::Data<Db>,
+    http: HttpRequest,
 ) -> AppResult<ActixResult<HttpResponse>> {
     let mgr = UserManager::new(&db);
     let role = match data.role.as_str() {
@@ -148,31 +242,43 @@ pub async fn register_user(
         _ => return Err(AppError::InvalidInput("Role must be 'borrower' or 'lender'".to_string())),
     };
 
-    let email = data.email.clone().filter(|e| !e.trim().is_empty());
-    let lender_id = if let Some(ref ln) = data.lender_name {
-        let lenders = mgr.get_all_users().map_err(AppError::Database)?;
-        lenders.into_iter().find(|u| u.role == UserRole::Lender && u.name == *ln).map(|u| u.id)
+    let email = if role == UserRole::Lender {
+        None
+    } else {
+        data.email.clone().filter(|e| !e.trim().is_empty())
+    };
+
+    let lender_id = if role == UserRole::Borrower {
+        let raw = data
+            .lender_id
+            .as_deref()
+            .or(data.lender_name.as_deref())
+            .unwrap_or("")
+            .trim();
+        Some(require_lender_id(&mgr, raw)?)
     } else {
         None
     };
     let organization = data.organization.clone().filter(|o| !o.trim().is_empty());
-
-    if role == UserRole::Borrower && lender_id.is_none() {
-        return Err(AppError::InvalidInput("Borrowers must select a lender".to_string()));
-    }
 
     if role == UserRole::Lender && organization.is_none() {
         return Err(AppError::InvalidInput("Lenders must specify an organization".to_string()));
     }
 
     let user_id = mgr
-        .register_user(data.name.clone(), email, role, lender_id, organization)
+        .register_user(data.name.clone(), email, role.clone(), lender_id, organization)
         .map_err(AppError::Database)?;
 
     let user = mgr
         .get_user(&user_id)
         .map_err(AppError::Database)?
         .ok_or_else(|| AppError::NotFound("User not found after insert".to_string()))?;
+
+    if matches!(role, UserRole::Lender) {
+        if let Err(e) = Identity::login(&http.extensions(), user.id.clone()) {
+            log::warn!("Could not attach session identity after registration: {e}");
+        }
+    }
 
     Ok(Ok(HttpResponse::Ok().json(user)))
 }
@@ -210,7 +316,12 @@ pub async fn get_users(
     if let Some(ref lid) = query.lender_id {
         let l = lid.trim();
         if !l.is_empty() && is_valid_4char_id(l) {
-            users.retain(|u| u.lender_id.as_deref() == Some(l));
+            users.retain(|u| {
+                u.lender_id
+                    .as_deref()
+                    .map(|id| id.eq_ignore_ascii_case(l))
+                    .unwrap_or(false)
+            });
         }
     }
 
@@ -222,75 +333,339 @@ async fn create_loan(
     identity: Identity,
     db: web::Data<Db>,
 ) -> AppResult<ActixResult<HttpResponse>> {
-    let user_id = identity.id()
-        .map_err(|_| AppError::AuthRequired)?;
-
-    let mgr = UserManager::new(&db);
-    let user = mgr.get_user(&user_id)
-        .map_err(|e| AppError::Database(e))?
-        .ok_or_else(|| AppError::AuthRequired)?;
-
+    let user = current_user(&identity, &db)?;
     if !matches!(user.role, UserRole::Lender) {
         return Err(AppError::InsufficientPermissions);
     }
 
     let borrower_id = data.borrower_id.trim();
     let lender_id = data.lender_id.trim();
-    if !is_valid_4char_id(borrower_id) || !is_valid_4char_id(lender_id) || lender_id != user_id {
+    if !is_valid_4char_id(borrower_id) || !is_valid_4char_id(lender_id) || lender_id != user.id {
         return Err(AppError::InvalidInput("Invalid borrower/lender ID format".to_string()));
+    }
+    if data.principal <= 0.0 || data.months < 1 || data.months > 120 {
+        return Err(AppError::InvalidInput(
+            "Principal must be positive and term 1–120 months".to_string(),
+        ));
+    }
+
+    let borrower = UserManager::new(&db)
+        .get_user(borrower_id)
+        .map_err(AppError::Database)?
+        .ok_or_else(|| AppError::InvalidInput("Borrower not found".to_string()))?;
+    if borrower.role != UserRole::Borrower {
+        return Err(AppError::InvalidInput("That ID is not a borrower".to_string()));
+    }
+    if borrower.lender_id.as_deref() != Some(user.id.as_str()) {
+        return Err(AppError::InvalidInput(
+            "That borrower is not on your book".to_string(),
+        ));
     }
 
     let tracker = LoanTracker::new(&db);
-    let loan_id = tracker.create_loan(borrower_id.to_string(), lender_id.to_string(), data.principal, data.interest_rate, data.months)
-        .map_err(|e| AppError::Database(e))?;
+    let loan_id = tracker
+        .create_loan(
+            borrower_id.to_string(),
+            lender_id.to_string(),
+            data.principal,
+            data.interest_rate,
+            data.months,
+        )
+        .map_err(AppError::Database)?;
 
     Ok(Ok(HttpResponse::Ok().json(CreateLoanRes { id: loan_id })))
 }
 
 async fn get_loans(
     query: web::Query<LoansQuery>,
+    identity: Option<Identity>,
     db: web::Data<Db>,
 ) -> AppResult<ActixResult<HttpResponse>> {
     let tracker = LoanTracker::new(&db);
     let mut loans = tracker.get_all_loans().map_err(AppError::Database)?;
 
-    if let Some(ref bid) = query.borrower_id {
-        let b = bid.trim();
-        if !b.is_empty() && b != "all" {
-            loans.retain(|loan| loan.borrower_id == b);
+    if let Some(ref ident) = identity {
+        if let Ok(user) = current_user(ident, &db) {
+            match user.role {
+                UserRole::Lender => loans.retain(|loan| loan.lender_id == user.id),
+                UserRole::Borrower => loans.retain(|loan| loan.borrower_id == user.id),
+                UserRole::Admin => {}
+            }
+        }
+    } else {
+        if let Some(ref bid) = query.borrower_id {
+            let b = bid.trim();
+            if !b.is_empty() && b != "all" {
+                loans.retain(|loan| loan.borrower_id == b);
+            }
+        }
+        if let Some(ref lid) = query.lender_id {
+            let l = lid.trim();
+            if !l.is_empty() {
+                loans.retain(|loan| loan.lender_id == l);
+            }
         }
     }
 
-    if let Some(ref lid) = query.lender_id {
-        let l = lid.trim();
-        if !l.is_empty() {
-            loans.retain(|loan| loan.lender_id == l);
-        }
+    for loan in &mut loans {
+        let _ = tracker.refresh_status(loan);
     }
 
-    let payload: Vec<LoanApiJson> = loans.iter().map(loan_api_json).collect();
+    let mut payload: Vec<LoanApiJson> = loans.iter().map(|loan| loan_api_json(&db, loan)).collect();
+    payload.sort_by(|a, b| a.health_score.partial_cmp(&b.health_score).unwrap_or(std::cmp::Ordering::Equal));
     Ok(Ok(HttpResponse::Ok().json(payload)))
+}
+
+#[derive(Deserialize)]
+struct AddBorrowerReq {
+    name: String,
+    #[serde(default)]
+    email: Option<String>,
+    #[serde(default)]
+    principal: Option<f64>,
+    #[serde(default)]
+    interest_rate: Option<f64>,
+    #[serde(default)]
+    months: Option<i64>,
+}
+
+#[derive(Serialize)]
+struct AddBorrowerRes {
+    id: String,
+    name: String,
+    email: Option<String>,
+    loan_id: Option<uuid::Uuid>,
+}
+
+async fn add_borrower(
+    data: web::Json<AddBorrowerReq>,
+    identity: Identity,
+    db: web::Data<Db>,
+) -> AppResult<ActixResult<HttpResponse>> {
+    let lender = current_user(&identity, &db)?;
+    if !matches!(lender.role, UserRole::Lender) {
+        return Err(AppError::InsufficientPermissions);
+    }
+    let name = data.name.trim();
+    if name.is_empty() {
+        return Err(AppError::InvalidInput("Enter the borrower’s name".to_string()));
+    }
+    let email = data
+        .email
+        .as_deref()
+        .map(|e| e.trim().to_string())
+        .filter(|e| !e.is_empty());
+    if let Some(ref em) = email {
+        if !em.contains('@') {
+            return Err(AppError::InvalidInput("Enter a valid email".to_string()));
+        }
+        if let Some(existing) = db.find_user_by_email_ci(em).map_err(AppError::Database)? {
+            return Err(AppError::InvalidInput(format!(
+                "A user with email {em} already exists (ID {})",
+                existing.id
+            )));
+        }
+    }
+
+    let mgr = UserManager::new(&db);
+    let borrower_id = mgr
+        .register_user(
+            name.to_string(),
+            email.clone(),
+            UserRole::Borrower,
+            Some(lender.id.clone()),
+            None,
+        )
+        .map_err(AppError::Database)?;
+
+    let mut loan_id = None;
+    if let Some(principal) = data.principal {
+        if principal > 0.0 {
+            let months = data.months.unwrap_or(12).clamp(1, 120);
+            let rate = data.interest_rate.unwrap_or(8.5);
+            let tracker = LoanTracker::new(&db);
+            loan_id = Some(
+                tracker
+                    .create_loan(
+                        borrower_id.clone(),
+                        lender.id.clone(),
+                        principal,
+                        rate,
+                        months,
+                    )
+                    .map_err(AppError::Database)?,
+            );
+        }
+    }
+
+    Ok(Ok(HttpResponse::Ok().json(AddBorrowerRes {
+        id: borrower_id,
+        name: name.to_string(),
+        email,
+        loan_id,
+    })))
+}
+
+#[derive(Deserialize)]
+struct PaymentReq {
+    amount: f64,
+    #[serde(default)]
+    note: Option<String>,
+}
+
+async fn record_payment(
+    path: web::Path<uuid::Uuid>,
+    data: web::Json<PaymentReq>,
+    identity: Identity,
+    db: web::Data<Db>,
+) -> AppResult<ActixResult<HttpResponse>> {
+    let user = current_user(&identity, &db)?;
+    let tracker = LoanTracker::new(&db);
+    let loan = tracker
+        .get_loan(path.into_inner())
+        .map_err(AppError::Database)?
+        .ok_or_else(|| AppError::NotFound("Loan not found".to_string()))?;
+
+    let allowed = match user.role {
+        UserRole::Lender => loan.lender_id == user.id,
+        UserRole::Borrower => loan.borrower_id == user.id,
+        UserRole::Admin => true,
+    };
+    if !allowed {
+        return Err(AppError::InsufficientPermissions);
+    }
+    if data.amount <= 0.0 {
+        return Err(AppError::InvalidInput("Payment amount must be positive".to_string()));
+    }
+
+    let updated = tracker
+        .record_payment(loan.id, data.amount, data.note.clone())
+        .map_err(AppError::Database)?;
+    Ok(Ok(HttpResponse::Ok().json(loan_api_json(&db, &updated))))
+}
+
+#[derive(Deserialize)]
+struct SignalReq {
+    kind: String,
+    #[serde(default)]
+    message: Option<String>,
+    #[serde(default)]
+    proposed_date: Option<String>,
+}
+
+#[derive(Deserialize)]
+struct SignalsQuery {
+    #[serde(default)]
+    borrower_id: Option<String>,
+    #[serde(default)]
+    lender_id: Option<String>,
+    #[serde(default)]
+    loan_id: Option<String>,
+}
+
+async fn create_signal(
+    path: web::Path<uuid::Uuid>,
+    data: web::Json<SignalReq>,
+    identity: Identity,
+    db: web::Data<Db>,
+) -> AppResult<ActixResult<HttpResponse>> {
+    let user = current_user(&identity, &db)?;
+    if !matches!(user.role, UserRole::Borrower) {
+        return Err(AppError::InsufficientPermissions);
+    }
+    let kind = data.kind.trim().to_ascii_lowercase();
+    if kind != "can_pay_early" && kind != "concern" {
+        return Err(AppError::InvalidInput(
+            "Signal must be can_pay_early or concern".to_string(),
+        ));
+    }
+    let tracker = LoanTracker::new(&db);
+    let loan = tracker
+        .get_loan(path.into_inner())
+        .map_err(AppError::Database)?
+        .ok_or_else(|| AppError::NotFound("Loan not found".to_string()))?;
+    if loan.borrower_id != user.id {
+        return Err(AppError::InsufficientPermissions);
+    }
+
+    let proposed_date = match data.proposed_date.as_deref() {
+        Some(raw) if !raw.trim().is_empty() => {
+            let raw = raw.trim();
+            let parsed = chrono::DateTime::parse_from_rfc3339(raw)
+                .map(|d| d.with_timezone(&chrono::Utc))
+                .or_else(|_| {
+                    chrono::NaiveDate::parse_from_str(raw, "%Y-%m-%d").map(|d| {
+                        d.and_hms_opt(12, 0, 0)
+                            .expect("noon")
+                            .and_utc()
+                    })
+                })
+                .map_err(|_| AppError::InvalidInput("Invalid proposed date".to_string()))?;
+            Some(parsed)
+        }
+        _ => None,
+    };
+
+    let message = data
+        .message
+        .as_deref()
+        .map(|m| m.trim().to_string())
+        .filter(|m| !m.is_empty())
+        .unwrap_or_else(|| {
+            if kind == "can_pay_early" {
+                "I can pay this loan earlier than scheduled.".to_string()
+            } else {
+                "I may have trouble making the next payment.".to_string()
+            }
+        });
+
+    let signal = LoanSignal {
+        id: uuid::Uuid::new_v4().to_string(),
+        loan_id: loan.id,
+        borrower_id: user.id.clone(),
+        lender_id: loan.lender_id.clone(),
+        kind,
+        message,
+        proposed_date,
+        created_at: chrono::Utc::now(),
+        status: "open".to_string(),
+    };
+    db.save_signal(&signal).map_err(AppError::Database)?;
+
+    Ok(Ok(HttpResponse::Ok().json(signal)))
+}
+
+async fn get_signals(
+    query: web::Query<SignalsQuery>,
+    identity: Identity,
+    db: web::Data<Db>,
+) -> AppResult<ActixResult<HttpResponse>> {
+    let user = current_user(&identity, &db)?;
+    let (borrower_id, lender_id) = match user.role {
+        UserRole::Lender => (None, Some(user.id.as_str())),
+        UserRole::Borrower => (Some(user.id.as_str()), None),
+        UserRole::Admin => (
+            query.borrower_id.as_deref(),
+            query.lender_id.as_deref(),
+        ),
+    };
+    let signals = db
+        .load_signals(borrower_id, lender_id, query.loan_id.as_deref())
+        .map_err(AppError::Database)?;
+    Ok(Ok(HttpResponse::Ok().json(signals)))
 }
 
 async fn flag_overdues(
     identity: Identity,
     db: web::Data<Db>,
 ) -> AppResult<ActixResult<HttpResponse>> {
-    let user_id = identity.id()
-        .map_err(|_| AppError::AuthRequired)?;
-
-    let mgr = UserManager::new(&db);
-    let user = mgr.get_user(&user_id)
-        .map_err(|e| AppError::Database(e))?
-        .ok_or_else(|| AppError::AuthRequired)?;
-
+    let user = current_user(&identity, &db)?;
     if !matches!(user.role, UserRole::Lender) {
         return Err(AppError::InsufficientPermissions);
     }
 
     let tracker = LoanTracker::new(&db);
-    let flagged_count = tracker.flag_overdues()
-        .map_err(|e| AppError::Database(e))?;
+    let flagged_count = tracker.flag_overdues().map_err(AppError::Database)?;
 
     Ok(Ok(HttpResponse::Ok().json(serde_json::json!({
         "flagged_count": flagged_count
@@ -302,23 +677,30 @@ async fn recommend_action(
     identity: Identity,
     db: web::Data<Db>,
 ) -> AppResult<ActixResult<HttpResponse>> {
-    let _user_id = identity.id()
-        .map_err(|_| AppError::AuthRequired)?;
-
+    let user = current_user(&identity, &db)?;
     let tracker = LoanTracker::new(&db);
-    let recovery = RecoveryEngine;
-
-    let loan = tracker.get_loan(path.into_inner())
-        .map_err(|e| AppError::Database(e))?
+    let loan = tracker
+        .get_loan(path.into_inner())
+        .map_err(AppError::Database)?
         .ok_or_else(|| AppError::NotFound("Loan not found".to_string()))?;
 
-    let risk = recovery.predict_default(&loan);
-    let action = recovery.recommend_action(risk, 0);
+    let allowed = match user.role {
+        UserRole::Lender => loan.lender_id == user.id,
+        UserRole::Borrower => loan.borrower_id == user.id,
+        UserRole::Admin => true,
+    };
+    if !allowed {
+        return Err(AppError::InsufficientPermissions);
+    }
 
+    let health = scoring::evaluate(&loan, chrono::Utc::now());
     Ok(Ok(HttpResponse::Ok().json(serde_json::json!({
         "loan_id": loan.id,
-        "risk_score": risk,
-        "recommended_action": action
+        "risk_score": health.risk_score,
+        "health_score": health.score,
+        "health_band": health.band,
+        "days_past_due": health.days_past_due,
+        "recommended_action": action_key(&health.recommendation)
     }))))
 }
 
@@ -418,11 +800,12 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
                             "/auth/verify",
                             "/auth/me",
                             "/auth/google",
+                            "/auth/id-login",
                             "/auth/demo-login",
                         ],
-                        "users": ["/users"],
-                        "loans": ["/loans"],
-                        "recovery": ["/overdues", "/recommend/{loan_id}"]
+                        "users": ["/users", "/borrowers"],
+                        "loans": ["/loans", "/loans/{id}/payments", "/loans/{id}/signals"],
+                        "recovery": ["/overdues", "/recommend/{loan_id}", "/signals"]
                     }
                 })))
             }))
@@ -432,8 +815,12 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
             // Public routes used by the Next.js BFF (no JWT)
             .route("/users", web::get().to(get_users))
             .route("/users", web::post().to(register_user))
+            .route("/borrowers", web::post().to(add_borrower))
             .route("/loans", web::get().to(get_loans))
             .route("/loans", web::post().to(create_loan))
+            .route("/loans/{loan_id}/payments", web::post().to(record_payment))
+            .route("/loans/{loan_id}/signals", web::post().to(create_signal))
+            .route("/signals", web::get().to(get_signals))
             .route("/overdues", web::post().to(flag_overdues))
             .route("/recommend/{loan_id}", web::post().to(recommend_action))
             // Protected routes with JWT authentication
@@ -442,8 +829,12 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
                     .wrap(jwt_auth.clone())
                     .route("/users", web::get().to(get_users))
                     .route("/users", web::post().to(register_user))
+                    .route("/borrowers", web::post().to(add_borrower))
                     .route("/loans", web::get().to(get_loans))
                     .route("/loans", web::post().to(create_loan))
+                    .route("/loans/{loan_id}/payments", web::post().to(record_payment))
+                    .route("/loans/{loan_id}/signals", web::post().to(create_signal))
+                    .route("/signals", web::get().to(get_signals))
                     .route("/overdues", web::post().to(flag_overdues))
                     .route("/recommend/{loan_id}", web::post().to(recommend_action))
             )

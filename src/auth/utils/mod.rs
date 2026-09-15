@@ -43,24 +43,25 @@ pub fn validate_password_strength(password: &str) -> Result<(), &'static str> {
     if password.len() < 8 {
         return Err("Password must be at least 8 characters long");
     }
-
-    let has_uppercase = password.chars().any(|c| c.is_uppercase());
-    let has_lowercase = password.chars().any(|c| c.is_lowercase());
-    let has_digit = password.chars().any(|c| c.is_ascii_digit());
-    let has_special = password.chars().any(|c| !c.is_alphanumeric());
-
-    if !has_uppercase {
-        return Err("Password must contain at least one uppercase letter");
-    }
-    if !has_lowercase {
-        return Err("Password must contain at least one lowercase letter");
-    }
-    if !has_digit {
-        return Err("Password must contain at least one digit");
-    }
-    if !has_special {
-        return Err("Password must contain at least one special character");
-    }
-
     Ok(())
+}
+
+pub fn firebase_auth_error_message(raw: &str) -> String {
+    let upper = raw.to_ascii_uppercase();
+    if upper.contains("CONFIGURATION_NOT_FOUND") || upper.contains("OPERATION_NOT_ALLOWED") {
+        return "Firebase Authentication is not set up. In Firebase Console open Authentication, click Get started, then enable Email/Password and Google. Also enable the Identity Toolkit API for this Google Cloud project.".to_string();
+    }
+    if upper.contains("EMAIL_EXISTS") {
+        return "That email is already registered. Sign in instead.".to_string();
+    }
+    if upper.contains("INVALID_PASSWORD") || upper.contains("INVALID_LOGIN_CREDENTIALS") {
+        return "Invalid email or password.".to_string();
+    }
+    if upper.contains("EMAIL_NOT_FOUND") {
+        return "No account with that email.".to_string();
+    }
+    if upper.contains("WEAK_PASSWORD") {
+        return "Password is too weak. Use at least 8 characters.".to_string();
+    }
+    "Authentication failed. Check Firebase Auth and try again.".to_string()
 }

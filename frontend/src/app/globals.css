@@ -10,6 +10,7 @@
   --primary-container: #4d8eff;
   --on-primary-container: #00285d;
   --secondary: #4cd7f6;
+  --tertiary: #d0bcff;
   --line: rgba(255, 255, 255, 0.08);
 }
 
@@ -23,6 +24,7 @@
   --color-primary-container: var(--primary-container);
   --color-on-primary-container: var(--on-primary-container);
   --color-secondary: var(--secondary);
+  --color-tertiary: var(--tertiary);
   --color-line: var(--line);
   --font-sans: var(--font-manrope);
   --font-mono: var(--font-jetbrains);

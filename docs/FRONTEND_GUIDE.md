@@ -20,7 +20,16 @@ Open http://127.0.0.1:3001
 
 The Next server proxies `/api/v1/*` to the Rust API (`API_URL`, default `http://127.0.0.1:3000`), so the browser stays same-origin and does not need CORS for those calls.
 
-Demo IDs: borrower `DEMO`, lender `BANK`.
+Lenders register with a **company name** and receive a 4-character account ID (optional Google). Borrowers join with that ID using **Google** (default) or **email**. There are no seeded demo companies or DEMO/BANK accounts.
+
+## Google sign-in (Firebase)
+
+1. Copy `.env.firebase.example` to `.env.firebase` on the **API** (repo root) and fill `FIREBASE_API_KEY`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_PROJECT_ID`.
+2. Firebase Console → Authentication → Sign-in method → enable **Google**.
+3. Authentication → Settings → Authorized domains: add `localhost`, `127.0.0.1`, and (if you use the LAN URL) `192.168.100.18`.
+4. Restart `cargo run`. Login/register loads config from `GET /auth/config`, opens the Google popup, then posts the ID token to `POST /auth/google`. Borrowers must send the lender account ID on first Google sign-up.
+
+Open the UI at **http://127.0.0.1:3001** (not a `file://` URL) so the popup and cookies work.
 
 ## Deploy (Vercel)
 

@@ -1,5 +1,6 @@
-use crate::models::{Loan, LoanStatus};
+use crate::models::{Loan, LoanPayment, LoanStatus};
 use crate::db::Db;
+use crate::scoring;
 use chrono::{Duration, Utc};
 use uuid::Uuid;
 use rusqlite::Result;
@@ -38,30 +39,40 @@ impl<'a> LoanTracker<'a> {
             start_date: now,
             last_repayment_date: None,
             status: LoanStatus::Active,
+            payments: Vec::new(),
         };
         self.db.save_loan(&loan)?;
         Ok(id)
     }
 
-    pub fn update_repayment(&self, loan_id: Uuid) -> Result<()> {
+    pub fn record_payment(&self, loan_id: Uuid, amount: f64, note: Option<String>) -> Result<Loan> {
+        if amount <= 0.0 {
+            return Err(rusqlite::Error::InvalidQuery);
+        }
         let mut loan = self.db.load_loan(loan_id)?
             .ok_or_else(|| rusqlite::Error::QueryReturnedNoRows)?;
-
-        loan.last_repayment_date = Some(Utc::now());
-
-        let overdue_installments = loan.repayment_schedule
-            .iter()
-            .filter(|&&due| Utc::now() > due)
-            .count();
-
-        loan.status = if overdue_installments >= loan.repayment_schedule.len() {
-            LoanStatus::Repaid
-        } else {
-            LoanStatus::Active
-        };
-
+        let now = Utc::now();
+        loan.payments.push(LoanPayment {
+            amount,
+            paid_at: now,
+            note,
+        });
+        loan.last_repayment_date = Some(now);
+        let health = scoring::evaluate(&loan, now);
+        loan.status = scoring::live_status(&health);
         self.db.save_loan(&loan)?;
-        Ok(())
+        Ok(loan)
+    }
+
+    pub fn refresh_status(&self, loan: &mut Loan) -> Result<bool> {
+        let health = scoring::evaluate(loan, Utc::now());
+        let next = scoring::live_status(&health);
+        if next != loan.status {
+            loan.status = next;
+            self.db.save_loan(loan)?;
+            return Ok(true);
+        }
+        Ok(false)
     }
 
     pub fn get_loan(&self, loan_id: Uuid) -> Result<Option<Loan>> {
@@ -78,14 +89,15 @@ impl<'a> LoanTracker<'a> {
         let mut flagged_count = 0;
 
         for mut loan in loans {
-            if loan.status == LoanStatus::Active {
-                // Check if any repayment date has passed
-                let has_overdue_payment = loan.repayment_schedule.iter().any(|&due_date| now > due_date);
-                if has_overdue_payment {
-                    loan.status = LoanStatus::Overdue;
-                    self.db.save_loan(&loan)?;
-                    flagged_count += 1;
-                }
+            if matches!(loan.status, LoanStatus::Repaid) {
+                continue;
+            }
+            let health = scoring::evaluate(&loan, now);
+            let next = scoring::live_status(&health);
+            if next != loan.status {
+                loan.status = next;
+                self.db.save_loan(&loan)?;
+                flagged_count += 1;
             }
         }
         Ok(flagged_count)

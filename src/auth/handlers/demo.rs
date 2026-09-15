@@ -24,11 +24,16 @@ pub async fn demo_login(
     db: web::Data<Db>,
 ) -> AppResult<ActixResult<HttpResponse>> {
     let user_id = data.user_id.trim().to_string();
+    if user_id.is_empty() {
+        return Err(AppError::InvalidInput("Enter your 4-character user ID".to_string()));
+    }
     let mgr = UserManager::new(&db);
     let user = mgr
         .get_user(&user_id)
         .map_err(AppError::Database)?
-        .ok_or_else(|| AppError::NotFound("User not found".to_string()))?;
+        .ok_or_else(|| {
+            AppError::InvalidInput(format!("No account found for ID {user_id}"))
+        })?;
 
     Identity::login(&req.extensions(), user.id.clone()).map_err(|_| AppError::AuthRequired)?;
 

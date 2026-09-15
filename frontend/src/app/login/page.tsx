@@ -2,15 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { GoogleButton } from "@/components/google-button";
-import { apiErrorMessage, apiFetch } from "@/lib/api";
-import type { UserRole } from "@/lib/types";
+import { apiErrorMessage, apiFetch, clearSession } from "@/lib/api";
+import { dashboardPath, type UserRole } from "@/lib/types";
+
+type BorrowerMethod = "google" | "email" | "id";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [role, setRole] = useState<UserRole>("borrower");
+  const [method, setMethod] = useState<BorrowerMethod>("google");
   const [userId, setUserId] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -19,22 +22,42 @@ export default function LoginPage() {
     setError("");
     setBusy(true);
     try {
-      const res = await apiFetch("/auth/demo-login", {
+      await apiFetch("/auth/logout", { method: "POST", body: "{}" }).catch(() => undefined);
+      await clearSession();
+      if (role === "lender" || (role === "borrower" && method === "id")) {
+        const res = await apiFetch("/auth/id-login", {
+          method: "POST",
+          body: JSON.stringify({ user_id: userId.trim().toUpperCase() }),
+        });
+        const data = (await res.json().catch(() => ({}))) as { role?: string };
+        if (!res.ok) throw new Error(apiErrorMessage(data, "Sign-in failed"));
+        const got = String(data.role || "").toLowerCase();
+        if (got !== role) {
+          throw new Error(
+            got === "lender"
+              ? "This ID is a lender account. Switch to the lender tab."
+              : "This ID is a borrower account. Switch to the borrower tab.",
+          );
+        }
+        window.location.assign(dashboardPath(role));
+        return;
+      }
+
+      const res = await apiFetch("/auth/login", {
         method: "POST",
-        body: JSON.stringify({ user_id: userId.trim() }),
+        body: JSON.stringify({ email: email.trim(), password }),
       });
       const data = (await res.json().catch(() => ({}))) as {
-        role?: string;
+        user?: { role?: string };
       };
-      if (!res.ok) throw new Error(apiErrorMessage(data, "Login failed"));
-      const got = String(data.role || "").toLowerCase();
-      if (got !== role) {
-        throw new Error(`This ID is a ${got}. Switch account type.`);
+      if (!res.ok) throw new Error(apiErrorMessage(data, "Sign-in failed"));
+      const got = String(data.user?.role || "").toLowerCase();
+      if (got && got !== "borrower") {
+        throw new Error("This email belongs to a lender account.");
       }
-      router.push(role === "lender" ? "/lender" : "/borrower");
-      router.refresh();
+      window.location.assign("/borrower");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : "Sign-in failed");
     } finally {
       setBusy(false);
     }
@@ -47,7 +70,9 @@ export default function LoginPage() {
           ← Home
         </Link>
         <h1 className="mt-4 text-2xl font-bold">Sign in</h1>
-        <p className="mt-1 text-sm text-muted">Use your 4-character ID or Google.</p>
+        <p className="mt-1 text-sm text-muted">
+          Borrowers can use Google. Lenders sign in with their account ID.
+        </p>
         <div className="mt-6 grid grid-cols-2 gap-1 rounded-xl bg-background p-1">
           <button
             type="button"
@@ -64,32 +89,99 @@ export default function LoginPage() {
             Lender
           </button>
         </div>
-        <form onSubmit={(e) => void onSubmit(e)} className="mt-6 space-y-4">
-          <label className="block text-xs font-semibold uppercase text-muted">
-            User ID
-            <input
-              required
-              maxLength={4}
-              pattern="[A-Za-z0-9]{4}"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              className="mt-1 w-full rounded-lg bg-background px-3 py-2.5 font-mono uppercase"
-              placeholder="DEMO"
-            />
-          </label>
-          <p className="text-xs text-muted">Demo: borrower DEMO · lender BANK</p>
-          {error ? <p className="text-sm text-red-300">{error}</p> : null}
-          <button
-            type="submit"
-            disabled={busy}
-            className="w-full rounded-lg bg-primary-container py-2.5 font-semibold text-on-primary-container"
-          >
-            Login
-          </button>
-        </form>
-        <div className="mt-4">
-          <GoogleButton role={role} onDone={() => router.push(role === "lender" ? "/lender" : "/borrower")} />
-        </div>
+
+        {role === "borrower" ? (
+          <div className="mt-4 grid grid-cols-3 gap-1 rounded-xl bg-background p-1">
+            <button
+              type="button"
+              className={`rounded-lg py-2 text-sm font-semibold ${method === "google" ? "bg-card-high" : "text-muted"}`}
+              onClick={() => setMethod("google")}
+            >
+              Google
+            </button>
+            <button
+              type="button"
+              className={`rounded-lg py-2 text-sm font-semibold ${method === "email" ? "bg-card-high" : "text-muted"}`}
+              onClick={() => setMethod("email")}
+            >
+              Email
+            </button>
+            <button
+              type="button"
+              className={`rounded-lg py-2 text-sm font-semibold ${method === "id" ? "bg-card-high" : "text-muted"}`}
+              onClick={() => setMethod("id")}
+            >
+              Account ID
+            </button>
+          </div>
+        ) : null}
+
+        {error ? <p className="mt-4 text-sm text-red-300">{error}</p> : null}
+
+        {role === "borrower" && method === "google" ? (
+          <div className="mt-6">
+            <GoogleButton role="borrower" />
+            <p className="mt-3 text-center text-xs text-muted">
+              New here? Register first with your lender’s account ID.
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={(e) => void onSubmit(e)} className="mt-6 space-y-4">
+            {role === "lender" || method === "id" ? (
+              <label className="block text-xs font-semibold uppercase text-muted">
+                Account ID
+                <input
+                  required
+                  maxLength={4}
+                  pattern="[A-Za-z0-9]{4}"
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
+                  className="mt-1 w-full rounded-lg bg-background px-3 py-2.5 font-mono uppercase"
+                  placeholder="ABCD"
+                />
+              </label>
+            ) : (
+              <>
+                <label className="block text-xs font-semibold uppercase text-muted">
+                  Email
+                  <input
+                    required
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="mt-1 w-full rounded-lg bg-background px-3 py-2.5"
+                    placeholder="you@email.com"
+                  />
+                </label>
+                <label className="block text-xs font-semibold uppercase text-muted">
+                  Password
+                  <input
+                    required
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="mt-1 w-full rounded-lg bg-background px-3 py-2.5"
+                  />
+                </label>
+              </>
+            )}
+            <button
+              type="submit"
+              disabled={busy}
+              className="w-full rounded-lg bg-primary-container py-2.5 font-semibold text-on-primary-container"
+            >
+              Sign in
+            </button>
+          </form>
+        )}
+
+        {role === "lender" ? (
+          <div className="mt-4">
+            <p className="mb-2 text-center text-xs text-muted">If you linked Google</p>
+            <GoogleButton role="lender" />
+          </div>
+        ) : null}
+
         <p className="mt-6 text-center text-sm text-muted">
           New here?{" "}
           <Link href="/register" className="text-secondary">

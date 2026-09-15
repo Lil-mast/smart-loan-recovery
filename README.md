@@ -21,7 +21,8 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
 - User registration and login system
 - Session-based authentication with secure cookies
 - Role-based access control (Borrowers & Lenders)
-- Password-less authentication (name-based for demo)
+- Lenders: company workspace and account ID (optional Google)
+- Borrowers: Google or email, joining with a lender account ID
 
 ### 🏦 **Loan Management**
 - Complete loan lifecycle tracking

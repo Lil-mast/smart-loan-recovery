@@ -218,21 +218,40 @@ impl FirebaseAuthService {
         email: &str,
         name: &str,
         role: UserRole,
+        lender_id: Option<String>,
+        organization: Option<String>,
     ) -> Result<String, Box<dyn std::error::Error>> {
         // First, check if user already exists
         if let Some(existing) = Self::get_user_link(db, firebase_uid)? {
             return Ok(existing.local_user_id);
         }
 
-        // Create local user
-        let local_user_id = db.create_linked_user(
-            name.to_string(),
-            Some(email.to_string()),
-            role.clone(),
-            None,
-            None,
-            firebase_uid.to_string(),
-        )?;
+        let claimed = if role == UserRole::Borrower {
+            if let (Some(lid), true) = (lender_id.as_deref(), !email.trim().is_empty()) {
+                db.find_unclaimed_borrower(email, lid)?.map(|u| u.id)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        let mgr = crate::user::UserManager::new(db);
+        let local_user_id = if let Some(id) = claimed {
+            id
+        } else {
+            mgr.register_user(
+                name.to_string(),
+                if email.trim().is_empty() {
+                    None
+                } else {
+                    Some(email.to_string())
+                },
+                role.clone(),
+                lender_id,
+                organization,
+            )?
+        };
 
         // Store the link
         let link = UserLink {

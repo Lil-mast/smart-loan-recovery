@@ -3,6 +3,7 @@ mod user;
 mod loan;
 mod db;
 mod recovery;
+mod scoring;
 mod api;
 mod config;
 mod error;
@@ -109,8 +110,9 @@ fn run_cli(cli: Cli, db: Db) -> Result<(), Box<dyn std::error::Error>> {
 
             match loan_tracker.get_loan(loan_uuid) {
                 Ok(Some(loan)) => {
-                    let risk_score = recovery_engine.predict_default(&loan);
-                    let action = recovery_engine.recommend_action(risk_score, 0); // Simplified: assume 0 missed payments for demo
+                    let health = crate::scoring::evaluate(&loan, chrono::Utc::now());
+                    let risk_score = health.risk_score;
+                    let action = recovery_engine.recommend_action(risk_score, health.missed_installments);
                     println!("📊 Loan {} - Risk Score: {:.2}", loan_id, risk_score);
                     println!("💡 Recommended Action: {:?}", action);
                 }
@@ -240,7 +242,7 @@ fn run_demo(db: Db) {
 
     // Demo: Update repayment
     println!(" 💳 Processing repayment...");
-    if let Err(e) = loan_tracker.update_repayment(loan_id) {
+    if let Err(e) = loan_tracker.record_payment(loan_id, 500.0, Some("demo repayment".into())) {
         eprintln!("❌ Failed to update repayment: {}", e);
     } else {
         println!("✅ Repayment updated successfully");

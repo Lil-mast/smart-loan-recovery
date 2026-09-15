@@ -1,4 +1,5 @@
-use actix_web::{web, HttpRequest, HttpResponse, Responder};
+use actix_identity::Identity;
+use actix_web::{web, HttpMessage, HttpRequest, HttpResponse, Responder};
 use serde_json::json;
 use std::sync::Arc;
 
@@ -9,16 +10,18 @@ use crate::auth::{
         TokenVerificationResponse, UpdateProfileRequest, UserInfo,
     },
     services::{FirebaseAuthService, TokenBlacklist},
-    utils::validate_password_strength,
+    utils::{firebase_auth_error_message, validate_password_strength},
     AuthState,
 };
 use crate::db::Db;
 use crate::models::UserRole;
+use crate::user::UserManager;
 
 /// Register a new user with email/password
 pub async fn register(
     auth_state: web::Data<AuthState>,
     db: web::Data<Db>,
+    http: HttpRequest,
     req: web::Json<RegisterRequest>,
 ) -> impl Responder {
     log::info!("Processing registration request for email: {}", req.email);
@@ -36,6 +39,39 @@ pub async fn register(
         }));
     }
 
+    if matches!(req.role, UserRole::Lender) {
+        return HttpResponse::BadRequest().json(json!({
+            "error": "Lenders register with a company name, not email"
+        }));
+    }
+
+    let mgr = UserManager::new(db.as_ref());
+    let lender_raw = req.lender_id.as_deref().unwrap_or("").trim();
+    if lender_raw.len() != 4 || !lender_raw.chars().all(|c| c.is_alphanumeric()) {
+        return HttpResponse::BadRequest().json(json!({
+            "error": "Enter the lender’s 4-character account ID"
+        }));
+    }
+    let lender = match mgr.get_user(lender_raw) {
+        Ok(Some(u)) if u.role == UserRole::Lender => u,
+        Ok(Some(_)) => {
+            return HttpResponse::BadRequest().json(json!({
+                "error": "That ID is not a lender account"
+            }));
+        }
+        Ok(None) => {
+            return HttpResponse::BadRequest().json(json!({
+                "error": "No lender found with that ID"
+            }));
+        }
+        Err(e) => {
+            log::error!("Failed to look up lender: {e}");
+            return HttpResponse::InternalServerError().json(json!({
+                "error": "Registration failed"
+            }));
+        }
+    };
+
     // Create user in Firebase
     let firebase_user = match auth_state
         .firebase
@@ -46,7 +82,7 @@ pub async fn register(
         Err(e) => {
             log::error!("Failed to create Firebase user: {}", e);
             return HttpResponse::BadRequest().json(json!({
-                "error": format!("Failed to create user: {}", e)
+                "error": firebase_auth_error_message(&e.to_string())
             }));
         }
     };
@@ -60,6 +96,8 @@ pub async fn register(
             &req.email,
             &req.name,
             req.role.clone(),
+            Some(lender.id),
+            None,
         )
         .await
     {
@@ -108,6 +146,10 @@ pub async fn register(
         },
     };
 
+    if let Err(e) = Identity::login(&http.extensions(), response.user.local_user_id.clone()) {
+        log::warn!("Could not attach session identity after email registration: {e}");
+    }
+
     log::info!("User registered successfully: {}", firebase_user.uid);
     HttpResponse::Created().json(response)
 }
@@ -116,6 +158,7 @@ pub async fn register(
 pub async fn login(
     auth_state: web::Data<AuthState>,
     db: web::Data<Db>,
+    http: HttpRequest,
     req: web::Json<LoginRequest>,
 ) -> impl Responder {
     log::info!("Processing login request for email: {}", req.email);
@@ -130,7 +173,7 @@ pub async fn login(
         Err(e) => {
             log::warn!("Login failed for {}: {}", req.email, e);
             return HttpResponse::Unauthorized().json(json!({
-                "error": "Invalid email or password"
+                "error": firebase_auth_error_message(&e.to_string())
             }));
         }
     };
@@ -145,7 +188,7 @@ pub async fn login(
 
             match auth_state
                 .firebase
-                .link_user(db.as_ref(), &firebase_user.uid, &req.email, &name, role.clone())
+                .link_user(db.as_ref(), &firebase_user.uid, &req.email, &name, role.clone(), None, None)
                 .await
             {
                 Ok(id) => {
@@ -211,6 +254,10 @@ pub async fn login(
         },
     };
 
+    if let Err(e) = Identity::login(&http.extensions(), response.user.local_user_id.clone()) {
+        log::warn!("Could not attach session identity after email login: {e}");
+    }
+
     log::info!("User logged in successfully: {}", firebase_user.uid);
     HttpResponse::Ok().json(response)
 }
@@ -220,9 +267,14 @@ pub async fn logout(
     auth_state: web::Data<AuthState>,
     token_blacklist: web::Data<Arc<TokenBlacklist>>,
     http_req: HttpRequest,
-    req: web::Json<LogoutRequest>,
+    identity: Option<Identity>,
+    body: web::Bytes,
 ) -> impl Responder {
     log::info!("Processing logout request");
+    if let Some(ident) = identity {
+        ident.logout();
+    }
+    let req: LogoutRequest = serde_json::from_slice(&body).unwrap_or_default();
 
     // Extract and blacklist the current access token
     if let Some(auth_header) = http_req.headers().get("Authorization") {
@@ -513,8 +565,9 @@ pub async fn update_profile(
     }))
 }
 
-/// Public Firebase web config (no secrets). Used by the static UI on Vercel.
+/// Public Firebase web config (apiKey is a client identifier, not a server secret).
 pub async fn firebase_public_config() -> impl Responder {
+    dotenv::from_filename(".env.firebase").ok();
     HttpResponse::Ok().json(json!({
         "apiKey": std::env::var("FIREBASE_API_KEY").unwrap_or_default(),
         "authDomain": std::env::var("FIREBASE_AUTH_DOMAIN").unwrap_or_default(),
