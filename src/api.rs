@@ -19,6 +19,62 @@ fn is_valid_4char_id(id: &str) -> bool {
     id.len() == 4 && id.chars().all(|c| c.is_alphanumeric())
 }
 
+fn ids_match(a: &str, b: &str) -> bool {
+    a.eq_ignore_ascii_case(b)
+}
+
+fn borrower_on_book(borrower: &User, lender_id: &str) -> bool {
+    borrower
+        .lender_id
+        .as_deref()
+        .map(|id| ids_match(id, lender_id))
+        .unwrap_or(false)
+}
+
+fn attach_borrower_to_lender(db: &Db, mut borrower: User, lender_id: &str) -> AppResult<User> {
+    if borrower.role != UserRole::Borrower {
+        return Err(AppError::InvalidInput("That ID is not a borrower".to_string()));
+    }
+    if let Some(ref existing) = borrower.lender_id {
+        if !ids_match(existing, lender_id) {
+            return Err(AppError::InvalidInput(
+                "That borrower is already on another lender's book".to_string(),
+            ));
+        }
+        return Ok(borrower);
+    }
+    borrower.lender_id = Some(lender_id.to_string());
+    db.save_user(&borrower).map_err(AppError::Database)?;
+    Ok(borrower)
+}
+
+fn maybe_issue_loan(
+    db: &Db,
+    borrower_id: &str,
+    lender_id: &str,
+    principal: Option<f64>,
+    interest_rate: Option<f64>,
+    months: Option<i64>,
+) -> AppResult<Option<uuid::Uuid>> {
+    let Some(principal) = principal.filter(|p| *p > 0.0) else {
+        return Ok(None);
+    };
+    let months = months.unwrap_or(12).clamp(1, 120);
+    let rate = interest_rate.unwrap_or(8.5);
+    let tracker = LoanTracker::new(db);
+    Ok(Some(
+        tracker
+            .create_loan(
+                borrower_id.to_string(),
+                lender_id.to_string(),
+                principal,
+                rate,
+                months,
+            )
+            .map_err(AppError::Database)?,
+    ))
+}
+
 fn require_lender_id(mgr: &UserManager<'_>, raw: &str) -> AppResult<String> {
     if !is_valid_4char_id(raw) {
         return Err(AppError::InvalidInput(
@@ -340,7 +396,8 @@ async fn create_loan(
 
     let borrower_id = data.borrower_id.trim();
     let lender_id = data.lender_id.trim();
-    if !is_valid_4char_id(borrower_id) || !is_valid_4char_id(lender_id) || lender_id != user.id {
+    if !is_valid_4char_id(borrower_id) || !is_valid_4char_id(lender_id) || !ids_match(lender_id, &user.id)
+    {
         return Err(AppError::InvalidInput("Invalid borrower/lender ID format".to_string()));
     }
     if data.principal <= 0.0 || data.months < 1 || data.months > 120 {
@@ -356,9 +413,9 @@ async fn create_loan(
     if borrower.role != UserRole::Borrower {
         return Err(AppError::InvalidInput("That ID is not a borrower".to_string()));
     }
-    if borrower.lender_id.as_deref() != Some(user.id.as_str()) {
+    if !borrower_on_book(&borrower, &user.id) {
         return Err(AppError::InvalidInput(
-            "That borrower is not on your book".to_string(),
+            "That borrower is not on your book. Add them by ID first.".to_string(),
         ));
     }
 
@@ -418,9 +475,12 @@ async fn get_loans(
 
 #[derive(Deserialize)]
 struct AddBorrowerReq {
+    #[serde(default)]
     name: String,
     #[serde(default)]
     email: Option<String>,
+    #[serde(default)]
+    borrower_id: Option<String>,
     #[serde(default)]
     principal: Option<f64>,
     #[serde(default)]
@@ -435,6 +495,7 @@ struct AddBorrowerRes {
     name: String,
     email: Option<String>,
     loan_id: Option<uuid::Uuid>,
+    linked: bool,
 }
 
 async fn add_borrower(
@@ -446,9 +507,20 @@ async fn add_borrower(
     if !matches!(lender.role, UserRole::Lender) {
         return Err(AppError::InsufficientPermissions);
     }
+
     let name = data.name.trim();
-    if name.is_empty() {
-        return Err(AppError::InvalidInput("Enter the borrower’s name".to_string()));
+    let known_id = data
+        .borrower_id
+        .as_deref()
+        .map(str::trim)
+        .filter(|id| !id.is_empty())
+        .map(|id| id.to_ascii_uppercase());
+    if let Some(ref id) = known_id {
+        if !is_valid_4char_id(id) {
+            return Err(AppError::InvalidInput(
+                "Borrower ID must be 4 letters or numbers".to_string(),
+            ));
+        }
     }
     let email = data
         .email
@@ -459,50 +531,81 @@ async fn add_borrower(
         if !em.contains('@') {
             return Err(AppError::InvalidInput("Enter a valid email".to_string()));
         }
-        if let Some(existing) = db.find_user_by_email_ci(em).map_err(AppError::Database)? {
-            return Err(AppError::InvalidInput(format!(
-                "A user with email {em} already exists (ID {})",
-                existing.id
-            )));
-        }
     }
 
     let mgr = UserManager::new(&db);
-    let borrower_id = mgr
-        .register_user(
-            name.to_string(),
-            email.clone(),
-            UserRole::Borrower,
-            Some(lender.id.clone()),
-            None,
+    let existing = if let Some(ref id) = known_id {
+        Some(
+            mgr.get_user(id)
+                .map_err(AppError::Database)?
+                .ok_or_else(|| AppError::InvalidInput("No borrower found with that ID".to_string()))?,
         )
-        .map_err(AppError::Database)?;
+    } else if let Some(ref em) = email {
+        db.find_user_by_email_ci(em).map_err(AppError::Database)?
+    } else {
+        None
+    };
 
-    let mut loan_id = None;
-    if let Some(principal) = data.principal {
-        if principal > 0.0 {
-            let months = data.months.unwrap_or(12).clamp(1, 120);
-            let rate = data.interest_rate.unwrap_or(8.5);
-            let tracker = LoanTracker::new(&db);
-            loan_id = Some(
-                tracker
-                    .create_loan(
-                        borrower_id.clone(),
-                        lender.id.clone(),
-                        principal,
-                        rate,
-                        months,
-                    )
-                    .map_err(AppError::Database)?,
-            );
+    let (borrower, linked) = if let Some(found) = existing {
+        if found.role != UserRole::Borrower {
+            return Err(AppError::InvalidInput(
+                "That account is a lender, not a borrower".to_string(),
+            ));
         }
-    }
+        let borrower = attach_borrower_to_lender(&db, found, &lender.id)?;
+        if !name.is_empty() && name != borrower.name {
+            let mut updated = borrower.clone();
+            updated.name = name.to_string();
+            db.save_user(&updated).map_err(AppError::Database)?;
+            (updated, true)
+        } else {
+            (borrower, true)
+        }
+    } else {
+        if name.is_empty() {
+            return Err(AppError::InvalidInput(
+                "Enter a borrower ID or a name to add someone new".to_string(),
+            ));
+        }
+        if let Some(ref em) = email {
+            if let Some(existing) = db.find_user_by_email_ci(em).map_err(AppError::Database)? {
+                return Err(AppError::InvalidInput(format!(
+                    "A user with email {em} already exists (ID {})",
+                    existing.id
+                )));
+            }
+        }
+        let id = mgr
+            .register_user(
+                name.to_string(),
+                email.clone(),
+                UserRole::Borrower,
+                Some(lender.id.clone()),
+                None,
+            )
+            .map_err(AppError::Database)?;
+        let borrower = mgr
+            .get_user(&id)
+            .map_err(AppError::Database)?
+            .ok_or_else(|| AppError::NotFound("Borrower not found after insert".to_string()))?;
+        (borrower, false)
+    };
+
+    let loan_id = maybe_issue_loan(
+        &db,
+        &borrower.id,
+        &lender.id,
+        data.principal,
+        data.interest_rate,
+        data.months,
+    )?;
 
     Ok(Ok(HttpResponse::Ok().json(AddBorrowerRes {
-        id: borrower_id,
-        name: name.to_string(),
-        email,
+        id: borrower.id,
+        name: borrower.name,
+        email: borrower.email,
         loan_id,
+        linked,
     })))
 }
 
@@ -665,7 +768,9 @@ async fn flag_overdues(
     }
 
     let tracker = LoanTracker::new(&db);
-    let flagged_count = tracker.flag_overdues().map_err(AppError::Database)?;
+    let flagged_count = tracker
+        .flag_overdues(Some(&user.id))
+        .map_err(AppError::Database)?;
 
     Ok(Ok(HttpResponse::Ok().json(serde_json::json!({
         "flagged_count": flagged_count

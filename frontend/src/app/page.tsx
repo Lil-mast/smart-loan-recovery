@@ -27,7 +27,7 @@ export default function HomePage() {
               href="/register"
               className="rounded-lg bg-primary-container px-8 py-3 font-semibold text-on-primary-container"
             >
-              Create workspace
+              Register
             </Link>
             <Link href="/login" className="rounded-lg bg-card-high px-8 py-3 font-semibold text-foreground">
               Sign in

@@ -98,7 +98,7 @@ fn run_cli(cli: Cli, db: Db) -> Result<(), Box<dyn std::error::Error>> {
         }
 
         Commands::FlagOverdues => {
-            match loan_tracker.flag_overdues() {
+            match loan_tracker.flag_overdues(None) {
                 Ok(count) => println!("✅ Overdue loans flagged successfully: {} loans flagged", count),
                 Err(e) => eprintln!("❌ Failed to flag overdues: {}", e),
             }

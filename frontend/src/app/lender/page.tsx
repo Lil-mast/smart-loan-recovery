@@ -20,12 +20,14 @@ export default function LenderPage() {
   const [rate, setRate] = useState("8.5");
   const [months, setMonths] = useState("12");
   const [borrowerId, setBorrowerId] = useState("");
+  const [newBorrowerId, setNewBorrowerId] = useState("");
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newPrincipal, setNewPrincipal] = useState("");
   const [newRate, setNewRate] = useState("8.5");
   const [newMonths, setNewMonths] = useState("12");
   const [adding, setAdding] = useState(false);
+  const [flagging, setFlagging] = useState(false);
 
   const load = useCallback(async (s: SessionUser) => {
     try {
@@ -90,6 +92,33 @@ export default function LenderPage() {
     router.push("/");
   }
 
+  async function flagOverdues() {
+    if (!user) return;
+    setFlagging(true);
+    setError("");
+    setNotice("");
+    try {
+      const res = await apiFetch("/overdues", { method: "POST" });
+      const data = (await res.json().catch(() => ({}))) as {
+        flagged_count?: number;
+        message?: string;
+        error?: string;
+      };
+      if (!res.ok) throw new Error(apiErrorMessage(data, "Could not flag overdues"));
+      const n = Number(data.flagged_count ?? 0);
+      setNotice(
+        n === 0
+          ? "No loans needed a status change. Health scores are already current."
+          : `Flagged ${n} loan${n === 1 ? "" : "s"} as overdue or defaulted.`,
+      );
+      await load(user);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not flag overdues");
+    } finally {
+      setFlagging(false);
+    }
+  }
+
   async function addBorrower(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return;
@@ -97,7 +126,10 @@ export default function LenderPage() {
     setError("");
     setNotice("");
     try {
-      const body: Record<string, unknown> = { name: newName.trim() };
+      const knownId = newBorrowerId.trim().toUpperCase();
+      const body: Record<string, unknown> = {};
+      if (knownId) body.borrower_id = knownId;
+      if (newName.trim()) body.name = newName.trim();
       if (newEmail.trim()) body.email = newEmail.trim();
       const p = Number(newPrincipal);
       if (newPrincipal.trim() && Number.isFinite(p) && p > 0) {
@@ -108,18 +140,25 @@ export default function LenderPage() {
       const res = await apiFetch("/borrowers", { method: "POST", body: JSON.stringify(body) });
       const data = (await res.json().catch(() => ({}))) as {
         id?: string;
+        name?: string;
         loan_id?: string;
+        linked?: boolean;
         message?: string;
         error?: string;
       };
       if (!res.ok) throw new Error(apiErrorMessage(data, "Could not add borrower"));
+      const label = data.name?.trim() || newName.trim() || data.id || "Borrower";
+      const id = data.id ?? knownId;
       setNotice(
-        `Added ${newName.trim()} as ${data.id}${data.loan_id ? " with a loan" : ""}. Share that ID so they can sign in.`,
+        data.linked
+          ? `${label} (${id}) is on your book${data.loan_id ? " with a loan" : ""}.`
+          : `Added ${label} as ${id}${data.loan_id ? " with a loan" : ""}. Share that ID so they can sign in.`,
       );
+      setNewBorrowerId("");
       setNewName("");
       setNewEmail("");
       setNewPrincipal("");
-      setBorrowerId(data.id ?? "");
+      setBorrowerId(data.id ?? knownId);
       await load(user);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not add borrower");
@@ -172,6 +211,14 @@ export default function LenderPage() {
             </span>
             <button
               type="button"
+              onClick={() => void flagOverdues()}
+              disabled={flagging}
+              className="block w-full rounded-lg px-3 py-2 text-left text-muted hover:text-foreground disabled:opacity-60"
+            >
+              {flagging ? "Flagging…" : "Flag overdues"}
+            </button>
+            <button
+              type="button"
               onClick={() => void logout()}
               className="block w-full rounded-lg px-3 py-2 text-left text-muted hover:text-foreground"
             >
@@ -192,13 +239,23 @@ export default function LenderPage() {
               {user.name} · {user.id}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => void logout()}
-            className="rounded-lg border border-line px-4 py-2 text-sm font-semibold text-muted lg:hidden"
-          >
-            Sign out
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => void flagOverdues()}
+              disabled={flagging}
+              className="rounded-lg bg-primary-container px-4 py-2 text-sm font-semibold text-on-primary-container disabled:opacity-60"
+            >
+              {flagging ? "Flagging…" : "Flag overdues"}
+            </button>
+            <button
+              type="button"
+              onClick={() => void logout()}
+              className="rounded-lg border border-line px-4 py-2 text-sm font-semibold text-muted lg:hidden"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
 
         <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-4">
@@ -229,11 +286,20 @@ export default function LenderPage() {
           <div className="sm:col-span-2 lg:col-span-6">
             <p className="font-mono text-[11px] uppercase tracking-widest text-secondary">Add borrower</p>
             <p className="mt-1 text-sm text-muted">
-              Creates someone on your book immediately. Share their 4-character ID so they can open the borrower dashboard.
+              Paste an existing 4-character borrower ID to put them on your book, or enter a name to create someone new.
             </p>
           </div>
           <input
-            required
+            value={newBorrowerId}
+            onChange={(e) => setNewBorrowerId(e.target.value.toUpperCase())}
+            maxLength={4}
+            className="rounded-lg bg-background px-3 py-2 font-mono text-sm uppercase"
+            placeholder="Existing ID"
+            autoComplete="off"
+            spellCheck={false}
+          />
+          <input
+            required={!newBorrowerId.trim() && !newEmail.trim()}
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             className="rounded-lg bg-background px-3 py-2 text-sm lg:col-span-2"

@@ -83,12 +83,17 @@ impl<'a> LoanTracker<'a> {
         self.db.load_all_loans()
     }
 
-    pub fn flag_overdues(&self) -> Result<usize> {
+    pub fn flag_overdues(&self, lender_id: Option<&str>) -> Result<usize> {
         let loans = self.db.load_all_loans()?;
         let now = Utc::now();
         let mut flagged_count = 0;
 
         for mut loan in loans {
+            if let Some(id) = lender_id {
+                if loan.lender_id != id {
+                    continue;
+                }
+            }
             if matches!(loan.status, LoanStatus::Repaid) {
                 continue;
             }

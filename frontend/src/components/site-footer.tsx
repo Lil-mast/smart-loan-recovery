@@ -29,16 +29,6 @@ export function SiteFooter() {
                 Register
               </Link>
             </li>
-            <li>
-              <Link href="/login?next=/borrower" className="text-muted hover:text-foreground">
-                Borrower dashboard
-              </Link>
-            </li>
-            <li>
-              <Link href="/login?next=/lender" className="text-muted hover:text-foreground">
-                Lender dashboard
-              </Link>
-            </li>
           </ul>
         </div>
         <div>

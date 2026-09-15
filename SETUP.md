@@ -134,7 +134,9 @@ CORS allows localhost **3001** (and Vercel) so the Next BFF and optional direct 
 
 The database starts **empty**. There are no seeded lenders, borrowers, or sample loans. Known leftover demo IDs (`DEMO`, `BANK`, M-shwari / Branch / Tala / Eazzy / KCB-Mpesa, loan `LOAN1`) are deleted on startup if they still exist.
 
-Lenders register with a company name and get a 4-character ID to share with borrowers.
+Lenders register with a company name and get a 4-character ID to share with borrowers. On `/lender` they can also **add borrowers** (optional loan); those borrowers sign in with **their** 4-character ID.
+
+Who sees which dashboard, Google-role isolation, scoring, and alerts: [docs/ROLES_AND_DASHBOARDS.md](docs/ROLES_AND_DASHBOARDS.md).
 
 The SQLite file is `loans.db` in the working directory (unless you change `DATABASE_URL`). JSON backups `users_backup.json` and `loans_backup.json` may be written by CLI commands.
 

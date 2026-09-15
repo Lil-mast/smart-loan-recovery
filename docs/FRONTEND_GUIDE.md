@@ -20,7 +20,18 @@ Open http://127.0.0.1:3001
 
 The Next server proxies `/api/v1/*` to the Rust API (`API_URL`, default `http://127.0.0.1:3000`), so the browser stays same-origin and does not need CORS for those calls.
 
-Lenders register with a **company name** and receive a 4-character account ID (optional Google). Borrowers join with that ID using **Google** (default) or **email**. There are no seeded demo companies or DEMO/BANK accounts.
+**Workspaces**
+
+| Path | Who |
+|------|-----|
+| `/lender` | Lender only |
+| `/borrower` | Borrower only |
+
+`src/proxy.ts` redirects the other role. Product rules (identity, scoring, add-borrower, calendar/alerts): [ROLES_AND_DASHBOARDS.md](ROLES_AND_DASHBOARDS.md).
+
+Lenders register with a **company name** and receive a 4-character account ID (optional Google). Borrowers join with that ID using **Google** (default), **email**, or later **their own** 4-character ID if the lender added them. There are no seeded demo companies or DEMO/BANK accounts.
+
+**Same Google cannot be both roles.** If Google is already linked to a lender, borrower Google with that account is rejected — use another Google, email, or the borrower ID.
 
 ## Google sign-in (Firebase)
 
@@ -47,8 +58,13 @@ Do not put API secrets in `NEXT_PUBLIC_*` variables.
 ```
 frontend/
   src/app/          pages and BFF routes
-  src/components/
-  src/lib/          API helper + session cookie
+    lender/         lender book, add-borrower, live health
+    borrower/       calendar, alerts, early-pay / need-time
+    login/          Google, email, or 4-character ID
+    register/
+    api/v1/         BFF proxy + session cookie
+  src/components/   calendar, health badge, Google button
+  src/lib/          API helper + session cookie + formatting
   src/proxy.ts      role gates for /borrower and /lender
 ```
 

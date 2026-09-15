@@ -11,6 +11,8 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
 
 **Objectives, traceability to code, and a short comparison** to other recovery approaches: [docs/OBJECTIVES_TRACEABILITY.md](docs/OBJECTIVES_TRACEABILITY.md).
 
+**Who sees which dashboard, how borrowers join, and how loan health is scored:** [docs/ROLES_AND_DASHBOARDS.md](docs/ROLES_AND_DASHBOARDS.md).
+
 ## 🌐 Live Demo
 
 **Production URL**: https://lendwise-recovery.fly.dev/
@@ -20,21 +22,21 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
 ### 🔐 **Authentication & Security**
 - User registration and login system
 - Session-based authentication with secure cookies
-- Role-based access control (Borrowers & Lenders)
-- Lenders: company workspace and account ID (optional Google)
-- Borrowers: Google or email, joining with a lender account ID
+- Role-based access control (Borrowers & Lenders) — **separate dashboards**, no role mixing
+- Lenders: company workspace and 4-character account ID (optional Google)
+- Borrowers: Google, email, or account ID, joining with a **lender** ID (or added by the lender)
 
 ### 🏦 **Loan Management**
 - Complete loan lifecycle tracking
-- Real-time loan status monitoring (Active, Overdue, Defaulted, Repaid)
-- Comprehensive loan data with repayment schedules
-- Principal, interest rate, and duration tracking
+- Live status (Active, Overdue, Defaulted, Repaid) from the installment schedule
+- Contractual repayment calendar and FIFO payment application
+- Principal, interest, term, outstanding, and coverage
 
 ### 🤖 **AI-Powered Recovery**
-- Intelligent recovery action recommendations using smart algorithms
-- Risk assessment based on loan status and history
-- Automated overdue loan detection
-- Rule-based recovery strategies optimized for maximum recovery rates
+- Deterministic health score (0–100) in `src/scoring.rs`: coverage, days past due, consecutive misses, schedule lag
+- Bands: healthy / watch / at risk / critical, with remind / renegotiate / escalate
+- Borrower early-pay and “need time” signals visible on the lender book
+- Automated overdue / default detection on each loan read
 
 ### 💾 **Data Persistence**
 - SQLite database with automatic schema management
@@ -94,22 +96,30 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
 
 ## 📡 API Endpoints
 
+Full product behaviour: [docs/ROLES_AND_DASHBOARDS.md](docs/ROLES_AND_DASHBOARDS.md).
+
 ### Authentication
-- `POST /users` - Register a new user
-- `POST /login` - Login with user credentials
-- `POST /logout` - Logout current user
-- `GET /me` - Get current user information
+- `POST /auth/register` — borrower email register (needs lender ID)
+- `POST /auth/login` — borrower email login
+- `POST /auth/google` — Google (role must match any existing link)
+- `POST /auth/id-login` — 4-character ID (lender or borrower)
+- `POST /auth/logout` — clear identity
+- `POST /users` — self-register (session attached for lenders only)
+- `POST /borrowers` — lender adds a borrower (does not switch session)
 
 ### Loans
-- `GET /loans` - List all loans (authenticated)
-- `POST /loans` - Create a new loan (lenders only)
+- `GET /loans` — scoped to the signed-in user; includes health, schedule, installments
+- `POST /loans` — create a loan (lenders; borrower must be on their book)
+- `POST /loans/{id}/payments` — record a payment
+- `POST /loans/{id}/signals` — borrower `can_pay_early` or `concern`
+- `GET /signals` — signals for this book / this borrower
 
 ### Recovery
-- `POST /overdues` - Flag overdue loans (admin)
-- `POST /recommend/{loan_id}` - Get recovery recommendation
+- `POST /overdues` — persist live overdue/default flags (lenders)
+- `POST /recommend/{loan_id}` — same scoring snapshot as GET `/loans`
 
 ### System
-- `GET /` - API information and available endpoints
+- `GET /` — API information and available endpoints
 
 ## 🔧 Configuration
 
@@ -135,8 +145,9 @@ src/
 ├── api.rs           # Web API routes and handlers
 ├── db.rs            # Database operations
 ├── user.rs          # User management
-├── loan.rs          # Loan operations
-├── recovery.rs      # AI recovery engine
+├── loan.rs          # Loan operations and payments
+├── scoring.rs       # Live health score (0–100) and bands
+├── recovery.rs      # Recovery action enum
 ├── models.rs        # Data structures
 ├── config.rs        # Configuration management
 ├── error.rs         # Error handling
@@ -185,125 +196,16 @@ fly launch
 fly deploy
 ```
 
-## 📖 User Guide 
+## 📖 User Guide
 
-### Step-by-Step: Register for a Loan and Get Recovery Recommendations
+Use the Next.js UI at `http://127.0.0.1:3001` (start `cargo run` and `cd frontend && pnpm dev`).
 
-#### Step 1: Register as a User
+1. **Lender:** Register with company name → keep the 4-character ID → `/lender`. Add borrowers from that page, or share the ID so they self-join.
+2. **Borrower:** Register with that lender ID (Google or email), **or** sign in with the ID the lender created for them → `/borrower`.
+3. One Google account is one role. The lender’s Google will not open `/borrower`.
+4. On `/borrower`, use the calendar and **Pay early** / **Need time**. Those show on the lender’s signal list; health scores refresh live.
 
-**API Call:**
-```bash
-curl -X POST https://smart-loan-recovery.fly.dev/users \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Doe",
-    "role": "borrower"
-  }'
-```
-
-**Response:**
-```json
-{
-  "id": "550e8400-e29b-41d4-a716-446655440000"
-}
-```
-
-#### Step 2: Login
-
-**API Call:**
-```bash
-curl -X POST https://smart-loan-recovery.fly.dev/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Doe"
-  }'
-```
-
-**Response:**
-```json
-{
-  "message": "Login successful",
-  "user_id": "550e8400-e29b-41d4-a716-446655440000",
-  "role": "borrower"
-}
-```
-
-#### Step 3: Register as a Lender (if needed)
-
-**API Call:**
-```bash
-curl -X POST https://smart-loan-recovery.fly.dev/users \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Bank Corp",
-    "role": "lender"
-  }'
-```
-
-#### Step 4: Create a Loan (as Lender)
-
-**API Call:**
-```bash
-curl -X POST https://smart-loan-recovery.fly.dev/loans \
-  -H "Content-Type: application/json" \
-  -d '{
-    "borrower_id": "550e8400-e29b-41d4-a716-446655440000",
-    "lender_id": "660e8400-e29b-41d4-a716-446655440001",
-    "principal": 10000.00,
-    "interest_rate": 5.5,
-    "months": 12
-  }'
-```
-
-**Response:**
-```json
-{
-  "id": "770e8400-e29b-41d4-a716-446655440002"
-}
-```
-
-#### Step 5: Check Loan Status
-
-**API Call:**
-```bash
-curl -X GET https://smart-loan-recovery.fly.dev/loans
-```
-
-#### Step 6: Flag Overdue Loans (Admin Function)
-
-**API Call:**
-```bash
-curl -X POST https://smart-loan-recovery.fly.dev/overdues
-```
-
-**Response:**
-```json
-{
-  "message": "Overdue loans flagged successfully",
-  "flagged_count": 1
-}
-```
-
-#### Step 7: Get Recovery Recommendation
-
-**API Call:**
-```bash
-curl -X POST https://smart-loan-recovery.fly.dev/recommend/770e8400-e29b-41d4-a716-446655440002
-```
-
-**Response:**
-```json
-{
-  "loan_id": "770e8400-e29b-41d4-a716-446655440002",
-  "risk_score": 8.5,
-  "recommendation": "immediate_contact",
-  "actions": [
-    "Send payment reminder email",
-    "Schedule phone call within 24 hours",
-    "Review loan terms and payment history"
-  ]
-}
-```
+Step-by-step identity, scoring, and API notes: [docs/ROLES_AND_DASHBOARDS.md](docs/ROLES_AND_DASHBOARDS.md). UI layout: [docs/FRONTEND_GUIDE.md](docs/FRONTEND_GUIDE.md).
 
 ## 🔒 Security Features
 
@@ -315,11 +217,13 @@ curl -X POST https://smart-loan-recovery.fly.dev/recommend/770e8400-e29b-41d4-a7
 
 ## 📊 Recovery Actions
 
-The system provides intelligent recovery recommendations:
+Live health (0–100) maps to actions in `src/scoring.rs`:
 
-- **Low Risk (0-3)**: `monitor` - Regular monitoring
-- **Medium Risk (3-7)**: `follow_up` - Payment reminders
-- **High Risk (7-10)**: `immediate_contact` - Urgent intervention
+- **Healthy / watch (≥ 65)**: send reminder
+- **At risk (≥ 45)**: renegotiate terms
+- **Critical (< 45)**: escalate to collection
+
+`risk_score` on JSON is `1 - health_score/100`. Details: [docs/ROLES_AND_DASHBOARDS.md](docs/ROLES_AND_DASHBOARDS.md#scoring-computed-on-every-loan-read).
 
 ## 🤝 Contributing
 

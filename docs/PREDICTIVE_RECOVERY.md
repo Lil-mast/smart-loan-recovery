@@ -1,5 +1,7 @@
 # Predictive Recovery: Rule-Based AI System
 
+Live loan health (coverage, delinquency, consecutive misses, schedule lag) is implemented in `src/scoring.rs` and documented in [ROLES_AND_DASHBOARDS.md](ROLES_AND_DASHBOARDS.md#scoring-computed-on-every-loan-read). GET `/loans` evaluates that model at request time. The notes below describe the older `RecoveryEngine` mapping that still backs `RecoveryAction`.
+
 ## Overview
 
 The Smart Loan Recovery System implements a sophisticated **rule-based AI engine** for predictive loan recovery. This system analyzes loan data in real-time to predict potential defaults and recommend appropriate recovery actions before losses become significant.
