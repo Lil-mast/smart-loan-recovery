@@ -2,7 +2,7 @@
 
 This document walks through installing, configuring, and running **LendWise Recovery** on a local machine, in Docker, and on Fly.io.
 
-The Rust process still serves the API (and the legacy `frontend/` UI at `/app/`). The current UI is the Next.js app in `web/` on port **3001**, which proxies API calls to `API_URL` (default `http://127.0.0.1:3000`). Always start the Rust binary from the **repository root**.
+The Rust process is the **API** (JSON). The web UI is the Next.js app in `frontend/` on port **3001** (`pnpm dev`), which proxies `/api/v1/*` to `API_URL` (default `http://127.0.0.1:3000`). Always start the Rust binary from the **repository root**.
 
 ## Prerequisites
 
@@ -56,9 +56,6 @@ DATABASE_URL=loans.db
 #   openssl rand -hex 32
 SESSION_SECRET=
 
-# Static UI directory (relative to the process working directory)
-FRONTEND_DIR=frontend
-
 # Set to "production" so session cookies are marked Secure (HTTPS)
 # RUST_ENV=production
 
@@ -74,7 +71,6 @@ RUST_LOG=info
 | `SERVER_PORT` | `3000` | Listen port |
 | `DATABASE_URL` | `loans.db` | SQLite path |
 | `SESSION_SECRET` | built-in dev key | Cookie encryption |
-| `FRONTEND_DIR` | `frontend` | HTML/CSS/JS for `/app/` |
 | `RUST_ENV` | unset | `production` enables Secure cookies |
 | `RUST_LOG` | unset | `info` / `debug` logging |
 
@@ -130,9 +126,9 @@ First compile can take several minutes. Subsequent builds are incremental.
 | URL | What it is |
 |-----|------------|
 | http://127.0.0.1:3000/ | JSON API status |
-| http://127.0.0.1:3000/app/ | Web UI (recommended) |
+| http://127.0.0.1:3001/ | Next.js UI (`pnpm dev` in `frontend/`) |
 
-CORS allows `http://127.0.0.1:3000` and `http://localhost:3000`. Keep the UI on the same origin as the API (`/app/`) to avoid CORS issues.
+CORS allows localhost **3001** (and Vercel) so the Next BFF and optional direct browser calls can reach the API. Prefer the Next proxy (`/api/v1`) so cookies stay on the UI origin.
 
 ### Demo data
 
@@ -183,9 +179,9 @@ docker build -t smart-loan-recovery .
 docker run --rm -p 3000:3000 smart-loan-recovery
 ```
 
-Then open http://127.0.0.1:3000/app/.
+Then the API is at http://127.0.0.1:3000/. Run the Next app separately (`cd frontend && pnpm dev`) for the UI.
 
-The image copies the frontend to `/usr/local/share/lendwise-frontend` and sets `FRONTEND_DIR` accordingly. Persist SQLite across restarts:
+The image is API-only (no static HTML). Persist SQLite across restarts:
 
 ```bash
 mkdir -p data
@@ -227,23 +223,22 @@ curl -s http://127.0.0.1:3000/ | python -m json.tool
 
 You should see `"message": "Smart Loan Recovery API is running!"` and a list of endpoints.
 
-Open http://127.0.0.1:3000/app/ in a browser and confirm the landing page loads.
+Open http://127.0.0.1:3001 after `pnpm dev` in `frontend/` and confirm the landing page loads.
 
 ## Troubleshooting
 
 | Symptom | What to check |
 |---------|----------------|
-| `GET /app/` fails or 404 | Run `cargo run` from the **repo root**, or set `FRONTEND_DIR` to an absolute path. |
 | Session / login errors | `SESSION_SECRET` must not be empty. |
 | Firebase init error in logs | Missing or invalid `.env.firebase`. Demo mode still runs. |
 | Port already in use | Change `SERVER_PORT` or stop the other process. |
 | Cookies not sent on HTTPS | Set `RUST_ENV=production`. |
-| CORS errors | Use `/app/` on the same host/port as the API (default 3000). |
+| CORS errors | Use the Next app on port 3001 (`/api/v1` proxy). |
 
 ## Related docs
 
 - [README.md](README.md) — features, API overview, user guide
-- [FIREBASE_AUTH_TESTING.md](FIREBASE_AUTH_TESTING.md) — Postman collection for `/auth/*`
+- [FIREBASE_AUTH_TESTING.md](docs/FIREBASE_AUTH_TESTING.md) — Postman collection for `/auth/*`
 - [docs/FRONTEND_GUIDE.md](docs/FRONTEND_GUIDE.md) — UI usage
 - [docs/CONTAINERIZATION.md](docs/CONTAINERIZATION.md) — Docker details
 - [docs/MAINTENANCE.md](docs/MAINTENANCE.md) — operations

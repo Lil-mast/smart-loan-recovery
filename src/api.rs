@@ -1,5 +1,4 @@
 use actix_cors::Cors;
-use actix_files::Files;
 use actix_web::{web, App, HttpResponse, HttpServer, Result as ActixResult, middleware::Logger};
 use actix_identity::{Identity, IdentityMiddleware};
 use actix_web::cookie::{Key, SameSite};
@@ -324,11 +323,8 @@ async fn recommend_action(
 }
 
 pub async fn run_server(config: Config) -> std::io::Result<()> {
-    log::info!("🚀 Smart Loan Recovery Server starting at http://{}", config.server_addr());
-    log::info!(
-        "Web UI (same-origin, avoids CORS): http://{}/app/",
-        config.server_addr()
-    );
+    log::info!("🚀 Smart Loan Recovery API starting at http://{}", config.server_addr());
+    log::info!("Next.js UI: cd frontend && pnpm dev → http://127.0.0.1:3001");
 
     // Initialize Firebase authentication services
     log::info!("🔐 Initializing Firebase authentication...");
@@ -359,18 +355,9 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
     // Initialize token blacklist for logout functionality
     let token_blacklist = web::Data::new(Arc::new(TokenBlacklist::new()));
 
-    let fe = std::path::Path::new(&config.frontend_dir);
-    if !fe.is_dir() {
-        log::warn!(
-            "FRONTEND_DIR {:?} is not a directory — GET /app/ will fail. Run `cargo run` from the repo root or set FRONTEND_DIR.",
-            fe
-        );
-    }
-
     log::info!("Server configured successfully");
 
     let _config_clone = config.clone();
-    let frontend_dir = _config_clone.frontend_dir.clone();
     let is_production = std::env::var("RUST_ENV").map(|v| v == "production").unwrap_or(false);
     
     HttpServer::new(move || {
@@ -423,7 +410,6 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
                         "google_signin": true
                     },
                     "endpoints": {
-                        "ui": ["/app/", "/app/index.html"],
                         "auth": [
                             "/auth/register",
                             "/auth/login",
@@ -441,14 +427,9 @@ pub async fn run_server(config: Config) -> std::io::Result<()> {
                 })))
             }))
             .route("/test", web::post().to(|| async { HttpResponse::Ok().body("POST test successful!") }))
-            .service(
-                Files::new("/app", frontend_dir.clone())
-                    .index_file("index.html")
-                    .prefer_utf8(true),
-            )
             // Firebase authentication routes (no JWT required)
             .configure(config_auth_routes)
-            // Public demo UI routes (no JWT). The HTML app posts here.
+            // Public routes used by the Next.js BFF (no JWT)
             .route("/users", web::get().to(get_users))
             .route("/users", web::post().to(register_user))
             .route("/loans", web::get().to(get_loans))

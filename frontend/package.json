@@ -1,7 +1,8 @@
 {
-  "name": "web",
+  "name": "lendwise-frontend",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@12.4.1",
   "scripts": {
     "dev": "next dev --port 3001",
     "build": "next build",

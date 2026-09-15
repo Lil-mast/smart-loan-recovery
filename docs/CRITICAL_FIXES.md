@@ -180,4 +180,3 @@ This allowed any website to make authenticated requests to the API (no CORS prot
 | `frontend/lenders.html` | Login endpoint → `/auth/demo-login`, removed dead `/auth/logout` call |
 | `tests/integration_tests.rs` | Unique temp DB files per test |
 | `.dockerignore` | Added secret/db file exclusions |
-| `TODO.md` | Updated status |

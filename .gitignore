@@ -2,4 +2,14 @@
 .env
 .env.firebase
 .env.local
-web/.npm-cache
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+loans_backup.json
+users_backup.json
+debug-*.log
+**/node_modules/
+**/.next/
+**/.npm-cache/
+frontend/.env.local

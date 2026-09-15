@@ -15,4 +15,4 @@ Sustainable loan recovery platform with low-ops, auditable rules.
    - **Updates**: Edit recovery.rs rules; `cargo update`.
    - **Monitoring**: Actix middleware::Logger.
 
-**Routine**: `cargo check`, backup DB, `fly deploy`. Check TODO.md.
+**Routine**: `cargo check`, backup DB, `fly deploy`.

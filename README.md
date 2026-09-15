@@ -74,15 +74,14 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
    cargo run
    ```
    - API root: `http://127.0.0.1:3000` (JSON status at `GET /`)
-   - Legacy static UI: `http://127.0.0.1:3000/app/`
-   - **Next.js UI (recommended):** in another terminal:
+   - **Web UI:** in another terminal:
      ```bash
-     cd web
+     cd frontend
      cp .env.example .env.local   # already points API_URL at 127.0.0.1:3000
-     npm install
-     npm run dev
+     pnpm install
+     pnpm dev
      ```
-     Open `http://127.0.0.1:3001`. The Next app proxies `/api/v1/*` to the Rust API (same-origin; no browser CORS). On Vercel, set the project **Root Directory** to `web`, plus `API_URL` (your API host) and `SESSION_SECRET`.
+     Open `http://127.0.0.1:3001`. The Next app proxies `/api/v1/*` to the Rust API (same-origin; no browser CORS). On Vercel, set the project **Root Directory** to `frontend`, plus `API_URL` (your API host) and `SESSION_SECRET`. More: [docs/FRONTEND_GUIDE.md](docs/FRONTEND_GUIDE.md).
    - Optional: `RUST_LOG=info cargo run` for request logs
    - Ensure `.env` does not set `SESSION_SECRET` to an empty value (or omit it to use the built-in dev default)
 

@@ -10,8 +10,6 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/target/release/lendwise-recovery /usr/local/bin/
-COPY --from=builder /app/frontend /usr/local/share/lendwise-frontend
 EXPOSE 3000
 ENV SERVER_HOST=0.0.0.0
-ENV FRONTEND_DIR=/usr/local/share/lendwise-frontend
 CMD ["lendwise-recovery"]
