@@ -58,10 +58,9 @@ Do not put API secrets in `NEXT_PUBLIC_*` variables.
 ```
 frontend/
   src/app/          pages and BFF routes
+    (marketing)/    landing, login, register (ice theme; dashboards untouched)
     lender/         lender book, add-borrower, live health
     borrower/       calendar, alerts, early-pay / need-time
-    login/          Google, email, or 4-character ID
-    register/
     api/v1/         BFF proxy + session cookie
   src/components/   calendar, health badge, Google button
   src/lib/          API helper + session cookie + formatting
@@ -69,3 +68,5 @@ frontend/
 ```
 
 Stitch design mocks live in `docs/design/` (reference only).
+
+Marketing landing and auth redesign (Rescale-inspired `/`, split-panel `/login` and `/register`, theme isolation from dashboards): [MARKETING_UI_REDESIGN.md](MARKETING_UI_REDESIGN.md).

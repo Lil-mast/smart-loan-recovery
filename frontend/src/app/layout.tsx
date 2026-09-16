@@ -24,7 +24,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`dark ${manrope.variable} ${jetbrains.variable} h-full antialiased`}
+      className={`${manrope.variable} ${jetbrains.variable} h-full antialiased`}
     >
       <head>
         <link
@@ -32,10 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           rel="stylesheet"
         />
       </head>
-      <body
-        suppressHydrationWarning
-        className="min-h-full bg-background text-foreground"
-      >
+      <body suppressHydrationWarning className="min-h-full bg-background text-foreground">
         {children}
       </body>
     </html>

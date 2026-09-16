@@ -3,6 +3,7 @@
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { GoogleAuthProvider, getAuth, signInWithPopup, type AuthError } from "firebase/auth";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { apiErrorMessage, apiFetch, clearSession } from "@/lib/api";
 import { dashboardPath, type UserRole } from "@/lib/types";
 
@@ -53,6 +54,7 @@ type Props = {
   disabled?: boolean;
   stayOnPage?: boolean;
   label?: string;
+  className?: string;
 };
 
 export function GoogleButton({
@@ -62,6 +64,7 @@ export function GoogleButton({
   disabled,
   stayOnPage,
   label,
+  className,
 }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -135,11 +138,14 @@ export function GoogleButton({
         type="button"
         onClick={() => void handleClick()}
         disabled={busy || disabled}
-        className="flex w-full items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 disabled:opacity-60"
+        className={cn(
+          "flex h-12 w-full items-center justify-center gap-2 rounded-full border border-input bg-white px-4 text-sm font-medium text-foreground disabled:opacity-60",
+          className,
+        )}
       >
         {busy ? "Connecting to Google…" : label ?? "Continue with Google"}
       </button>
-      {error ? <p className="mt-2 text-center text-sm text-red-300">{error}</p> : null}
+      {error ? <p className="mt-2 text-center text-sm text-destructive">{error}</p> : null}
     </div>
   );
 }
