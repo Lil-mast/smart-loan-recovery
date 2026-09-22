@@ -25,18 +25,18 @@ export function SiteHeader() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-line bg-background/70 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
+        <Link href="/" className="flex shrink-0 items-center gap-2 font-semibold tracking-tight">
           <BrandMark className="h-5 w-7 text-primary" />
           {site.shortName}
         </Link>
-        <nav className="hidden items-center gap-6 text-sm text-muted-foreground sm:flex">
+        <nav className="hidden items-center gap-6 text-sm text-muted-foreground lg:flex">
           {nav.map((item) => (
             <Link key={item.href} href={item.href} className="hover:text-foreground">
               {item.label}
             </Link>
           ))}
         </nav>
-        <div className="hidden items-center gap-2 sm:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           <Button variant="ghost" size="sm" asChild>
             <Link href="/login">Sign in</Link>
           </Button>
@@ -46,7 +46,7 @@ export function SiteHeader() {
         </div>
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="sm:hidden" aria-label="Open menu">
+            <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu">
               <Menu />
             </Button>
           </SheetTrigger>

@@ -1,13 +1,21 @@
+import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { Mail, Phone } from "lucide-react";
+import { Link2, Mail, MapPin, Phone } from "lucide-react";
 import { FaqSection } from "@/components/marketing/faq-section";
 import { LiquidGlassText } from "@/components/marketing/liquid-glass-text";
 import { MarqueeRow } from "@/components/marketing/marquee-row";
 import { ProductSpotlight } from "@/components/marketing/product-spotlight";
+import { JsonLd } from "@/components/seo/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
+import { marketingJsonLd } from "@/lib/seo";
 import { site } from "@/lib/site";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 const steps = [
   {
@@ -51,8 +59,9 @@ export default function HomePage() {
             <LiquidGlassText>Smart AI insights</LiquidGlassText>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-            Track each loan, flag overdues, and get the next recovery action — remind, renegotiate,
-            or escalate — in one workspace for your company and your borrowers.
+            {site.name} helps lenders track each loan, flag overdues, and get the next recovery
+            action — remind, renegotiate, or escalate — in one workspace for your company and
+            borrowers. Built in {site.owner.location} by {site.owner.name}.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button size="lg" className="h-12 rounded-full px-8" asChild>
@@ -167,33 +176,61 @@ export default function HomePage() {
         <section id="about" className="scroll-mt-24 bg-card py-20">
           <div className="mx-auto max-w-6xl px-6">
             <p className="font-mono text-[11px] tracking-widest text-primary uppercase">About us</p>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">Meet the owner</h2>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">{site.owner.name}</h2>
             <p className="mt-4 max-w-2xl text-muted-foreground">
-              The person behind {site.name} — replace the placeholders in{" "}
-              <code className="text-xs">frontend/src/lib/site.ts</code> with your name, contact, and
-              bio.
+              {site.owner.role} behind {site.name}, based in {site.owner.location}.
             </p>
-            <div className="mt-10 max-w-xl rounded-2xl border border-line bg-background p-8">
-              <p className="font-mono text-[11px] tracking-widest text-primary uppercase">
-                {site.owner.role}
-              </p>
-              <h3 className="mt-2 text-2xl font-bold">{site.owner.name}</h3>
-              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{site.owner.bio}</p>
-              <div className="mt-6 flex flex-col gap-2 text-sm">
-                <a
-                  href={`mailto:${site.owner.email}`}
-                  className="inline-flex items-center gap-2 text-foreground hover:underline"
-                >
-                  <Mail className="size-4" />
-                  {site.owner.email}
-                </a>
-                <a
-                  href={`tel:${site.owner.phone}`}
-                  className="inline-flex items-center gap-2 text-foreground hover:underline"
-                >
-                  <Phone className="size-4" />
-                  {site.owner.phone}
-                </a>
+            <div className="mt-10 grid max-w-3xl overflow-hidden rounded-2xl border border-line bg-background grid-cols-[148px_1fr] sm:grid-cols-[200px_1fr] md:grid-cols-[240px_1fr]">
+              <div className="relative min-h-[240px] bg-[#d7e6f8] sm:min-h-[300px] md:min-h-[360px]">
+                <Image
+                  src={site.owner.photo}
+                  alt={`${site.owner.name}, ${site.owner.role} in ${site.owner.location}`}
+                  fill
+                  sizes="(min-width: 768px) 240px, 200px"
+                  className="object-cover object-[center_10%]"
+                />
+              </div>
+              <div className="p-8">
+                <p className="font-mono text-[11px] tracking-widest text-primary uppercase">
+                  {site.owner.role}
+                </p>
+                <h3 className="mt-2 text-2xl font-bold">{site.owner.name}</h3>
+                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{site.owner.bio}</p>
+                <div className="mt-6 flex flex-col gap-2 text-sm">
+                  <p className="inline-flex items-center gap-2 text-foreground">
+                    <MapPin className="size-4" />
+                    {site.owner.location}
+                  </p>
+                  {site.owner.linktree ? (
+                    <a
+                      href={site.owner.linktree}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-foreground hover:underline"
+                    >
+                      <Link2 className="size-4" />
+                      {site.owner.linktree.replace(/^https?:\/\//, "")}
+                    </a>
+                  ) : null}
+                  {site.owner.email ? (
+                    <a
+                      href={`mailto:${site.owner.email}`}
+                      className="inline-flex items-center gap-2 text-foreground hover:underline"
+                    >
+                      <Mail className="size-4" />
+                      {site.owner.email}
+                    </a>
+                  ) : null}
+                  {site.owner.phone ? (
+                    <a
+                      href={`tel:${site.owner.phone}`}
+                      className="inline-flex items-center gap-2 text-foreground hover:underline"
+                    >
+                      <Phone className="size-4" />
+                      {site.owner.phone}
+                    </a>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
@@ -215,17 +252,29 @@ export default function HomePage() {
           <div className="rounded-[2rem] bg-[#0b3a6a] px-8 py-14 text-center text-white">
             <h2 className="text-3xl font-bold tracking-tight md:text-5xl">Ready? Let’s talk.</h2>
             <p className="mx-auto mt-4 max-w-xl text-sky-100">
-              Questions about a workspace, a book, or this product — write or call{" "}
-              {site.owner.name}.
+              Questions about a workspace, a book, or this product — reach {site.owner.name} in{" "}
+              {site.owner.location}.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button size="lg" className="h-12 rounded-full bg-white px-8 text-[#0b3a6a] hover:bg-sky-100" asChild>
-                <a href={`mailto:${site.owner.email}`}>Email {site.owner.name}</a>
-              </Button>
+              {site.owner.linktree ? (
+                <Button size="lg" className="h-12 rounded-full bg-white px-8 text-[#0b3a6a] hover:bg-sky-100" asChild>
+                  <a href={site.owner.linktree} target="_blank" rel="noopener noreferrer">
+                    Open Linktree
+                  </a>
+                </Button>
+              ) : site.owner.email ? (
+                <Button size="lg" className="h-12 rounded-full bg-white px-8 text-[#0b3a6a] hover:bg-sky-100" asChild>
+                  <a href={`mailto:${site.owner.email}`}>Email {site.owner.name}</a>
+                </Button>
+              ) : null}
               <Button
                 size="lg"
-                variant="outline"
-                className="h-12 rounded-full border-white/40 bg-transparent px-8 text-white hover:bg-white/10"
+                className={
+                  site.owner.linktree || site.owner.email
+                    ? "h-12 rounded-full border-white/40 bg-transparent px-8 text-white hover:bg-white/10"
+                    : "h-12 rounded-full bg-white px-8 text-[#0b3a6a] hover:bg-sky-100"
+                }
+                variant={site.owner.linktree || site.owner.email ? "outline" : "default"}
                 asChild
               >
                 <Link href="/register">Create a workspace</Link>
@@ -235,6 +284,7 @@ export default function HomePage() {
         </section>
       </main>
       <SiteFooter />
+      <JsonLd data={marketingJsonLd()} />
     </div>
   );
 }

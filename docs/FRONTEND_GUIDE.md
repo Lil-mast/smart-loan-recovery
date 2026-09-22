@@ -50,6 +50,8 @@ Set the project **Root Directory** to `frontend`, then:
 |-----|---------|
 | `API_URL` | Public or private URL of the Rust API |
 | `SESSION_SECRET` | HMAC secret for the httpOnly `lw_session` cookie |
+| `NEXT_PUBLIC_SITE_URL` | Canonical public origin for sitemap, Open Graph, and robots. Required for search indexing. |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Optional Search Console HTML-tag token |
 
 Do not put API secrets in `NEXT_PUBLIC_*` variables.
 

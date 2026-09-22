@@ -7,7 +7,7 @@ Visual references:
 - Landing rhythm: [Rescale (Framer)](https://rescale.framer.ai/)
 - Auth shell: [`frontend/src/assets/Login _ Sign up 3.png`](../frontend/src/assets/Login%20_%20Sign%20up%203.png)
 
-Owner copy lives in [`frontend/src/lib/site.ts`](../frontend/src/lib/site.ts). Replace the `OWNER_*` placeholders when you have them.
+Owner copy lives in [`frontend/src/lib/site.ts`](../frontend/src/lib/site.ts) (Christian Tazma, Nairobi). Add `email` or `phone` there if you want those links on the site.
 
 ## Isolation
 
