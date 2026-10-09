@@ -1,8 +1,8 @@
 # Setup Guide
 
-This document walks through installing, configuring, and running **LendWise Recovery** on a local machine, in Docker, and on Fly.io.
+This document walks through installing, configuring, and running **LendWise Recovery** locally, in Docker, and on Render.
 
-The Rust process is the **API** (JSON). The web UI is the Next.js app in `frontend/` on port **3001** (`pnpm dev`), which proxies `/api/v1/*` to `API_URL` (default `http://127.0.0.1:3000`). Always start the Rust binary from the **repository root**.
+The Rust process is the **API** (JSON). The web UI is the Next.js app in `frontend/` on port **3001** (`pnpm dev`), which proxies `/api/v1/*` to `API_URL` (local default `http://127.0.0.1:3000`, production default `https://lendwise-5gdu.onrender.com`). Always start the Rust binary from the **repository root**.
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ The Rust process is the **API** (JSON). The web UI is the Next.js app in `fronte
 | Git | Any recent version |
 | SQLite | Bundled with the `rusqlite` crate; no system SQLite install required |
 | Docker | Optional, for container builds |
-| [Fly CLI](https://fly.io/docs/flyctl/install/) | Optional, for production deploys |
+| Render account | Used for the production API deployment |
 | A [Firebase](https://console.firebase.google.com/) project | Required for Google and email sign-in for borrowers |
 
 Install Rust with rustup:
@@ -67,8 +67,8 @@ RUST_LOG=info
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `SERVER_HOST` | `127.0.0.1` | Listen address |
-| `SERVER_PORT` | `3000` | Listen port |
+| `SERVER_HOST` | `127.0.0.1` locally; `0.0.0.0` when `PORT` is set | Listen address (explicit value overrides the default) |
+| `SERVER_PORT` | `3000` | Listen port when `PORT` is unset (Render's `PORT` takes precedence) |
 | `DATABASE_URL` | `loans.db` | SQLite path |
 | `SESSION_SECRET` | built-in dev key | Cookie encryption |
 | `RUST_ENV` | unset | `production` enables Secure cookies |
@@ -192,27 +192,15 @@ docker run --rm -p 3000:3000 \
 
 Pass Firebase secrets with `-e` or `--env-file .env.firebase`. Do not bake `.env*` files into the image (they are listed in `.dockerignore`).
 
-## Fly.io
+## Render deployment
 
-This repo already includes `fly.toml` (`app = 'lendwise-recovery'`, HTTP on port **3000**).
+Deploy the repository as a Render Web Service using its Dockerfile. Configure the service with `SERVER_HOST=0.0.0.0`, a strong `SESSION_SECRET`, and a persistent `DATABASE_URL`. The Rust service uses Render's `PORT` environment variable when `SERVER_PORT` is not set.
 
-```bash
-fly auth login
-fly deploy
-```
+For the Vercel frontend, set `API_URL=https://lendwise-5gdu.onrender.com` and `SESSION_SECRET` in the project's environment variables, then redeploy. The `API_URL` setting takes precedence over the code default.
 
-Set production secrets (never commit them):
+To disable the blocked Vercel preview feedback script, set `VERCEL_PREVIEW_FEEDBACK_ENABLED=0` for the Vercel Preview environment. Keep the app's Content Security Policy unchanged. The browser console error from `contentYt.js` is usually injected by an extension; check with extensions disabled.
 
-```bash
-fly secrets set SESSION_SECRET="$(openssl rand -hex 32)"
-fly secrets set RUST_ENV=production
-# Optional Firebase
-fly secrets set FIREBASE_PROJECT_ID=... FIREBASE_API_KEY=... JWT_SECRET=...
-```
-
-Pushes to `main` deploy via `.github/workflows/fly-deploy.yml` when `FLY_API_TOKEN` is configured as a GitHub secret.
-
-Live demo: https://lendwise-recovery.fly.dev/
+Production API: https://lendwise-5gdu.onrender.com/
 
 ## Verify the install
 

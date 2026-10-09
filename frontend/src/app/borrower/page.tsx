@@ -50,7 +50,7 @@ function buildAlerts(loans: Loan[], signals: LoanSignal[]): Alert[] {
     }
   }
   for (const s of signals) {
-    if (s.kind === "can_pay_early") {
+    if (s.kind === "can_pay_early" && s.status === "open") {
       out.push({
         id: s.id,
         tone: "info",
@@ -177,8 +177,8 @@ export default function BorrowerPage() {
           </div>
         </div>
 
-        {error ? <p className="mb-4 text-red-300">{error}</p> : null}
-        {notice ? <p className="mb-4 text-sm text-emerald-300">{notice}</p> : null}
+        {error ? <p className="mb-4 text-red-700">{error}</p> : null}
+        {notice ? <p className="mb-4 text-sm text-emerald-700">{notice}</p> : null}
 
         {alerts.length > 0 ? (
           <div className="mb-8 space-y-2">
@@ -245,7 +245,7 @@ export default function BorrowerPage() {
                           className="text-secondary"
                           onClick={() => void signal(l.id, "can_pay_early")}
                         >
-                          Pay early
+                          Request early payment
                         </button>
                         <button
                           type="button"

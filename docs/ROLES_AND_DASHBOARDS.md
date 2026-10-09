@@ -29,7 +29,7 @@ Borrower ID login is the fastest path after a lender adds someone who has no Goo
 ## Lender dashboard (`/lender`)
 
 - Book totals: outstanding, loan count, stressed (at-risk + critical), open borrower signals.
-- **Add borrower** form: name, optional email, optional principal / rate / months (creates the loan in the same submit).
+- **Add borrower** form: existing borrower ID is optional; without one, enter a name and the app generates a sign-in ID. Email and optional principal / rate / months are also supported (a loan can be created in the same submit).
 - **Issue loan** against an existing borrower on this book only.
 - Table sorted by **health score** (worst first): outstanding, band, days past due, next due, recommended action.
 - **Live borrower signals**: `can_pay_early` and `concern` from the borrower workspace.
@@ -40,7 +40,7 @@ Borrower ID login is the fastest path after a lender adds someone who has no Goo
 - Alerts: overdue installments, due today, due within 7 days, plus confirmation of signals they already sent.
 - Month calendar of the repayment schedule (overdue / due today / upcoming / paid).
 - Per loan: outstanding, health band, next due.
-- **Pay early** / **Need time** — posts a signal the lender sees immediately. An open `can_pay_early` slightly **raises** health so the book is not treated as silent risk.
+- **Request early payment** / **Need time** — posts a signal the lender sees immediately. This requests a payment; it does not collect money. After receiving funds outside the app, the lender records the amount. The balance and health score update, and the early-pay request is marked handled.
 
 ## Scoring (computed on every loan read)
 
@@ -92,12 +92,12 @@ GET `/loans` is scoped to the signed-in user: lenders see their book, borrowers 
 | POST | `/borrowers` | Lender | Add borrower (optional loan). Does **not** switch session. |
 | GET | `/loans` | Either | Live health + installment schedule |
 | POST | `/loans` | Lender | Issue a loan to a borrower on this book |
-| POST | `/loans/{id}/payments` | Lender or owning borrower | Record a payment |
+| POST | `/loans/{id}/payments` | Owning lender | Record a payment received outside the app |
 | POST | `/loans/{id}/signals` | Borrower | `can_pay_early` or `concern` |
 | GET | `/signals` | Either | Open notes for this book / this borrower |
 | POST | `/recommend/{id}` | Owner | Same scoring snapshot as GET `/loans` |
 
-Signal kinds: `can_pay_early`, `concern`. Status starts as `open`.
+Signal kinds: `can_pay_early`, `concern`. Status starts as `open`; recording a payment marks that loan's open early-pay requests as `seen`.
 
 ## UI routes
 
@@ -117,5 +117,5 @@ Session cookie: httpOnly `lw_session` set by the Next BFF (`frontend/src/app/api
 1. Register a lender → note the 4-character ID → `/lender`.
 2. Add a borrower (or register a **different** Google/email with that lender ID).
 3. Sign in as the borrower with **their** ID → `/borrower`. Visiting `/lender` must bounce back.
-4. Use **Pay early**; it should appear under Live borrower signals on `/lender`.
+4. Use **Request early payment**; it should appear under Live borrower signals on `/lender`. Once funds are received, record the payment as the lender and confirm the balance changes and request closes.
 5. Same Google as the lender, on the borrower tab, must error — not open the lender book.

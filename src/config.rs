@@ -17,11 +17,19 @@ impl Config {
             Ok(s) if !s.trim().is_empty() => s,
             _ => "super-secret-key-change-in-production-at-least-47-characters-long".to_string(),
         };
+        let server_host = env::var("SERVER_HOST").unwrap_or_else(|_| {
+            if env::var_os("PORT").is_some() {
+                "0.0.0.0".to_string()
+            } else {
+                "127.0.0.1".to_string()
+            }
+        });
 
         Ok(Config {
             database_url: env::var("DATABASE_URL").unwrap_or_else(|_| "loans.db".to_string()),
-            server_host: env::var("SERVER_HOST").unwrap_or_else(|_| "127.0.0.1".to_string()),
-            server_port: env::var("SERVER_PORT")
+            server_host,
+            server_port: env::var("PORT")
+                .or_else(|_| env::var("SERVER_PORT"))
                 .unwrap_or_else(|_| "3000".to_string())
                 .parse()
                 .map_err(|_| "Invalid SERVER_PORT")?,

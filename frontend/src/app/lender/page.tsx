@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { HealthBadge } from "@/components/health-badge";
 import { apiErrorMessage, apiFetch, clearSession, getSession } from "@/lib/api";
-import { money, recLabel } from "@/lib/format";
+import { money, moneyExact, recLabel } from "@/lib/format";
 import type { ApiUser, Loan, LoanSignal, SessionUser } from "@/lib/types";
 
 export default function LenderPage() {
@@ -26,8 +26,10 @@ export default function LenderPage() {
   const [newPrincipal, setNewPrincipal] = useState("");
   const [newRate, setNewRate] = useState("8.5");
   const [newMonths, setNewMonths] = useState("12");
+  const [paymentAmounts, setPaymentAmounts] = useState<Record<string, string>>({});
   const [adding, setAdding] = useState(false);
   const [flagging, setFlagging] = useState(false);
+  const [recordingPayment, setRecordingPayment] = useState("");
 
   const load = useCallback(async (s: SessionUser) => {
     try {
@@ -188,6 +190,37 @@ export default function LenderPage() {
     await load(user);
   }
 
+  async function recordPayment(e: React.FormEvent, loan: Loan) {
+    e.preventDefault();
+    if (!user) return;
+    const amount = Number(paymentAmounts[loan.id]);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setError("Enter a payment amount greater than zero.");
+      return;
+    }
+    setRecordingPayment(loan.id);
+    setError("");
+    setNotice("");
+    try {
+      const res = await apiFetch(`/loans/${encodeURIComponent(loan.id)}/payments`, {
+        method: "POST",
+        body: JSON.stringify({ amount, note: "Confirmed as received by lender" }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        message?: string;
+      };
+      if (!res.ok) throw new Error(apiErrorMessage(data, "Could not record payment"));
+      setPaymentAmounts((previous) => ({ ...previous, [loan.id]: "" }));
+      setNotice(`Recorded ${moneyExact(amount)} for loan ${loan.id.slice(0, 8)}. The balance is updated.`);
+      await load(user);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not record payment");
+    } finally {
+      setRecordingPayment("");
+    }
+  }
+
   const borrowersById = useMemo(() => {
     const m = new Map<string, ApiUser>();
     for (const b of borrowers) m.set(b.id, b);
@@ -201,7 +234,7 @@ export default function LenderPage() {
 
   return (
     <div className="min-h-screen bg-background lg:pl-64">
-      <aside className="fixed left-0 top-0 hidden h-full w-64 flex-col justify-between border-r border-line bg-[#0a0e18] p-6 lg:flex">
+      <aside className="fixed left-0 top-0 hidden h-full w-64 flex-col justify-between border-r border-line bg-card p-6 lg:flex">
         <div>
           <p className="text-lg font-bold">LendWise</p>
           <p className="font-mono text-[11px] uppercase text-secondary">Lender book</p>
@@ -286,20 +319,26 @@ export default function LenderPage() {
           <div className="sm:col-span-2 lg:col-span-6">
             <p className="font-mono text-[11px] uppercase tracking-widest text-secondary">Add borrower</p>
             <p className="mt-1 text-sm text-muted">
-              Paste an existing 4-character borrower ID to put them on your book, or enter a name to create someone new.
+              Existing ID is optional. Add a borrower by name and we’ll generate an ID they can use to sign in.
             </p>
           </div>
+          <div className="space-y-1">
+            <label htmlFor="existing-borrower-id" className="text-xs text-muted">
+              Existing borrower ID (optional)
+            </label>
+            <input
+              id="existing-borrower-id"
+              value={newBorrowerId}
+              onChange={(e) => setNewBorrowerId(e.target.value.toUpperCase())}
+              maxLength={4}
+              className="w-full rounded-lg border border-line bg-background px-3 py-2 font-mono text-sm uppercase"
+              placeholder="ABCD"
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
           <input
-            value={newBorrowerId}
-            onChange={(e) => setNewBorrowerId(e.target.value.toUpperCase())}
-            maxLength={4}
-            className="rounded-lg bg-background px-3 py-2 font-mono text-sm uppercase"
-            placeholder="Existing ID"
-            autoComplete="off"
-            spellCheck={false}
-          />
-          <input
-            required={!newBorrowerId.trim() && !newEmail.trim()}
+            required={!newBorrowerId.trim()}
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             className="rounded-lg bg-background px-3 py-2 text-sm lg:col-span-2"
@@ -379,12 +418,12 @@ export default function LenderPage() {
           </div>
         </form>
 
-        {notice ? <p className="mb-4 text-sm text-emerald-300">{notice}</p> : null}
-        {error ? <p className="mb-4 text-red-300">{error}</p> : null}
+        {notice ? <p className="mb-4 text-sm text-emerald-700">{notice}</p> : null}
+        {error ? <p className="mb-4 text-red-700">{error}</p> : null}
 
         {openSignals.length > 0 ? (
           <div className="mb-8 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5">
-            <p className="font-mono text-[11px] uppercase tracking-widest text-amber-200">Live borrower signals</p>
+            <p className="font-mono text-[11px] uppercase tracking-widest text-amber-800">Live borrower signals</p>
             <ul className="mt-3 space-y-2 text-sm">
               {openSignals.map((s) => (
                 <li key={s.id} className="flex flex-wrap justify-between gap-2">
@@ -413,12 +452,13 @@ export default function LenderPage() {
                 <th className="px-4 py-3">DPD</th>
                 <th className="px-4 py-3">Next due</th>
                 <th className="px-4 py-3">Action</th>
+                <th className="px-4 py-3">Record payment</th>
               </tr>
             </thead>
             <tbody>
               {loans.length === 0 ? (
                 <tr>
-                  <td className="px-4 py-6 text-muted" colSpan={6}>
+                  <td className="px-4 py-6 text-muted" colSpan={7}>
                     No loans yet. Add a borrower, then issue a loan.
                   </td>
                 </tr>
@@ -429,13 +469,49 @@ export default function LenderPage() {
                       <p className="font-semibold">{borrowersById.get(l.borrower_id)?.name ?? l.borrower_id}</p>
                       <p className="font-mono text-xs text-muted">{l.borrower_id}</p>
                     </td>
-                    <td className="px-4 py-3">{money(l.outstanding_amount ?? l.principal)}</td>
+                    <td className="px-4 py-3">{moneyExact(l.outstanding_amount ?? l.principal)}</td>
                     <td className="px-4 py-3">
                       <HealthBadge band={l.health_band ?? "watch"} score={l.health_score} />
                     </td>
                     <td className="px-4 py-3 font-mono">{l.days_past_due ?? 0}d</td>
                     <td className="px-4 py-3 text-muted">{l.next_due ? l.next_due.slice(0, 10) : "—"}</td>
                     <td className="px-4 py-3 capitalize text-muted">{recLabel(l.ai_recommendation)}</td>
+                    <td className="px-4 py-3">
+                      {l.outstanding_amount <= 0.01 ? (
+                        <span className="text-muted">Paid in full</span>
+                      ) : (
+                        <>
+                          <form
+                            onSubmit={(e) => void recordPayment(e, l)}
+                            className="flex min-w-56 gap-2"
+                            aria-label={`Record received payment for loan ${l.id.slice(0, 8)}`}
+                          >
+                            <input
+                              type="number"
+                              min="0.01"
+                              max={Math.round(l.outstanding_amount * 100) / 100}
+                              step="0.01"
+                              required
+                              value={paymentAmounts[l.id] ?? ""}
+                              onChange={(e) =>
+                                setPaymentAmounts((previous) => ({ ...previous, [l.id]: e.target.value }))
+                              }
+                              className="w-28 rounded-md border border-line bg-background px-2 py-1 text-sm"
+                              placeholder="Amount"
+                              aria-label="Amount received"
+                            />
+                            <button
+                              type="submit"
+                              disabled={recordingPayment === l.id}
+                              className="rounded-md bg-primary-container px-2 py-1 text-xs font-semibold text-on-primary-container disabled:opacity-60"
+                            >
+                              {recordingPayment === l.id ? "Saving…" : "Confirm received"}
+                            </button>
+                          </form>
+                          <p className="mt-1 text-xs text-muted">Record only after receiving funds.</p>
+                        </>
+                      )}
+                    </td>
                   </tr>
                 ))
               )}

@@ -4,46 +4,44 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Dashboard default — keep /lender and /borrower on the original navy tokens. */
-:root,
-.dark {
-  --background: #0f131d;
-  --foreground: #dfe2f1;
-  --card: #171b26;
-  --card-foreground: #dfe2f1;
-  --card-high: #262a35;
-  --muted: #94a3b8;
-  --muted-foreground: #94a3b8;
-  --primary: #adc6ff;
-  --primary-foreground: #00285d;
-  --primary-container: #4d8eff;
-  --on-primary-container: #00285d;
-  --secondary: #4cd7f6;
-  --secondary-foreground: #002a36;
-  --tertiary: #d0bcff;
-  --line: rgba(255, 255, 255, 0.08);
-  --popover: #171b26;
-  --popover-foreground: #dfe2f1;
-  --accent: #262a35;
-  --accent-foreground: #dfe2f1;
+:root {
+  --background: #f5f8fd;
+  --foreground: #16243a;
+  --card: #ffffff;
+  --card-foreground: #16243a;
+  --card-high: #e9f0fa;
+  --muted: #5e6f85;
+  --muted-foreground: #5e6f85;
+  --primary: #2467c5;
+  --primary-foreground: #ffffff;
+  --primary-container: #d5e5ff;
+  --on-primary-container: #143866;
+  --secondary: #087e8b;
+  --secondary-foreground: #ffffff;
+  --tertiary: #7048a8;
+  --line: rgba(22, 47, 79, 0.13);
+  --popover: #ffffff;
+  --popover-foreground: #16243a;
+  --accent: #e9f0fa;
+  --accent-foreground: #16243a;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.12);
-  --ring: #4d8eff;
-  --chart-1: #adc6ff;
-  --chart-2: #4cd7f6;
-  --chart-3: #4d8eff;
-  --chart-4: #d0bcff;
-  --chart-5: #94a3b8;
+  --border: rgba(22, 47, 79, 0.15);
+  --input: rgba(22, 47, 79, 0.12);
+  --ring: #2467c5;
+  --chart-1: #2467c5;
+  --chart-2: #087e8b;
+  --chart-3: #7048a8;
+  --chart-4: #d5812d;
+  --chart-5: #5e6f85;
   --radius: 0.625rem;
-  --sidebar: #171b26;
-  --sidebar-foreground: #dfe2f1;
-  --sidebar-primary: #4d8eff;
-  --sidebar-primary-foreground: #00285d;
-  --sidebar-accent: #262a35;
-  --sidebar-accent-foreground: #dfe2f1;
-  --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-ring: #4d8eff;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #16243a;
+  --sidebar-primary: #2467c5;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e9f0fa;
+  --sidebar-accent-foreground: #16243a;
+  --sidebar-border: rgba(22, 47, 79, 0.13);
+  --sidebar-ring: #2467c5;
 }
 
 /* Public site only — ice blue / white, deep ink. */

@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SESSION_COOKIE, sessionFromUnknown, signSession, verifySession } from "@/lib/session";
 
-const UPSTREAM = (process.env.API_URL || "https://lendwise-recovery.fly.dev").replace(/\/$/, "");
+const DEFAULT_UPSTREAM =
+  process.env.NODE_ENV === "development"
+    ? "http://127.0.0.1:3000"
+    : "https://lendwise-5gdu.onrender.com";
+const UPSTREAM = (process.env.API_URL || DEFAULT_UPSTREAM).replace(/\/$/, "");
 
 const ALLOWED_PREFIXES = [
   "/users",

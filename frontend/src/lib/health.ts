@@ -14,10 +14,10 @@ export function healthLabel(band?: string): string {
 }
 
 export function healthClass(band?: string): string {
-  if (band === "healthy") return "bg-emerald-500/15 text-emerald-300";
-  if (band === "watch") return "bg-amber-500/15 text-amber-300";
-  if (band === "at_risk") return "bg-orange-500/15 text-orange-300";
-  return "bg-red-500/15 text-red-300";
+  if (band === "healthy") return "bg-emerald-100 text-emerald-800";
+  if (band === "watch") return "bg-amber-100 text-amber-800";
+  if (band === "at_risk") return "bg-orange-100 text-orange-800";
+  return "bg-red-100 text-red-800";
 }
 
 export function formatDay(iso?: string | null): string {

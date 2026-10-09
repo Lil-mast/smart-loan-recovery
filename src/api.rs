@@ -103,7 +103,6 @@ fn cors_origin_allowed(origin: &str) -> bool {
         || origin == "http://127.0.0.1:5500"
         || origin.ends_with(".vercel.app")
         || origin.ends_with(".onrender.com")
-        || origin == "https://lendwise-recovery.fly.dev"
     {
         return true;
     }
@@ -629,21 +628,37 @@ async fn record_payment(
         .map_err(AppError::Database)?
         .ok_or_else(|| AppError::NotFound("Loan not found".to_string()))?;
 
-    let allowed = match user.role {
-        UserRole::Lender => loan.lender_id == user.id,
-        UserRole::Borrower => loan.borrower_id == user.id,
-        UserRole::Admin => true,
-    };
-    if !allowed {
+    if !matches!(user.role, UserRole::Lender) || loan.lender_id != user.id {
         return Err(AppError::InsufficientPermissions);
     }
     if data.amount <= 0.0 {
         return Err(AppError::InvalidInput("Payment amount must be positive".to_string()));
     }
+    let health = scoring::evaluate(&loan, chrono::Utc::now());
+    let max_payment = (health.outstanding_amount * 100.0).round() / 100.0;
+    if data.amount > max_payment || max_payment <= 0.0 {
+        return Err(AppError::InvalidInput(format!(
+            "Payment cannot exceed the outstanding balance of {:.2}",
+            max_payment
+        )));
+    }
 
     let updated = tracker
         .record_payment(loan.id, data.amount, data.note.clone())
         .map_err(AppError::Database)?;
+
+    // A recorded payment confirms the borrower's early-pay request for this loan.
+    let loan_id = loan.id.to_string();
+    if let Ok(signals) = db.load_signals(None, None, Some(&loan_id)) {
+        for mut signal in signals.into_iter().filter(|signal| {
+            signal.kind == "can_pay_early" && signal.status == "open"
+        }) {
+            signal.status = "seen".to_string();
+            if let Err(err) = db.save_signal(&signal) {
+                log::warn!("Could not close early-pay signal {}: {}", signal.id, err);
+            }
+        }
+    }
     Ok(Ok(HttpResponse::Ok().json(loan_api_json(&db, &updated))))
 }
 

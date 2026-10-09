@@ -1,6 +1,6 @@
 # LendWise Recovery
 
-[![Deployed on Fly.io](https://img.shields.io/badge/Deployed%20on-Fly.io-blue)](https://lendwise-recovery.fly.dev/)
+[![Deployed on Render](https://img.shields.io/badge/Deployed%20on-Render-blue)](https://lendwise-5gdu.onrender.com/)
 [![Rust](https://img.shields.io/badge/Rust-1.92-orange)](https://www.rust-lang.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue)](https://www.docker.com/)
 [![Rust Africa Hackathon](https://img.shields.io/badge/Built%20for-%23RustAfricaHackathon-brightgreen)](https://rust-africa-hackathon.io/)
@@ -15,7 +15,7 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
 
 ## 🌐 Live Demo
 
-**Production URL**: https://lendwise-recovery.fly.dev/
+**Production URL**: https://lendwise-5gdu.onrender.com/
 
 ## ✨ Features
 
@@ -33,8 +33,7 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
 - Principal, interest, term, outstanding, and coverage
 
 ### 🤖 **AI-Powered Recovery**
-- Deterministic health score (0–100) in `src/scoring.rs`: coverage, days past due, consecutive misses, schedule lag
-- Bands: healthy / watch / at risk / critical, with remind / renegotiate / escalate
+- Transparent deterministic health score (0–100) based on payment coverage, lateness, missed installments, and schedule progress; health bands drive remind / renegotiate / escalate recommendations
 - Borrower early-pay and “need time” signals visible on the lender book
 - Automated overdue / default detection on each loan read
 
@@ -48,7 +47,7 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
 - Docker containerization for easy deployment across environments
 - Multi-stage Docker builds for optimized images
 - Production-ready configuration
-- One-click deployment to Fly.io
+- Production API hosted on Render
 
 ### 🧪 **Testing & Quality**
 - Comprehensive integration tests for reliability
@@ -58,7 +57,7 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
 
 ## 🚀 Quick Start
 
-**Full install, environment, Docker, and Fly.io steps:** [SETUP.md](SETUP.md).
+**Full install, environment, Docker, and Render steps:** [SETUP.md](SETUP.md).
 
 ### Prerequisites
 - Rust 1.92 or later
@@ -80,11 +79,11 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
    - **Web UI:** in another terminal:
      ```bash
      cd frontend
-     cp .env.example .env.local   # already points API_URL at 127.0.0.1:3000
+     cp .env.example .env.local   # points API_URL at 127.0.0.1:3000
      pnpm install
      pnpm dev
      ```
-     Open `http://127.0.0.1:3001`. The Next app proxies `/api/v1/*` to the Rust API (same-origin; no browser CORS). On Vercel, set the project **Root Directory** to `frontend`, plus `API_URL` (your API host) and `SESSION_SECRET`. More: [docs/FRONTEND_GUIDE.md](docs/FRONTEND_GUIDE.md).
+     Open `http://127.0.0.1:3001`. The Next app proxies `/api/v1/*` to the Rust API (same-origin; no browser CORS). On Vercel, set the project **Root Directory** to `frontend`, `API_URL=https://lendwise-5gdu.onrender.com`, and a long random `SESSION_SECRET`. More: [docs/FRONTEND_GUIDE.md](docs/FRONTEND_GUIDE.md).
    - Optional: `RUST_LOG=info cargo run` for request logs
    - Ensure `.env` does not set `SESSION_SECRET` to an empty value (or omit it to use the built-in dev default)
 
@@ -110,7 +109,7 @@ Full product behaviour: [docs/ROLES_AND_DASHBOARDS.md](docs/ROLES_AND_DASHBOARDS
 ### Loans
 - `GET /loans` — scoped to the signed-in user; includes health, schedule, installments
 - `POST /loans` — create a loan (lenders; borrower must be on their book)
-- `POST /loans/{id}/payments` — record a payment
+- `POST /loans/{id}/payments` — lender records funds received outside the app
 - `POST /loans/{id}/signals` — borrower `can_pay_early` or `concern`
 - `GET /signals` — signals for this book / this borrower
 
@@ -190,11 +189,10 @@ docker build -t smart-loan-recovery .
 docker run -p 3000:3000 smart-loan-recovery
 ```
 
-### Deploy to Fly.io
-```bash
-fly launch
-fly deploy
-```
+### Deploy to Render
+Create a Render Web Service from this repository and use its Dockerfile. Set `SERVER_HOST=0.0.0.0`, a strong `SESSION_SECRET`, and `DATABASE_URL` to a location on a persistent disk. The Rust service uses Render's `PORT` environment variable when `SERVER_PORT` is not set.
+
+The production API is https://lendwise-5gdu.onrender.com/. Set the Vercel frontend's `API_URL` to this URL; an existing environment variable overrides the built-in default.
 
 ## 📖 User Guide
 
@@ -203,7 +201,7 @@ Use the Next.js UI at `http://127.0.0.1:3001` (start `cargo run` and `cd fronten
 1. **Lender:** Register with company name → keep the 4-character ID → `/lender`. Add borrowers from that page, or share the ID so they self-join.
 2. **Borrower:** Register with that lender ID (Google or email), **or** sign in with the ID the lender created for them → `/borrower`.
 3. One Google account is one role. The lender’s Google will not open `/borrower`.
-4. On `/borrower`, use the calendar and **Pay early** / **Need time**. Those show on the lender’s signal list; health scores refresh live.
+4. On `/borrower`, use the calendar and **Request early payment** / **Need time**. These show on the lender’s signal list. After receiving funds outside the app, the lender records the payment; the balance and health score refresh live.
 
 Step-by-step identity, scoring, and API notes: [docs/ROLES_AND_DASHBOARDS.md](docs/ROLES_AND_DASHBOARDS.md). UI layout: [docs/FRONTEND_GUIDE.md](docs/FRONTEND_GUIDE.md).
 
@@ -250,5 +248,5 @@ Special thanks to the Rust and African tech communities for the inspiration and 
 - Built with Rust and Actix Web
 - SQLite for data persistence
 - Docker for containerization
-- Fly.io for hassle-free hosting
+- Render for hosting the production API
 - The Rust community for amazing tools and frameworks

@@ -19,10 +19,7 @@ const siteUrl = getSiteUrl();
 const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#E8F1FF" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f131d" },
-  ],
+  themeColor: "#f5f8fd",
 };
 
 export const metadata: Metadata = {
