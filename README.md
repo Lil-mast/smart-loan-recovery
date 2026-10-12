@@ -5,7 +5,6 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue)](https://www.docker.com/)
 [![Rust Africa Hackathon](https://img.shields.io/badge/Built%20for-%23RustAfricaHackathon-brightgreen)](https://rust-africa-hackathon.io/)
 
-🚀 **Built for #RustAfricaHackathon** 🚀
 
 An innovative AI-enhanced loan recovery system built with Rust, featuring a secure web API, authentication, and intelligent recovery recommendations. This project demonstrates modern financial technology solutions optimized for African fintech challenges.
 
@@ -15,7 +14,7 @@ An innovative AI-enhanced loan recovery system built with Rust, featuring a secu
 
 ## 🌐 Live Demo
 
-**Production URL**: https://lendwise-5gdu.onrender.com/
+**Production URL**: https://smart-loan-recovery.vercel.app/
 
 ## ✨ Features
 
@@ -239,7 +238,7 @@ Live health (0–100) maps to actions in `src/scoring.rs`:
 
 This project is licensed under the APACHE License - see the LICENSE file for details.
 
-## 🌟 Built with ❤️ for #RustAfricaHackathon
+
 
 Special thanks to the Rust and African tech communities for the inspiration and support.
 
